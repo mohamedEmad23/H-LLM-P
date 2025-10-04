@@ -1,0 +1,340 @@
+# ============================================
+# THESIS DOCUMENTS (Requested)
+# ============================================
+Implementation-Outline.md
+Thesis-Report.md
+
+# ============================================
+# DEVELOPMENT FILES (Requested)
+# ============================================
+requirements-dev.txt
+setup.py
+tests/
+
+# ============================================
+# PYTHON
+# ============================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+poetry.lock
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ============================================
+# IDE / EDITORS
+# ============================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+
+# ============================================
+# OPERATING SYSTEMS
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ============================================
+# PROJECT SPECIFIC
+# ============================================
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+# Local configuration files
+config/local_*.yaml
+config/local_*.yml
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Output files
+output/
+results/
+experiments/
+logs/
+execution_logs/
+
+# Model files (if storing large LLM models locally)
+models/
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.gguf
+*.onnx
+
+# Data files
+data/raw/
+data/processed/
+*.csv
+*.json.gz
+*.parquet
+
+# Cache directories
+.cache/
+cache/
+__cache__/
+
+# Generated documentation
+docs/build/
+docs/api/
+
+# Jupyter notebook outputs
+*.ipynb
+!examples/*.ipynb  # Keep example notebooks
+
+# Vector database files (for future RAG implementation)
+chromadb/
+faiss_index/
+*.index
+
+# Experiment tracking
+mlruns/
+wandb/
+.neptune/
+
+# Build artifacts
+*.whl
+*.tar.gz
+
+# Profiling data
+*.prof
+*.lprof
+
+# ============================================
+# SECRETS & CREDENTIALS (CRITICAL)
+# ============================================
+
+# API keys and secrets
+*.key
+*.pem
+*.p12
+secrets.yaml
+secrets.yml
+credentials.json
+.secrets/
+api_keys.txt
+
+# Environment variables with sensitive data
+.env.production
+.env.secret
+
+# ============================================
+# BACKUP & ARCHIVE FILES
+# ============================================
+
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+backup/
+archives/
+
+# ============================================
+# LARGE FILES (Optional - uncomment if needed)
+# ============================================
+
+# Uncomment if you don't want to track large datasets
+# *.h5
+# *.hdf5
+# *.pkl
+# *.pickle

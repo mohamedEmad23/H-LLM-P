@@ -1,0 +1,147 @@
+# ============================================
+# CORE DEPENDENCIES (Essential for MVP)
+# ============================================
+
+# Python version management
+python-dotenv==1.0.0                    # Environment variables and configuration management
+
+# Data structures and validation
+pydantic==2.5.0                          # Data validation and settings management
+dataclasses-json==0.6.3                  # JSON serialization for dataclasses
+
+# Logging and debugging
+loguru==0.7.2                            # Beautiful, intuitive logging
+colorama==0.4.6                          # Cross-platform colored terminal output
+rich==13.7.0                             # Rich text and beautiful formatting in terminal
+
+# ============================================
+# LLM INTEGRATION (Free Options Priority)
+# ============================================
+
+# Local LLM inference (FREE - Highest Priority)
+ollama==0.1.6                            # Python client for Ollama local LLMs
+
+# HuggingFace for local models (FREE)
+transformers==4.36.0                     # HuggingFace transformers library
+torch==2.1.2                             # PyTorch for model inference
+accelerate==0.25.0                       # Faster model loading and inference
+sentencepiece==0.1.99                    # Tokenization for some models
+protobuf==4.25.1                         # Protocol buffers for model serialization
+
+# Free API options (backup)
+google-generativeai==0.3.2               # Google Gemini API (free tier)
+groq==0.4.1                              # Groq API client (free tier)
+
+# ============================================
+# PLANNING & REASONING
+# ============================================
+
+# State and logic management
+networkx==3.2.1                          # Graph algorithms for thought trees and plan visualization
+graphviz==0.20.1                         # Graph visualization
+pydot==2.0.0                             # DOT language graph description
+
+# ============================================
+# DATA STORAGE & PERSISTENCE
+# ============================================
+
+# Lightweight databases
+tinydb==4.8.0                            # Simple JSON-based database for task library
+sqlite-utils==3.36                       # SQLite utilities for execution logs
+
+# Serialization
+jsonschema==4.20.0                       # JSON schema validation
+pyyaml==6.0.1                            # YAML configuration files
+
+# ============================================
+# NATURAL LANGUAGE PROCESSING
+# ============================================
+
+# Text processing (for parsing LLM responses)
+spacy==3.7.2                             # Industrial-strength NLP
+nltk==3.8.1                              # Natural Language Toolkit
+regex==2023.12.25                        # Advanced regex for parsing
+
+# ============================================
+# TESTING & QUALITY ASSURANCE
+# ============================================
+
+pytest==7.4.3                            # Testing framework
+pytest-cov==4.1.0                        # Code coverage for pytest
+pytest-mock==3.12.0                      # Mocking for tests
+pytest-asyncio==0.23.2                   # Async testing support
+hypothesis==6.92.1                       # Property-based testing
+
+# ============================================
+# EVALUATION & METRICS (Phase 3)
+# ============================================
+
+# Performance metrics
+pandas==2.1.4                            # Data analysis and manipulation
+numpy==1.26.2                            # Numerical computing
+scipy==1.11.4                            # Scientific computing
+
+# Visualization
+matplotlib==3.8.2                        # Plotting and visualization
+seaborn==0.13.0                          # Statistical data visualization
+plotly==5.18.0                           # Interactive plots
+
+# ============================================
+# JUPYTER NOTEBOOK SUPPORT (For experimentation)
+# ============================================
+
+jupyter==1.0.0                           # Jupyter notebook
+ipykernel==6.27.1                        # Python kernel for Jupyter
+ipywidgets==8.1.1                        # Interactive widgets
+notebook==7.0.6                          # Jupyter notebook interface
+
+# ============================================
+# DEVELOPMENT TOOLS
+# ============================================
+
+# Code formatting and linting
+black==23.12.1                           # Code formatter
+ruff==0.1.9                              # Fast Python linter
+mypy==1.7.1                              # Static type checker
+isort==5.13.2                            # Import sorting
+
+# Documentation
+sphinx==7.2.6                            # Documentation generator
+sphinx-rtd-theme==2.0.0                  # Read the Docs theme for Sphinx
+myst-parser==2.0.0                       # Markdown support for Sphinx
+
+# ============================================
+# UTILITIES
+# ============================================
+
+# File handling
+pathlib2==2.3.7                          # Enhanced path operations
+watchdog==3.0.0                          # File system monitoring
+
+# Command-line interfaces
+click==8.1.7                             # CLI creation
+typer==0.9.0                             # Modern CLI framework
+tqdm==4.66.1                             # Progress bars
+
+# HTTP requests (for API-based LLMs)
+requests==2.31.0                         # HTTP library
+httpx==0.25.2                            # Async HTTP client
+aiohttp==3.9.1                           # Async HTTP client/server
+
+# ============================================
+# OPTIONAL: RAG & VECTOR STORES (Phase 2+)
+# ============================================
+
+# Uncomment when implementing RAG in later phases:
+# chromadb==0.4.22                       # Vector database for RAG
+# langchain==0.1.0                       # LLM application framework
+# faiss-cpu==1.7.4                       # Facebook AI Similarity Search
+# sentence-transformers==2.2.2           # Sentence embeddings
+
+# ============================================
+# PAID/LOW PRIORITY APIS
+# ============================================
+
+# Uncomment only if free options are insufficient:
+# openai==1.6.1                          # OpenAI GPT API (PAID)
+# anthropic==0.8.0                       # Anthropic Claude API (PAID)
