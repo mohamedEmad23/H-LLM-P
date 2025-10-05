@@ -1,56 +1,259 @@
-# Practical Framework for Implementing an HTN Planner Using LLMs
+"""
+Task Manager Module
 
-## Tools and Technologies
+This module defines the task hierarchy for HTN planning:
+- PrimitiveTask: Directly executable actions
+- CompoundTask: Abstract tasks that require decomposition
 
-### 1. Programming Language
-- **Python**: A versatile language with extensive libraries for AI and planning.
+Author: H-LLM-P Project
+Phase: 1 - Foundation (CoT + RAG)
+"""
 
-### 2. HTN Planning Libraries
-- **PyHop**: A lightweight HTN planner that is easy to use and modify. It is open-source and suitable for educational purposes.
-- **SHOP2**: A more advanced HTN planner that supports hierarchical planning. It is also open-source.
+from typing import Dict, Any, Optional, List
+from dataclasses import dataclass, field
+from enum import Enum
+from abc import ABC, abstractmethod
+from loguru import logger
 
-### 3. Large Language Models (LLMs)
-- **Hugging Face Transformers**: Use pre-trained models available for free. Models like GPT-2 or DistilGPT-2 can be fine-tuned for specific tasks.
-- **OpenAI GPT-3**: Requires an API key, but can be considered for advanced capabilities if budget allows.
 
-### 4. Natural Language Processing Libraries
-- **spaCy**: A powerful NLP library for Python that can help with text processing and parsing LLM responses.
-- **NLTK**: Another NLP library that is open-source and can be used for various text processing tasks.
+class TaskType(Enum):
+    """Enumeration of task types"""
+    PRIMITIVE = "primitive"
+    COMPOUND = "compound"
 
-### 5. Development Environment
-- **Jupyter Notebook**: Ideal for prototyping and testing small code snippets interactively.
-- **VS Code**: A robust code editor for larger projects with support for Python.
 
-### 6. Data Storage
-- **SQLite**: A lightweight, serverless database for storing task definitions and planning data.
-- **JSON Files**: For simple storage of task definitions and configurations.
+@dataclass
+class Task(ABC):
+    """
+    Base class for all tasks in the HTN planner.
+    
+    A task represents an action or goal that needs to be accomplished.
+    Tasks can be either primitive (directly executable) or compound
+    (requiring decomposition into subtasks).
+    
+    Attributes:
+        name: The name/identifier of the task
+        parameters: Dictionary of parameter name -> value mappings
+        metadata: Additional information about the task
+    """
+    name: str
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    @abstractmethod
+    def is_primitive(self) -> bool:
+        """Check if this is a primitive task"""
+        pass
+    
+    @abstractmethod
+    def get_type(self) -> TaskType:
+        """Get the type of this task"""
+        pass
+    
+    def get_signature(self) -> str:
+        """
+        Get a unique signature for this task instance.
+        Useful for hashing and comparison.
+        
+        Returns:
+            String representation: name(param1=value1, param2=value2, ...)
+        """
+        if not self.parameters:
+            return f"{self.name}()"
+        
+        param_strs = [f"{k}={v}" for k, v in sorted(self.parameters.items())]
+        return f"{self.name}({', '.join(param_strs)})"
+    
+    def to_natural_language(self) -> str:
+        """
+        Convert task to natural language description.
+        Useful for LLM prompts.
+        
+        Returns:
+            Human-readable task description
+        """
+        if not self.parameters:
+            return f"{self.name.replace('_', ' ')}"
+        
+        # Format parameters nicely
+        param_parts = []
+        for key, value in self.parameters.items():
+            param_parts.append(f"{key}: {value}")
+        
+        params_str = ", ".join(param_parts)
+        return f"{self.name.replace('_', ' ')} ({params_str})"
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert task to dictionary for serialization"""
+        return {
+            "name": self.name,
+            "type": self.get_type().value,
+            "parameters": self.parameters,
+            "metadata": self.metadata
+        }
+    
+    def __repr__(self) -> str:
+        """String representation for debugging"""
+        return f"{self.__class__.__name__}({self.get_signature()})"
+    
+    def __eq__(self, other: Any) -> bool:
+        """Check equality based on signature"""
+        if not isinstance(other, Task):
+            return False
+        return self.get_signature() == other.get_signature()
+    
+    def __hash__(self) -> int:
+        """Make Task hashable"""
+        return hash(self.get_signature())
 
-### 7. Testing Framework
-- **pytest**: A testing framework for Python that is easy to use and integrates well with various tools.
 
-### 8. Visualization Tools
-- **Matplotlib**: For visualizing task networks and planning processes.
-- **Graphviz**: For creating visual representations of task hierarchies and dependencies.
+@dataclass
+class PrimitiveTask(Task):
+    """
+    A primitive task that can be directly executed.
+    
+    Primitive tasks correspond to operators in classical planning.
+    They have preconditions and effects, and can be executed directly
+    in the world.
+    
+    Example:
+        PrimitiveTask(
+            name="pick_up",
+            parameters={"object": "cup", "location": "table"}
+        )
+    """
+    
+    def is_primitive(self) -> bool:
+        """Primitive tasks return True"""
+        return True
+    
+    def get_type(self) -> TaskType:
+        """Return the primitive task type"""
+        return TaskType.PRIMITIVE
 
-### 9. Documentation
-- **Sphinx**: A documentation generator for Python projects, useful for creating user manuals and API documentation.
 
-### 10. Version Control
-- **Git**: Essential for version control and collaboration. Use GitHub or GitLab for repository hosting.
+@dataclass
+class CompoundTask(Task):
+    """
+    A compound (abstract) task that requires decomposition.
+    
+    Compound tasks represent high-level goals or abstract actions
+    that must be broken down into simpler subtasks through HTN methods.
+    
+    Example:
+        CompoundTask(
+            name="prepare_coffee",
+            parameters={"cup_type": "mug", "coffee_type": "espresso"}
+        )
+    """
+    
+    # Optional: Store the decomposition method used (filled during planning)
+    decomposition_method: Optional[str] = field(default=None, repr=False)
+    
+    def is_primitive(self) -> bool:
+        """Compound tasks return False"""
+        return False
+    
+    def get_type(self) -> TaskType:
+        """Return the compound task type"""
+        return TaskType.COMPOUND
 
-## Implementation Steps
 
-1. **Set Up Development Environment**: Install Python, Jupyter Notebook, and VS Code.
-2. **Install Required Libraries**: Use pip to install PyHop, spaCy, NLTK, and other necessary libraries.
-3. **Define Task Hierarchies**: Create JSON files or use SQLite to define tasks and methods for the HTN planner.
-4. **Integrate LLM**: Use Hugging Face Transformers to load a pre-trained model for generating task decompositions.
-5. **Implement the Planner**: Write the HTN planner using PyHop or SHOP2, integrating the LLM for on-demand method generation.
-6. **Testing**: Use pytest to create tests for the planner's functionality.
-7. **Documentation**: Use Sphinx to document the code and usage instructions.
-8. **Version Control**: Initialize a Git repository and commit changes regularly.
-
-## Optional Paid Tools (Low Priority)
-- **OpenAI GPT-3 API**: For advanced LLM capabilities, if budget allows.
-- **Cloud Services**: Consider using cloud platforms for hosting if needed, but prioritize local solutions first.
-
-This framework provides a comprehensive starting point for implementing an HTN planner using LLMs, focusing on free and open-source tools while listing paid options as low priority.
+class TaskManager:
+    """
+    Manages task creation, validation, and tracking.
+    Provides utilities for working with task hierarchies.
+    """
+    
+    def __init__(self):
+        self.task_registry: Dict[str, type] = {}
+        self.task_history: List[Task] = []
+    
+    def register_task_type(self, task_name: str, task_class: type) -> None:
+        """
+        Register a task type for dynamic task creation.
+        
+        Args:
+            task_name: Name of the task
+            task_class: Either PrimitiveTask or CompoundTask class
+        """
+        if task_class not in [PrimitiveTask, CompoundTask]:
+            raise ValueError(f"Task class must be PrimitiveTask or CompoundTask")
+        
+        self.task_registry[task_name] = task_class
+        logger.debug(f"Registered task type: {task_name} as {task_class.__name__}")
+    
+    def create_task(
+        self, 
+        name: str, 
+        parameters: Optional[Dict[str, Any]] = None,
+        is_primitive: bool = False
+    ) -> Task:
+        """
+        Factory method to create tasks.
+        
+        Args:
+            name: Task name
+            parameters: Task parameters
+            is_primitive: Whether this is a primitive task
+            
+        Returns:
+            A PrimitiveTask or CompoundTask instance
+        """
+        params = parameters or {}
+        
+        # Check registry first
+        if name in self.task_registry:
+            task_class = self.task_registry[name]
+            return task_class(name=name, parameters=params)
+        
+        # Otherwise create based on is_primitive flag
+        if is_primitive:
+            return PrimitiveTask(name=name, parameters=params)
+        else:
+            return CompoundTask(name=name, parameters=params)
+    
+    def log_task(self, task: Task) -> None:
+        """Add a task to the execution history"""
+        self.task_history.append(task)
+    
+    def get_history(self) -> List[Task]:
+        """Get the full task execution history"""
+        return self.task_history
+    
+    def clear_history(self) -> None:
+        """Clear the task execution history"""
+        self.task_history = []
+        logger.debug("Task history cleared")
+    
+    @staticmethod
+    def parse_task_string(task_str: str) -> tuple[str, Dict[str, Any]]:
+        """
+        Parse a task string into name and parameters.
+        
+        Args:
+            task_str: String like "pick_up(object=cup, location=table)"
+            
+        Returns:
+            Tuple of (task_name, parameters_dict)
+        """
+        task_str = task_str.strip()
+        
+        # Handle simple task with no parameters
+        if "(" not in task_str:
+            return task_str, {}
+        
+        # Extract name and parameters
+        name = task_str[:task_str.index("(")]
+        params_str = task_str[task_str.index("(") + 1:task_str.rindex(")")]
+        
+        parameters = {}
+        if params_str.strip():
+            # Parse parameters
+            for param in params_str.split(","):
+                param = param.strip()
+                if "=" in param:
+                    key, value = param.split("=", 1)
+                    parameters[key.strip()] = value.strip()
+        
+        return name, parameters
