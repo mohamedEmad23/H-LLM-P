@@ -1,12 +1,12 @@
 # ============================================
 # THESIS DOCUMENTS (Requested)
 # ============================================
-PROGRESS.md
-Implementation-Outline.md
-Thesis-Report.md
-STAGE1_COMPLETE.md
-STAGE2_COMPLETE.md
-QUICK_REFERENCE.md
+#PROGRESS.md
+#Implementation-Outline.md
+#Thesis-Report.md
+#STAGE1_COMPLETE.md
+#STAGE2_COMPLETE.md
+#QUICK_REFERENCE.md
 
 
 # ============================================
@@ -14,10 +14,10 @@ QUICK_REFERENCE.md
 # ============================================
 requirements-dev.txt
 setup.py
-test_core_components.py
-test_htn_planner.py
-test_simple_htn.py
-tests/
+#test_core_components.py
+#test_htn_planner.py
+#test_simple_htn.py
+#tests/
 
 # ============================================
 # PYTHON
@@ -255,7 +255,7 @@ temp/
 
 # Output files
 output/
-results/
+#results/
 experiments/
 logs/
 execution_logs/

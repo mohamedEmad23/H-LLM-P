@@ -1,0 +1,410 @@
+{
+  "timestamp": "2025-10-11 00:10:07",
+  "aggregate_metrics": {
+    "total_tasks": 4,
+    "success_rate": 1.0,
+    "average_time": 69.15585152804852,
+    "total_tokens": 12298.0,
+    "llms_tested": 4
+  },
+  "llm_performance": {
+    "llama_local": {
+      "successes": 4,
+      "total": 4,
+      "total_time": 996.3623344898224,
+      "total_tokens": 4504
+    },
+    "groq_llama70b": {
+      "successes": 4,
+      "total": 4,
+      "total_time": 16.65132188796997,
+      "total_tokens": 3845
+    },
+    "gemini_flash": {
+      "successes": 4,
+      "total": 4,
+      "total_time": 18.057745218276978,
+      "total_tokens": 0
+    },
+    "cohere_command": {
+      "successes": 4,
+      "total": 4,
+      "total_time": 75.42222285270691,
+      "total_tokens": 3949.0
+    }
+  },
+  "task_results": [
+    {
+      "task": "make_coffee",
+      "report": {
+        "task_name": "make_coffee",
+        "summary": {
+          "total_attempts": 4,
+          "successful_attempts": 4,
+          "success_rate": "100.0%",
+          "average_execution_time": "64.226s",
+          "total_tokens": 3180.0,
+          "best_llm": "gemini_flash"
+        },
+        "results_per_llm": {
+          "llama_local": {
+            "llm_provider": "llama_local",
+            "model_name": "llama3.1:8b",
+            "status": "success",
+            "success": true,
+            "execution_time": 225.008,
+            "tokens_used": {
+              "prompt_tokens": 444,
+              "completion_tokens": 616,
+              "total_tokens": 1060
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "make_coffee",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "ollama",
+              "timeout": 30.0
+            }
+          },
+          "groq_llama70b": {
+            "llm_provider": "groq_llama70b",
+            "model_name": "llama-3.3-70b-versatile",
+            "status": "success",
+            "success": true,
+            "execution_time": 6.185,
+            "tokens_used": {
+              "prompt_tokens": 464,
+              "completion_tokens": 563,
+              "total_tokens": 1027
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "make_coffee",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "groq",
+              "timeout": 30.0
+            }
+          },
+          "gemini_flash": {
+            "llm_provider": "gemini_flash",
+            "model_name": "gemini-2.0-flash-exp",
+            "status": "success",
+            "success": true,
+            "execution_time": 3.984,
+            "tokens_used": null,
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "make_coffee_standard",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "gemini",
+              "timeout": 30.0
+            }
+          },
+          "cohere_command": {
+            "llm_provider": "cohere_command",
+            "model_name": "command-r-plus-08-2024",
+            "status": "success",
+            "success": true,
+            "execution_time": 21.728,
+            "tokens_used": {
+              "input_tokens": 623.0,
+              "output_tokens": 470.0,
+              "total_tokens": 1093.0
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "make_coffee_method",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "cohere",
+              "timeout": 30.0
+            }
+          }
+        },
+        "timestamp": "2025-10-10 23:55:57"
+      }
+    },
+    {
+      "task": "clean_room",
+      "report": {
+        "task_name": "clean_room",
+        "summary": {
+          "total_attempts": 4,
+          "successful_attempts": 4,
+          "success_rate": "100.0%",
+          "average_execution_time": "53.646s",
+          "total_tokens": 2680.0,
+          "best_llm": "groq_llama70b"
+        },
+        "results_per_llm": {
+          "llama_local": {
+            "llm_provider": "llama_local",
+            "model_name": "llama3.1:8b",
+            "status": "success",
+            "success": true,
+            "execution_time": 190.33,
+            "tokens_used": {
+              "prompt_tokens": 352,
+              "completion_tokens": 547,
+              "total_tokens": 899
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "clean_room",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "ollama",
+              "timeout": 30.0
+            }
+          },
+          "groq_llama70b": {
+            "llm_provider": "groq_llama70b",
+            "model_name": "llama-3.3-70b-versatile",
+            "status": "success",
+            "success": true,
+            "execution_time": 1.903,
+            "tokens_used": {
+              "prompt_tokens": 372,
+              "completion_tokens": 507,
+              "total_tokens": 879
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "clean_room_method",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "groq",
+              "timeout": 30.0
+            }
+          },
+          "gemini_flash": {
+            "llm_provider": "gemini_flash",
+            "model_name": "gemini-2.0-flash-exp",
+            "status": "success",
+            "success": true,
+            "execution_time": 4.517,
+            "tokens_used": null,
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "clean_room_method_1",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "gemini",
+              "timeout": 30.0
+            }
+          },
+          "cohere_command": {
+            "llm_provider": "cohere_command",
+            "model_name": "command-r-plus-08-2024",
+            "status": "success",
+            "success": true,
+            "execution_time": 17.834,
+            "tokens_used": {
+              "input_tokens": 536.0,
+              "output_tokens": 366.0,
+              "total_tokens": 902.0
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "clean_and_organize_room",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "cohere",
+              "timeout": 30.0
+            }
+          }
+        },
+        "timestamp": "2025-10-10 23:59:32"
+      }
+    },
+    {
+      "task": "prepare_breakfast",
+      "report": {
+        "task_name": "prepare_breakfast",
+        "summary": {
+          "total_attempts": 4,
+          "successful_attempts": 4,
+          "success_rate": "100.0%",
+          "average_execution_time": "70.416s",
+          "total_tokens": 3254.0,
+          "best_llm": "gemini_flash"
+        },
+        "results_per_llm": {
+          "llama_local": {
+            "llm_provider": "llama_local",
+            "model_name": "llama3.1:8b",
+            "status": "success",
+            "success": true,
+            "execution_time": 254.852,
+            "tokens_used": {
+              "prompt_tokens": 457,
+              "completion_tokens": 716,
+              "total_tokens": 1173
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "prepare_breakfast",
+            "num_subtasks": 3,
+            "metadata": {
+              "provider": "ollama",
+              "timeout": 30.0
+            }
+          },
+          "groq_llama70b": {
+            "llm_provider": "groq_llama70b",
+            "model_name": "llama-3.3-70b-versatile",
+            "status": "success",
+            "success": true,
+            "execution_time": 6.642,
+            "tokens_used": {
+              "prompt_tokens": 477,
+              "completion_tokens": 608,
+              "total_tokens": 1085
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "scrambling",
+            "num_subtasks": 5,
+            "metadata": {
+              "provider": "groq",
+              "timeout": 30.0
+            }
+          },
+          "gemini_flash": {
+            "llm_provider": "gemini_flash",
+            "model_name": "gemini-2.0-flash-exp",
+            "status": "success",
+            "success": true,
+            "execution_time": 5.139,
+            "tokens_used": null,
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "prepare_breakfast_method",
+            "num_subtasks": 2,
+            "metadata": {
+              "provider": "gemini",
+              "timeout": 30.0
+            }
+          },
+          "cohere_command": {
+            "llm_provider": "cohere_command",
+            "model_name": "command-r-plus-08-2024",
+            "status": "success",
+            "success": true,
+            "execution_time": 15.032,
+            "tokens_used": {
+              "input_tokens": 631.0,
+              "output_tokens": 365.0,
+              "total_tokens": 996.0
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "prepare_breakfast_method",
+            "num_subtasks": 5,
+            "metadata": {
+              "provider": "cohere",
+              "timeout": 30.0
+            }
+          }
+        },
+        "timestamp": "2025-10-11 00:04:13"
+      }
+    },
+    {
+      "task": "set_table",
+      "report": {
+        "task_name": "set_table",
+        "summary": {
+          "total_attempts": 4,
+          "successful_attempts": 4,
+          "success_rate": "100.0%",
+          "average_execution_time": "88.335s",
+          "total_tokens": 3184.0,
+          "best_llm": "groq_llama70b"
+        },
+        "results_per_llm": {
+          "llama_local": {
+            "llm_provider": "llama_local",
+            "model_name": "llama3.1:8b",
+            "status": "success",
+            "success": true,
+            "execution_time": 326.173,
+            "tokens_used": {
+              "prompt_tokens": 372,
+              "completion_tokens": 1000,
+              "total_tokens": 1372
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "set_table",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "ollama",
+              "timeout": 30.0
+            }
+          },
+          "groq_llama70b": {
+            "llm_provider": "groq_llama70b",
+            "model_name": "llama-3.3-70b-versatile",
+            "status": "success",
+            "success": true,
+            "execution_time": 1.921,
+            "tokens_used": {
+              "prompt_tokens": 392,
+              "completion_tokens": 462,
+              "total_tokens": 854
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "set_table_method",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "groq",
+              "timeout": 30.0
+            }
+          },
+          "gemini_flash": {
+            "llm_provider": "gemini_flash",
+            "model_name": "gemini-2.0-flash-exp",
+            "status": "success",
+            "success": true,
+            "execution_time": 4.417,
+            "tokens_used": null,
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "set_table_method_1",
+            "num_subtasks": 2,
+            "metadata": {
+              "provider": "gemini",
+              "timeout": 30.0
+            }
+          },
+          "cohere_command": {
+            "llm_provider": "cohere_command",
+            "model_name": "command-r-plus-08-2024",
+            "status": "success",
+            "success": true,
+            "execution_time": 20.828,
+            "tokens_used": {
+              "input_tokens": 558.0,
+              "output_tokens": 400.0,
+              "total_tokens": 958.0
+            },
+            "confidence_score": 0.9,
+            "errors": [],
+            "method_name": "set_table_for_dinner",
+            "num_subtasks": 4,
+            "metadata": {
+              "provider": "cohere",
+              "timeout": 30.0
+            }
+          }
+        },
+        "timestamp": "2025-10-11 00:10:07"
+      }
+    }
+  ]
+}

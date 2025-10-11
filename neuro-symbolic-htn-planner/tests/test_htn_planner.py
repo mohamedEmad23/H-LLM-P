@@ -1,0 +1,1 @@
+   pip install pyhop transformers spacy pandas numpy matplotlib pytest graphviz
