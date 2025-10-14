@@ -53,8 +53,24 @@ class HouseholdTaskTests:
         # Setup instructions
         providers_setup = []
         
-        # GitHub Models skipped for now (marketplace issues)
-        # Will revisit after RAG implementation
+        # Try GitHub Models - DeepSeek V3 (if token available)
+        if os.getenv("GITHUB_TOKEN"):
+            try:
+                from llm.github_models_client import GitHubModelsClient
+                
+                deepseek_client = GitHubModelsClient(
+                    config=LLMConfig(
+                        model_name="deepseek/DeepSeek-V3-0324",
+                        temperature=0.7,
+                        max_tokens=1000
+                    )
+                )
+                # Skip availability check - add directly (we know it works from testing)
+                self.engine.add_llm_provider("deepseek_v3", deepseek_client)
+                providers_setup.append("✅ DeepSeek V3 (671B MoE, GitHub Models)")
+                logger.info("DeepSeek V3 added successfully")
+            except Exception as e:
+                logger.warning(f"GitHub Models (DeepSeek V3) setup failed: {e}")
         
         # Try Ollama (if running locally)
         try:

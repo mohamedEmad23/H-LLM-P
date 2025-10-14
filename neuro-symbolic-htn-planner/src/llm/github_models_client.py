@@ -156,25 +156,29 @@ class GitHubModelsClient(BaseLLMClient):
             
             # GPT-5 has specific requirements: only supports temperature=1.0
             # and uses max_completion_tokens instead of max_tokens
+            # Also does NOT support top_p parameter
             if self.config.model_name.startswith("openai/gpt-5"):
                 # GPT-5 only supports temperature=1.0 (default)
                 params["temperature"] = 1.0
                 params["model_extras"] = {
                     "max_completion_tokens": kwargs.get("max_tokens", self.config.max_tokens)
                 }
+                # Don't add top_p for GPT-5
             elif self.config.model_name.startswith("openai/gpt-4o"):
                 params["temperature"] = kwargs.get("temperature", self.config.temperature)
                 params["model_extras"] = {
                     "max_completion_tokens": kwargs.get("max_tokens", self.config.max_tokens)
                 }
+                # Add optional parameters for GPT-4o
+                if self.config.top_p != 1.0:
+                    params["top_p"] = kwargs.get("top_p", self.config.top_p)
             else:
                 # Other models support standard parameters
                 params["temperature"] = kwargs.get("temperature", self.config.temperature)
                 params["max_tokens"] = kwargs.get("max_tokens", self.config.max_tokens)
-            
-            # Add optional parameters
-            if self.config.top_p != 1.0:
-                params["top_p"] = kwargs.get("top_p", self.config.top_p)
+                # Add optional parameters for other models
+                if self.config.top_p != 1.0:
+                    params["top_p"] = kwargs.get("top_p", self.config.top_p)
             
             # Call GitHub Models API using Azure SDK
             response = self.client.complete(**params)
@@ -294,24 +298,29 @@ class GitHubModelsClient(BaseLLMClient):
             
             # GPT-5 has specific requirements: only supports temperature=1.0
             # and uses max_completion_tokens instead of max_tokens
+            # Also does NOT support top_p parameter
             if self.config.model_name.startswith("openai/gpt-5"):
                 # GPT-5 only supports temperature=1.0 (default)
                 params["temperature"] = 1.0
                 params["model_extras"] = {
                     "max_completion_tokens": kwargs.get("max_tokens", self.config.max_tokens)
                 }
+                # Don't add top_p for GPT-5
             elif self.config.model_name.startswith("openai/gpt-4o"):
                 params["temperature"] = kwargs.get("temperature", self.config.temperature)
                 params["model_extras"] = {
                     "max_completion_tokens": kwargs.get("max_tokens", self.config.max_tokens)
                 }
+                # Add optional parameters for GPT-4o
+                if self.config.top_p != 1.0:
+                    params["top_p"] = kwargs.get("top_p", self.config.top_p)
             else:
                 # Other models support standard parameters
                 params["temperature"] = kwargs.get("temperature", self.config.temperature)
                 params["max_tokens"] = kwargs.get("max_tokens", self.config.max_tokens)
-            
-            if self.config.top_p != 1.0:
-                params["top_p"] = kwargs.get("top_p", self.config.top_p)
+                # Add optional parameters for other models
+                if self.config.top_p != 1.0:
+                    params["top_p"] = kwargs.get("top_p", self.config.top_p)
             
             # Call API using Azure SDK
             response = self.client.complete(**params)
