@@ -87,6 +87,9 @@ class MistralClient(BaseLLMClient):
         
         self.config = config or LLMConfig(model_name=self.DEFAULT_MODEL)
         
+        # Initialize base class (sets provider_name)
+        super().__init__(api_key=self.api_key, config=self.config)
+        
         # Validate model
         if self.config.model_name not in self.SUPPORTED_MODELS:
             logger.warning(f"Model {self.config.model_name} not in supported models. Using default: {self.DEFAULT_MODEL}")

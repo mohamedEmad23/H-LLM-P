@@ -14,6 +14,7 @@
 # ============================================
 requirements-dev.txt
 setup.py
+AGENT-DEVELOPMENT-KIT/
 #test_core_components.py
 #test_htn_planner.py
 #test_simple_htn.py

@@ -143,7 +143,46 @@ class HouseholdTaskTests:
             except Exception as e:
                 logger.warning(f"Cohere setup failed: {e}")
         
-        # Mistral skipped (401 unauthorized)
+        # Try Mistral (if API key available)
+        if os.getenv("MISTRAL_API_KEY"):
+            try:
+                from llm.mistral_client import MistralClient
+                
+                mistral_client = MistralClient(
+                    config=LLMConfig(
+                        model_name="mistral-small-latest",
+                        temperature=0.7,
+                        max_tokens=1000
+                    )
+                )
+                if mistral_client.is_available():
+                    self.engine.add_llm_provider("mistral_small", mistral_client)
+                    providers_setup.append("✅ Mistral Small (fast, efficient)")
+            except Exception as e:
+                logger.warning(f"Mistral setup failed: {e}")
+        
+        # Try Eden AI (if API key available) - SKIP FOR NOW (API is slow/unstable)
+        # if os.getenv("EDEN_API_KEY"):
+        #     try:
+        #         from llm.eden_client import EdenClient
+        #         
+        #         eden_client = EdenClient(
+        #             config=LLMConfig(
+        #                 model_name="gpt-3.5-turbo",
+        #                 temperature=0.7,
+        #                 max_tokens=1000
+        #             ),
+        #             provider="openai"
+        #         )
+        #         # Test availability with timeout (Eden can be slow)
+        #         try:
+        #             if eden_client.is_available():
+        #                 self.engine.add_llm_provider("eden_gpt35", eden_client)
+        #                 providers_setup.append("✅ Eden AI (GPT-3.5 via unified API)")
+        #         except Exception:
+        #             logger.warning("Eden AI availability check timed out or failed")
+        #     except Exception as e:
+        #         logger.warning(f"Eden AI setup failed: {e}")
         
         if not self.engine.llm_providers:
             raise RuntimeError(

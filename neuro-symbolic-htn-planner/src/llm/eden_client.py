@@ -90,6 +90,9 @@ class EdenClient(BaseLLMClient):
         self.provider = provider or self.DEFAULT_PROVIDER
         self.config = config or LLMConfig(model_name=self.DEFAULT_MODEL)
         
+        # Initialize base class (sets provider_name)
+        super().__init__(api_key=self.api_key, config=self.config)
+        
         logger.success(f"Eden AI client initialized with provider: {self.provider}, model: {self.config.model_name}")
     
     def _get_headers(self) -> Dict[str, str]:
