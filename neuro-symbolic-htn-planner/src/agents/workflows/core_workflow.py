@@ -13,7 +13,7 @@ from ..decomposition_agent import DecompositionAgent
 from ..execution_agent import ExecutionAgent
 from ..verification_agent import VerificationAgent
 from ..message_bus import MessageBus
-from ..state_manager import AgentStateManager
+from ..agent_state_manager import AgentStateManager
 
 
 class CoreWorkflow:
