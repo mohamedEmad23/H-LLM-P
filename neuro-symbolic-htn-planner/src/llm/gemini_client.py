@@ -87,7 +87,9 @@ class GeminiClient(BaseLLMClient):
         
         # Get API key from environment if not provided
         if self.api_key is None:
-            self.api_key = os.getenv("GOOGLE_GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+            self.api_key = (os.getenv("GOOGLE_GEMINI_API_KEY") or 
+                           os.getenv("GEMINI_API_KEY") or 
+                           os.getenv("GOOGLE_API_KEY"))
         
         if not self.api_key:
             raise ValueError(

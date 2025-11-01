@@ -1,0 +1,184 @@
+[
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Failed at unknown edge",
+    "time": 2.1696090698242188e-05,
+    "meta": {
+      "cost": 4
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 80,
+    "details": "Cost: 17 (used research)",
+    "time": 2.4080276489257812e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "Optimal cost: 17",
+    "time": 1.6689300537109375e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Violated constraint (1 violations)",
+    "time": 0.00010061264038085938,
+    "meta": {
+      "violations": 1
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 60,
+    "details": "7 moves, no violations",
+    "time": 0.00013208389282226562,
+    "meta": {
+      "moves": 7,
+      "violations": 0
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "7 moves, no violations",
+    "time": 0.0001232624053955078,
+    "meta": {
+      "moves": 7,
+      "violations": 0
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": true,
+    "score": 70,
+    "details": "Chose risky (lucky, no analysis)",
+    "time": 0.00011324882507324219,
+    "meta": {
+      "choice": "B"
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 30,
+    "details": "Chose safe (suboptimal)",
+    "time": 8.797645568847656e-05,
+    "meta": {
+      "choice": "A"
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "EV analysis, chose optimal",
+    "time": 0.00012826919555664062,
+    "meta": {
+      "choice": "B",
+      "ev_safe": 30,
+      "ev_risky": 25
+    }
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Failed: tried locked peg",
+    "time": 1.1682510375976562e-05,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 60,
+    "details": "Total: 3 ops (suboptimal unlock)",
+    "time": 0.00017213821411132812,
+    "meta": {
+      "cost": 3
+    }
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "Optimal: 3 ops",
+    "time": 0.0001628398895263672,
+    "meta": {
+      "cost": 3
+    }
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": true,
+    "score": 30,
+    "details": "Naive: 31 moves",
+    "time": 0.0005283355712890625,
+    "meta": {
+      "moves": 31
+    }
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 30,
+    "details": "Naive: 31 moves",
+    "time": 0.0005135536193847656,
+    "meta": {
+      "moves": 31
+    }
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "Frame-Stewart: 13 moves",
+    "time": 0.00022673606872558594,
+    "meta": {
+      "moves": 13
+    }
+  }
+]

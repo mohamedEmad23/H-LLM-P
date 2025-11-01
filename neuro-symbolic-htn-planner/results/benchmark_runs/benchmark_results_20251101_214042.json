@@ -1,0 +1,174 @@
+[
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Failed at unknown edge",
+    "time": 2.8848648071289062e-05,
+    "meta": {
+      "cost": 4
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 80,
+    "details": "Cost: 17 (used research)",
+    "time": 3.2901763916015625e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "Optimal cost: 17",
+    "time": 2.288818359375e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Violated constraint (1 violations)",
+    "time": 0.00013875961303710938,
+    "meta": {
+      "violations": 1
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 60,
+    "details": "7 moves, no violations",
+    "time": 0.00022029876708984375,
+    "meta": {
+      "moves": 7,
+      "violations": 0
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "7 moves, no violations",
+    "time": 0.00020813941955566406,
+    "meta": {
+      "moves": 7,
+      "violations": 0
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": true,
+    "score": 70,
+    "details": "Chose risky (lucky, no analysis)",
+    "time": 0.00017571449279785156,
+    "meta": {
+      "choice": "B"
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 30,
+    "details": "Chose safe (suboptimal)",
+    "time": 0.00014352798461914062,
+    "meta": {
+      "choice": "A"
+    }
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "EV analysis, chose optimal",
+    "time": 0.0002110004425048828,
+    "meta": {
+      "choice": "B",
+      "ev_safe": 30,
+      "ev_risky": 25
+    }
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'HybridPuzzleState' object has no attribute 'hanoi_pegs'",
+    "time": 3.170967102050781e-05,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'HybridPuzzleState' object has no attribute 'hanoi_pegs'",
+    "time": 0.00010776519775390625,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'HybridPuzzleState' object has no attribute 'hanoi_pegs'",
+    "time": 0.0001068115234375,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Error: KPegHanoiOperators.move_disk() takes 3 positional arguments but 4 were given",
+    "time": 5.7220458984375e-05,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: KPegHanoiOperators.move_disk() takes 3 positional arguments but 4 were given",
+    "time": 4.029273986816406e-05,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: KPegHanoiOperators.move_disk() takes 3 positional arguments but 4 were given",
+    "time": 5.6743621826171875e-05,
+    "meta": {}
+  }
+]
