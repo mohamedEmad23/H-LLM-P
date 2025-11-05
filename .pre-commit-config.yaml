@@ -30,5 +30,4 @@ repos:
     -   id: mypy
         # This makes mypy much faster on pre-commit
         args: [--explicit-package-bases, --namespace-packages]
-        exclude: ^neuro-symbolic-htn-planner/
         additional_dependencies: ['types-PyYAML'] # Add other 'types-*' packages as needed
