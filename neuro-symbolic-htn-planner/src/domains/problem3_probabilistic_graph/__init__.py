@@ -28,14 +28,14 @@ calculate_expected_values = ProbabilisticGraphOperators.calculate_expected_value
 check_goal = ProbabilisticGraphOperators.check_goal
 
 __all__ = [
-    'ProbabilisticGraphState',
-    'ProbabilisticGraphOperators',
-    'ProbabilisticGraphMethods',
-    'create_probabilistic_graph',
-    'choose_path',
-    'traverse_to_end',
-    'calculate_expected_values',
-    'check_goal',
-    'get_applicable_operators',
-    'get_decomposition_methods'
+    "ProbabilisticGraphState",
+    "ProbabilisticGraphOperators",
+    "ProbabilisticGraphMethods",
+    "create_probabilistic_graph",
+    "choose_path",
+    "traverse_to_end",
+    "calculate_expected_values",
+    "check_goal",
+    "get_applicable_operators",
+    "get_decomposition_methods",
 ]

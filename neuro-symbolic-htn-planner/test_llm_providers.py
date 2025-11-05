@@ -1,4 +1,5 @@
 """Quick diagnostic script to test all LLM providers."""
+
 import os
 import sys
 from pathlib import Path
@@ -8,14 +9,15 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from llm.local_llm_interface import LLMConfig
 
-print("="*80)
+print("=" * 80)
 print("LLM Provider Diagnostic Test")
-print("="*80)
+print("=" * 80)
 
 # Test 1: Ollama (local)
 print("\n[1/7] Testing Ollama (local)...")
 try:
     from llm.ollama_client import OllamaClient
+
     client = OllamaClient(config=LLMConfig(model_name="llama3.1:8b"))
     if client.is_available():
         print("✅ Ollama: AVAILABLE")
@@ -33,6 +35,7 @@ if not os.getenv("GROQ_API_KEY"):
 else:
     try:
         from llm.groq_client import GroqClient
+
         client = GroqClient(config=LLMConfig(model_name="llama-3.3-70b-versatile"))
         if client.is_available():
             print("✅ Groq: AVAILABLE")
@@ -50,6 +53,7 @@ if not os.getenv("GITHUB_TOKEN"):
 else:
     try:
         from llm.github_models_client import GitHubModelsClient
+
         # Try GPT-4o (most likely to work)
         client = GitHubModelsClient(config=LLMConfig(model_name="openai/gpt-4o"))
         if client.is_available():
@@ -69,6 +73,7 @@ if not api_key:
 else:
     try:
         from llm.gemini_client import GeminiClient
+
         client = GeminiClient(config=LLMConfig(model_name="gemini-2.0-flash-exp"))
         if client.is_available():
             print("✅ Gemini: AVAILABLE")
@@ -86,6 +91,7 @@ if not os.getenv("COHERE_API_KEY"):
 else:
     try:
         from llm.cohere_client import CohereClient
+
         client = CohereClient(config=LLMConfig(model_name="command-r-plus-08-2024"))
         if client.is_available():
             print("✅ Cohere: AVAILABLE")
@@ -103,6 +109,7 @@ if not os.getenv("MISTRAL_API_KEY"):
 else:
     try:
         from llm.mistral_client import MistralClient
+
         client = MistralClient(config=LLMConfig(model_name="mistral-large-latest"))
         if client.is_available():
             print("✅ Mistral: AVAILABLE")
@@ -120,6 +127,7 @@ if not os.getenv("EDEN_API_KEY"):
 else:
     try:
         from llm.eden_client import EdenClient
+
         client = EdenClient(config=LLMConfig(model_name="openai/gpt-4"))
         if client.is_available():
             print("✅ Eden AI: AVAILABLE")
@@ -130,6 +138,6 @@ else:
     except Exception as e:
         print(f"❌ Eden AI: ERROR - {str(e)[:100]}")
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("Diagnostic Complete")
-print("="*80)
+print("=" * 80)

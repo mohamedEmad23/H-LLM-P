@@ -321,11 +321,11 @@ CCS = (0.4 × State_Score) + (0.3 × Goal_Score) + (0.3 × Constraint_Score)
 - **State Consistency**: Check for logical contradictions in state transitions
   - Count: contradictory predicates, impossible states
   - Score: 100 - (10 × contradiction_count)
-  
+
 - **Goal Alignment**: Measure relevance of each action to goal
   - Calculate: actions moving toward goal / total actions
   - Score: relevance_ratio × 100
-  
+
 - **Constraint Adherence**: Track constraint violations
   - Count: soft constraint violations, hard constraint violations
   - Score: 100 - (5 × soft_violations) - (20 × hard_violations)
@@ -483,6 +483,6 @@ Tables:
 
 ---
 
-**Prepared by**: H-LLM-P Project Team  
-**Approval**: Thesis Professor Supervisor  
+**Prepared by**: H-LLM-P Project Team
+**Approval**: Thesis Professor Supervisor
 **Version**: 1.0 - Baseline Benchmarking Phase

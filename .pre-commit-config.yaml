@@ -1,0 +1,34 @@
+# .pre-commit-config.yaml
+
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+# --- General File Checks ---
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0 # Use a recent tag
+    hooks:
+    -   id: trailing-whitespace    # Removes trailing whitespace
+    -   id: end-of-file-fixer      # Makes sure files end in a newline
+    -   id: check-yaml             # Checks YAML file syntax
+    -   id: check-json             # Checks JSON file syntax
+    -   id: check-merge-conflict   # Prevents committing merge-conflict strings
+    -   id: check-added-large-files  # Prevents committing large files
+
+# --- Python-Specific Checks ---
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.1 # Use a recent ruff tag
+    hooks:
+    # Run the ruff linter
+    -   id: ruff
+        args: [--fix] # Automatically fix what it can
+    # Run the ruff formatter (a faster alternative to Black)
+    -   id: ruff-format
+
+# --- Python Type Checking ---
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.1 # Use a recent mypy tag
+    hooks:
+    -   id: mypy
+        # This makes mypy much faster on pre-commit
+        args: [--explicit-package-bases, --namespace-packages]
+        exclude: ^neuro-symbolic-htn-planner/
+        additional_dependencies: ['types-PyYAML'] # Add other 'types-*' packages as needed

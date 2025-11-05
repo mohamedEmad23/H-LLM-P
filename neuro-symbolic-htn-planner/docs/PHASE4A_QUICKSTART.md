@@ -37,14 +37,14 @@ async def main():
     decomp_agent = DecompositionAgent()
     exec_agent = ExecutionAgent()
     verif_agent = VerificationAgent()
-    
+
     # Create workflow
     workflow = CoreWorkflow(
         decomposition_agent=decomp_agent,
         execution_agent=exec_agent,
         verification_agent=verif_agent
     )
-    
+
     # Solve 3-disk Tower of Hanoi
     result = await workflow.process_task({
         "task": "solve_hanoi(3, A, C, B)",
@@ -57,7 +57,7 @@ async def main():
         },
         "optimal_steps": 7
     })
-    
+
     # Print results
     print(f"\n{'='*60}")
     print(f"Success: {result['success']}")
@@ -66,7 +66,7 @@ async def main():
     print(f"Plan: {len(result['plan'])} steps")
     print(f"Total Time: {result['total_time_ms']:.1f}ms")
     print(f"{'='*60}\n")
-    
+
     # Get full report
     print(workflow.get_full_report())
 

@@ -88,7 +88,7 @@ Problems Passed: 5/5
   - Full execution logs
   - LLM calls with latency/tokens
   - Evaluation scores per problem
-  
+
 - **Markdown**: `results/phase1_traces/phase1_{provider}_{timestamp}.md`
   - Human-readable report
   - LLM response excerpts
@@ -162,7 +162,7 @@ Problems Passed: 5/5
   - Agent-to-agent messages
   - LLM calls per agent with provider tags
   - HTN decompositions
-  
+
 - **Markdown**: `results/phase3_traces/phase3_multi_llm_{timestamp}.md`
   - Communication flow
   - Multi-LLM coordination patterns
@@ -239,7 +239,7 @@ Problems Passed: 5/5
   - Full 5-agent workflow
   - Fallback activation logs
   - Strategic decision points
-  
+
 - **Markdown**: `results/phase4b_traces/phase4b_strategic_{timestamp}.md`
   - Strategic coordination analysis
   - Fallback mechanism effectiveness
@@ -301,12 +301,12 @@ After running all tests, compare:
    - Which provider scores highest on each problem?
    - Latency comparison: Groq vs Cohere vs Gemini vs Ollama vs HuggingFace
    - Token efficiency
-   
+
 2. **Multi-LLM Benefit (Phase 3)**:
    - Does 3-agent system outperform single LLM?
    - Which agent combinations work best?
    - Communication overhead cost
-   
+
 3. **Strategic Value (Phase 4B)**:
    - Does 5-agent system justify complexity?
    - Monitoring/Validation ROI
@@ -360,7 +360,7 @@ ollama pull llama3.2  # If not already pulled
 
 **Symptom**: `429 Too Many Requests`
 
-**Solution**: 
+**Solution**:
 - Add delays between tests (modify code: `time.sleep(2)`)
 - Use provider-specific rate limit configs
 - Upgrade API tier (Groq, Cohere, etc.)

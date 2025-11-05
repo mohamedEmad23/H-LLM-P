@@ -12,27 +12,27 @@
   - State transitions (apply_effects)
   - Natural language conversion for LLM prompts
   - State history tracking via StateManager
-  
+
 - [x] Implement Task classes (`task_manager.py`)
   - PrimitiveTask: Directly executable actions
   - CompoundTask: Abstract tasks requiring decomposition
   - TaskManager: Factory and registry for task creation
   - Natural language conversion support
-  
+
 - [x] Implement Operator definitions (`operator.py`)
   - STRIPS-style preconditions and effects
   - Applicability checking
   - State transition application
   - Executor support for simulation
   - OperatorLibrary for managing operator collections
-  
+
 - [x] Implement Method class (`methods.py`) ✅ **NEW**
   - Defines task decomposition rules
   - Precondition checking for method applicability
   - Ordered subtask lists
   - Priority-based method selection
   - MethodLibrary for managing decomposition knowledge
-  
+
 - [x] Build HTN Planner (`htn_planner.py`) ✅ **NEW**
   - Recursive task decomposition algorithm
   - Depth-first search through task network
@@ -40,7 +40,7 @@
   - Planning statistics and decomposition tracing
   - Knowledge gap detection (for LLM integration)
   - PlanningResult dataclass for result encapsulation
-  
+
 - [x] Create comprehensive tests
   - Core components tested (`test_core_components.py`) ✅
   - HTN planner tested (`test_simple_htn.py`) ✅

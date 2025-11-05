@@ -195,7 +195,7 @@ def test_p1(self, phase, trace):
         tokens=120,
         success=False
     )
-    
+
     # Log HTN decomposition
     trace.add_htn_decomposition(
         agent="SingleLLM",
@@ -204,7 +204,7 @@ def test_p1(self, phase, trace):
         subtasks=["move_to_B", "move_to_C", "move_to_D"],
         reasoning="No research capability, hallucinating edge weight"
     )
-    
+
     # Execute and log state transitions
     _, state, _ = move_to_node(state, "B")
     trace.add_state_transition(
@@ -215,7 +215,7 @@ def test_p1(self, phase, trace):
         success=True,
         message="Moved to B"
     )
-    
+
     success, state, msg = move_to_node(state, "C")
     trace.add_state_transition(
         agent="SingleLLM",
@@ -225,7 +225,7 @@ def test_p1(self, phase, trace):
         success=False,
         message=msg
     )
-    
+
     # Log failure analysis
     trace.add_failure_analysis(
         failure_point="move_to_node(C)",
@@ -233,7 +233,7 @@ def test_p1(self, phase, trace):
         missing_capability="Modular tool-calling architecture",
         recovery=False
     )
-    
+
     return {'success': False, 'score': 0, 'details': "Failed at unknown edge"}
 ```
 
@@ -476,11 +476,11 @@ Result: 13 moves (optimal) vs 31 moves (naive) ✓
 Strategic Analysis:
   Safe path: 30 min guaranteed
   Risky path: 50% chance 10 min, 50% chance 40 min
-  
+
 Expected Value Calculation:
   EV[Safe] = 30
   EV[Risky] = 0.5*10 + 0.5*40 = 25
-  
+
 Decision: Choose Risky (lower expected time) ✓
 ```
 
@@ -489,7 +489,7 @@ Decision: Choose Risky (lower expected time) ✓
 Strategic Research:
   Standard 3-peg Hanoi: 2^n - 1 moves
   For 5 disks: 2^5 - 1 = 31 moves
-  
+
 Frame-Stewart Algorithm Discovery:
   For k≥4 pegs: Optimal recursive split strategy
   For 5 disks, 4 pegs: 13 moves (58% reduction!) ✓
@@ -557,7 +557,7 @@ def call_llm_real(agent, prompt):
         messages=[{"role": "user", "content": prompt}]
     )
     latency = (time.time() - start_time) * 1000
-    
+
     trace.add_llm_call(
         agent=agent,
         provider="groq",
@@ -568,7 +568,7 @@ def call_llm_real(agent, prompt):
         tokens=response.usage.total_tokens,
         success=True
     )
-    
+
     return response.choices[0].message.content
 ```
 
@@ -685,7 +685,7 @@ Kafka is overkill unless you're building a production system with thousands of a
 
 > **"I want a detailed JSON/Markdown/CSV/any kind of log file that has information about how each phase deals with the problem, and why it failed"**
 
-**Fixed**: 
+**Fixed**:
 - JSON: Machine-readable, complete trace (`execution_trace_*.json`)
 - Markdown: Human-readable narrative (`execution_trace_*.md`)
 - Comparison: Quick overview table (`comparison_report_*.md`)

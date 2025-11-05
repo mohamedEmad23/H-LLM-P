@@ -19,10 +19,9 @@ response = client.chat.completions.create(
         {
             "role": "user",
             "content": "What is the capital of France?",
-        }
+        },
     ],
-    model=model
+    model=model,
 )
 
 print(response.choices[0].message.content)
-

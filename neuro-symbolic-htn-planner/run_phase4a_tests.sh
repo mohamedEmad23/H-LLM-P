@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Master Test Suite for Phase 4A - Multi-Agent HTN System
-# 
+#
 # This script runs all unit and integration tests for the 3-agent
 # architecture and generates a comprehensive test report.
 
@@ -26,11 +26,11 @@ NC='\033[0m' # No Color
 run_test() {
     local test_file=$1
     local test_name=$2
-    
+
     echo "──────────────────────────────────────────────────────────────"
     echo "📋 Running: $test_name"
     echo "──────────────────────────────────────────────────────────────"
-    
+
     if pytest "$test_file" -v; then
         echo -e "${GREEN}✅ PASSED${NC}: $test_name"
         ((PASSED_TESTS++))
@@ -38,7 +38,7 @@ run_test() {
         echo -e "${RED}❌ FAILED${NC}: $test_name"
         ((FAILED_TESTS++))
     fi
-    
+
     ((TOTAL_TESTS++))
     echo ""
 }

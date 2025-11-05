@@ -1,0 +1,14 @@
+[tool.ruff.lint]
+# Ignore E402 (module-level import not at top) just for files in `tests/`
+
+[tool.ruff.lint.per-file-ignores]
+"neuro-symbolic-htn-planner/tests/*.py" = ["E402"]
+
+[tool.mypy]
+# Exclude the neuro-symbolic-htn-planner directory from type checking to avoid module name conflicts
+exclude = [
+    "^neuro-symbolic-htn-planner/.*$",
+]
+mypy_path = "neuro-symbolic-htn-planner/src"
+namespace_packages = true
+explicit_package_bases = true

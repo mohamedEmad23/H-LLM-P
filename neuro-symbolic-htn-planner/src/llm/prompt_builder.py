@@ -20,15 +20,17 @@ from enum import Enum
 
 class PromptStrategy(Enum):
     """Different prompting strategies for different use cases."""
-    FAST = "fast"           # Minimal prompts for fast models (Groq, small models)
+
+    FAST = "fast"  # Minimal prompts for fast models (Groq, small models)
     REASONING = "reasoning"  # Detailed CoT for reasoning models (Gemini, Cohere)
-    CODE_FOCUSED = "code"   # For code-specialized models (Codestral, CodeLLaMA)
-    LOCAL = "local"         # Optimized for local models (Ollama)
+    CODE_FOCUSED = "code"  # For code-specialized models (Codestral, CodeLLaMA)
+    LOCAL = "local"  # Optimized for local models (Ollama)
 
 
 @dataclass
 class HTNTask:
     """Represents an HTN task to be decomposed."""
+
     name: str
     parameters: List[str]
     preconditions: List[str]
@@ -39,6 +41,7 @@ class HTNTask:
 @dataclass
 class DomainContext:
     """Context about the HTN domain."""
+
     domain_name: str
     available_operators: List[str]
     available_methods: List[str]
@@ -49,11 +52,11 @@ class DomainContext:
 class PromptBuilder:
     """
     Builds prompts for LLM-based HTN task decomposition.
-    
+
     Supports multiple prompting strategies and provides templates
     for different types of HTN reasoning tasks.
     """
-    
+
     # Few-shot examples for HTN decomposition
     EXAMPLES = {
         "blocks_world": """
@@ -153,32 +156,32 @@ Method: make_brewed_coffee
     - NOT has_ingredient(coffee_beans)
     - NOT has_ingredient(water)
 ```
-"""
+""",
     }
-    
+
     def __init__(self, strategy: PromptStrategy = PromptStrategy.REASONING):
         """
         Initialize the prompt builder.
-        
+
         Args:
             strategy: The prompting strategy to use
         """
         self.strategy = strategy
-    
+
     def build_task_decomposition_prompt(
         self,
         task: HTNTask,
         domain_context: DomainContext,
-        include_examples: bool = True
+        include_examples: bool = True,
     ) -> str:
         """
         Build a prompt for decomposing an HTN task.
-        
+
         Args:
             task: The task to decompose
             domain_context: Context about the HTN domain
             include_examples: Whether to include few-shot examples
-            
+
         Returns:
             The complete prompt string
         """
@@ -190,7 +193,7 @@ Method: make_brewed_coffee
             return self._build_code_prompt(task, domain_context)
         else:  # LOCAL
             return self._build_local_prompt(task, domain_context, include_examples)
-    
+
     def _build_fast_prompt(self, task: HTNTask, domain_context: DomainContext) -> str:
         """Build a minimal prompt for fast models."""
         return f"""Decompose this HTN task into subtasks:
@@ -208,12 +211,9 @@ Method: <method_name>
     2. <subtask_2>
     ...
 """
-    
+
     def _build_reasoning_prompt(
-        self,
-        task: HTNTask,
-        domain_context: DomainContext,
-        include_examples: bool
+        self, task: HTNTask, domain_context: DomainContext, include_examples: bool
     ) -> str:
         """Build a detailed Chain of Thought prompt for reasoning models."""
         prompt = f"""You are an expert in Hierarchical Task Network (HTN) planning. Your task is to decompose complex tasks into sequences of subtasks that can be executed to achieve a goal.
@@ -225,13 +225,13 @@ Existing Methods: {', '.join(domain_context.available_methods) if domain_context
 State Variables: {', '.join(domain_context.state_variables)}
 
 """
-        
+
         if include_examples and domain_context.domain_name.lower() in self.EXAMPLES:
             prompt += f"""## Learning Examples
 {self.EXAMPLES.get(domain_context.domain_name.lower(), self.EXAMPLES['blocks_world'])}
 
 """
-        
+
         prompt += f"""## Task to Decompose
 Task: {task.name}({', '.join(task.parameters)})
 {f'Description: {task.description}' if task.description else ''}
@@ -266,7 +266,7 @@ Method: <method_name>
 Begin your response with your reasoning, then provide the method decomposition.
 """
         return prompt
-    
+
     def _build_code_prompt(self, task: HTNTask, domain_context: DomainContext) -> str:
         """Build a prompt optimized for code-focused models."""
         return f"""# HTN Method Generation
@@ -293,17 +293,17 @@ class Method:
     name = "<method_name>"
     task = "{task.name}"
     parameters = {[f"?{p}" for p in task.parameters]}
-    
+
     preconditions = [
         # List precondition predicates
     ]
-    
+
     subtasks = [
         # List of (task_name, [parameters]) tuples
         ("<subtask_1>", ["?param1", "?param2"]),
         ("<subtask_2>", ["?param3"]),
     ]
-    
+
     effects = [
         # List effect predicates
     ]
@@ -311,12 +311,9 @@ class Method:
 
 Provide the method implementation:
 """
-    
+
     def _build_local_prompt(
-        self,
-        task: HTNTask,
-        domain_context: DomainContext,
-        include_examples: bool
+        self, task: HTNTask, domain_context: DomainContext, include_examples: bool
     ) -> str:
         """Build a prompt optimized for local models (shorter context)."""
         prompt = f"""Decompose this HTN task into executable subtasks.
@@ -328,7 +325,7 @@ Task: {task.name}({', '.join(task.parameters)})
 {f'Description: {task.description}' if task.description else ''}
 
 """
-        
+
         if include_examples:
             prompt += """Example Method:
 ```
@@ -340,7 +337,7 @@ Method: example_method
 ```
 
 """
-        
+
         prompt += f"""Your Task Method:
 ```
 Method: <name>
@@ -351,21 +348,18 @@ Method: <name>
 ```
 """
         return prompt
-    
+
     def build_method_refinement_prompt(
-        self,
-        original_method: str,
-        failure_reason: str,
-        execution_trace: List[str]
+        self, original_method: str, failure_reason: str, execution_trace: List[str]
     ) -> str:
         """
         Build a prompt for refining a failed method.
-        
+
         Args:
             original_method: The method that failed
             failure_reason: Why it failed
             execution_trace: Trace of execution steps
-            
+
         Returns:
             Prompt for method refinement
         """
@@ -402,21 +396,21 @@ Method: <refined_method_name>
   Effects: ...
 ```
 """
-    
+
     def build_gap_analysis_prompt(
         self,
         current_state: Dict[str, Any],
         goal_state: Dict[str, Any],
-        attempted_methods: List[str]
+        attempted_methods: List[str],
     ) -> str:
         """
         Build a prompt for analyzing knowledge gaps in HTN planning.
-        
+
         Args:
             current_state: Current world state
             goal_state: Desired goal state
             attempted_methods: Methods that were tried
-            
+
         Returns:
             Prompt for gap analysis
         """
@@ -444,19 +438,17 @@ Format your response as:
 2. **Missing Knowledge**: What methods/operators are needed?
 3. **Proposed Solution**: Detailed method or operator definition
 """
-    
+
     def build_validation_prompt(
-        self,
-        method: str,
-        domain_constraints: List[str]
+        self, method: str, domain_constraints: List[str]
     ) -> str:
         """
         Build a prompt for validating a generated method.
-        
+
         Args:
             method: The method to validate
             domain_constraints: Constraints from the domain
-            
+
         Returns:
             Prompt for validation
         """
@@ -484,21 +476,21 @@ Provide:
 - **Issues Found**: List of problems (if any)
 - **Corrected Method**: Fixed version (if needed)
 """
-    
+
     def _format_list(self, items: List[str]) -> str:
         """Format a list with proper indentation."""
         if not items:
             return "  - None"
-        return '\n'.join(f"  - {item}" for item in items)
-    
+        return "\n".join(f"  - {item}" for item in items)
+
     def _format_dict(self, d: Dict[str, Any]) -> str:
         """Format a dictionary as a readable string."""
-        return '\n'.join(f"  {k}: {v}" for k, v in d.items())
-    
+        return "\n".join(f"  {k}: {v}" for k, v in d.items())
+
     def get_system_prompt(self) -> str:
         """
         Get the system prompt for HTN planning.
-        
+
         Returns:
             System prompt to set LLM behavior
         """
@@ -513,13 +505,14 @@ Provide:
 
 Provide detailed, well-reasoned method decompositions using Chain of Thought reasoning."""
         elif self.strategy == PromptStrategy.CODE_FOCUSED:
-            return """You are a code generation expert specializing in HTN planning systems. 
+            return """You are a code generation expert specializing in HTN planning systems.
 Generate clean, well-structured method definitions in a Python-like format."""
         else:  # LOCAL
             return "You are an HTN planning assistant. Break down tasks into clear subtasks."
 
 
 # Convenience functions for common use cases
+
 
 def build_decomposition_prompt(
     task_name: str,
@@ -529,11 +522,11 @@ def build_decomposition_prompt(
     strategy: PromptStrategy = PromptStrategy.REASONING,
     task_description: Optional[str] = None,
     preconditions: Optional[List[str]] = None,
-    effects: Optional[List[str]] = None
+    effects: Optional[List[str]] = None,
 ) -> tuple[str, str]:
     """
     Build a task decomposition prompt (convenience function).
-    
+
     Args:
         task_name: Name of the task
         task_params: Task parameters
@@ -543,42 +536,42 @@ def build_decomposition_prompt(
         task_description: Optional task description
         preconditions: Optional preconditions
         effects: Optional effects
-        
+
     Returns:
         Tuple of (system_prompt, user_prompt)
     """
     builder = PromptBuilder(strategy)
-    
+
     task = HTNTask(
         name=task_name,
         parameters=task_params,
         preconditions=preconditions or [],
         effects=effects or [],
-        description=task_description
+        description=task_description,
     )
-    
+
     domain = DomainContext(
         domain_name=domain_name,
         available_operators=operators,
         available_methods=[],
-        state_variables=[]
+        state_variables=[],
     )
-    
+
     system_prompt = builder.get_system_prompt()
     user_prompt = builder.build_task_decomposition_prompt(task, domain)
-    
+
     return system_prompt, user_prompt
 
 
 def build_quick_prompt(task_name: str, description: str, operators: List[str]) -> str:
     """
     Build a quick decomposition prompt for fast iteration.
-    
+
     Args:
         task_name: Task to decompose
         description: Task description
         operators: Available operators
-        
+
     Returns:
         Complete prompt string
     """
@@ -594,43 +587,45 @@ Method:
 
 # Example usage
 if __name__ == "__main__":
-    print("="*80)
+    print("=" * 80)
     print("HTN Prompt Builder - Example Usage")
-    print("="*80)
-    
+    print("=" * 80)
+
     # Example 1: Reasoning strategy
     print("\n### Example 1: Detailed Reasoning Prompt ###\n")
     builder = PromptBuilder(PromptStrategy.REASONING)
-    
+
     task = HTNTask(
         name="move_block",
         parameters=["block", "from_loc", "to_loc"],
         preconditions=["clear(block)", "clear(to_loc)", "on(block, from_loc)"],
         effects=["on(block, to_loc)", "NOT on(block, from_loc)"],
-        description="Move a block from one location to another"
+        description="Move a block from one location to another",
     )
-    
+
     domain = DomainContext(
         domain_name="blocks_world",
         available_operators=["pickup", "putdown", "stack", "unstack"],
         available_methods=["move_to_table", "move_to_block"],
-        state_variables=["on", "clear", "holding"]
+        state_variables=["on", "clear", "holding"],
     )
-    
+
     system_prompt = builder.get_system_prompt()
-    user_prompt = builder.build_task_decomposition_prompt(task, domain, include_examples=True)
-    
+    user_prompt = builder.build_task_decomposition_prompt(
+        task, domain, include_examples=True
+    )
+
     print("SYSTEM PROMPT:")
     print(system_prompt)
     print("\nUSER PROMPT:")
     print(user_prompt[:500] + "...\n[truncated for display]")
-    
+
     # Example 2: Fast strategy
     print("\n### Example 2: Fast Prompt (for Groq) ###\n")
     fast_builder = PromptBuilder(PromptStrategy.FAST)
     fast_prompt = fast_builder.build_task_decomposition_prompt(task, domain)
     print(fast_prompt)
-    
+
     # Example 3: Using convenience function
     print("\n### Example 3: Convenience Function ###\n")
     sys_prompt, usr_prompt = build_decomposition_prompt(
@@ -641,11 +636,11 @@ if __name__ == "__main__":
         strategy=PromptStrategy.LOCAL,
         task_description="Make a cup of coffee",
         preconditions=["has(coffee_beans)", "has(water)", "clean(maker)"],
-        effects=["coffee_ready(cup)"]
+        effects=["coffee_ready(cup)"],
     )
     print("SYSTEM:", sys_prompt)
     print("\nUSER:", usr_prompt)
-    
-    print("\n" + "="*80)
+
+    print("\n" + "=" * 80)
     print("✅ Prompt Builder Examples Complete")
-    print("="*80)
+    print("=" * 80)

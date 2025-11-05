@@ -1,9 +1,9 @@
 # MAP (Modular Agentic Planner) Research Notes
 
-**Paper**: "Improving Planning with Large Language Models: A Modular Agentic Architecture"  
-**Authors**: Taylor Webb, Shanka Subhra Mondal, Ida Momennejad  
-**Published**: Nature Communications, 2025 (arXiv:2310.00194v4, Oct 2024)  
-**Institution**: Microsoft Research + Princeton University  
+**Paper**: "Improving Planning with Large Language Models: A Modular Agentic Architecture"
+**Authors**: Taylor Webb, Shanka Subhra Mondal, Ida Momennejad
+**Published**: Nature Communications, 2025 (arXiv:2310.00194v4, Oct 2024)
+**Institution**: Microsoft Research + Princeton University
 
 ---
 
@@ -77,18 +77,18 @@ Instead of a single LLM handling all planning aspects, MAP decomposes planning i
 Function MAP(x, y, T, L, B):
     P ← []  # Initialize plan
     Z ← TaskDecomposer(x, y)  # Generate subgoals
-    
+
     for g in 1..length(Z)+1:
         if g ≤ length(Z):
             z ← Z_g  # Current subgoal
         else:
             z ← y  # Final goal
-        
+
         while not Orchestrator(x, z) and length(P) < T:
             a ← Search(1, L, B, x, z)  # Tree search
             x ← Execute(a)  # Apply action
             P ← P + [a]  # Add to plan
-    
+
     return P
 ```
 
@@ -98,12 +98,12 @@ Function MAP(x, y, T, L, B):
 Function ProposeAction(x, y, B):
     σ ← false  # Initialize validity
     E ← {}  # Initialize feedback
-    
+
     while σ is false:
         A ← Actor(x, y, E, B)  # Sample B actions
         σ, ε ← Monitor(x, A)  # Check validity
         E ← E ∪ {ε}  # Accumulate feedback
-    
+
     return A
 ```
 
@@ -117,18 +117,18 @@ Function Search(l, L, B, x, y):
     V_l ← {}  # Value record
     X̃_l ← {}  # Next-state record
     A_l ← ProposeAction(x, y, B)
-    
+
     for b in 1..B:
         x̃_lb ← Predictor(x, A_lb)  # Predict next state
-        
+
         if l < L:
             a_lb ← Search(l+1, L, B, x̃_lb, y)  # Recursive search
             x̃_lb ← Predictor(x̃_lb, a_lb)
-        
+
         v_lb ← Evaluator(x̃_lb, y)  # Evaluate state
         V_l ← V_l ∪ {v_lb}
         X̃_l ← X̃_l ∪ {x̃_lb}
-    
+
     return A_l[argmax(V_l)]  # Best action
 ```
 
@@ -265,11 +265,11 @@ MAP modules map to prefrontal cortex (PFC) subregions:
 ### TaskDecomposer Prompt
 
 ```
-Use the goal recursion strategy. First if the smallest number 
-isn't at the correct position in list C, then set the subgoal 
-of moving the smallest number to its correct position in list C. 
-But before that, the numbers larger than the smallest number and 
-present in the same list as the smallest number must be moved to 
+Use the goal recursion strategy. First if the smallest number
+isn't at the correct position in list C, then set the subgoal
+of moving the smallest number to its correct position in list C.
+But before that, the numbers larger than the smallest number and
+present in the same list as the smallest number must be moved to
 a list other than list C...
 ```
 
@@ -290,8 +290,8 @@ Rule #2: You can only move to a list if larger than all numbers.
 ### Evaluator Prompt
 
 ```
-Predict the minimum number of valid moves required to reach the 
-goal configuration from the current configuration using the 
+Predict the minimum number of valid moves required to reach the
+goal configuration from the current configuration using the
 "sum of distances" heuristic.
 ```
 

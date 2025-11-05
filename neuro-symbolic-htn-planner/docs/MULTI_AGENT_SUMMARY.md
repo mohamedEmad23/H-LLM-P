@@ -1,8 +1,8 @@
 # Multi-Agent Architecture Design - Summary
 
-**Date**: January 2025  
-**Status**: Design Phase Complete ✅  
-**Next Steps**: Implementation Phase  
+**Date**: January 2025
+**Status**: Design Phase Complete ✅
+**Next Steps**: Implementation Phase
 
 ---
 
@@ -54,41 +54,41 @@ Stage 3: LLM-as-Orchestrator (NEW - Multi-Agent System) ⭐
 ### 6 Specialized Agents (HTN-Adapted)
 
 #### 1. **Planning Agent** (Strategic Analysis)
-**Role**: Analyze high-level goals, generate subgoal hierarchies  
-**Inspired by**: MAP's TaskDecomposer + Anterior PFC  
-**Input**: Task, state, domain context  
-**Output**: Decomposition strategy, subgoals, priority order  
+**Role**: Analyze high-level goals, generate subgoal hierarchies
+**Inspired by**: MAP's TaskDecomposer + Anterior PFC
+**Input**: Task, state, domain context
+**Output**: Decomposition strategy, subgoals, priority order
 
 #### 2. **Decomposition Agent** (Method Generation)
-**Role**: Generate HTN methods (task → subtask sequences)  
-**Inspired by**: MAP's Actor + your Strategic Decomposition Engine  
-**Input**: Task, subgoals, domain context  
-**Output**: Candidate methods with confidence scores  
+**Role**: Generate HTN methods (task → subtask sequences)
+**Inspired by**: MAP's Actor + your Strategic Decomposition Engine
+**Input**: Task, subgoals, domain context
+**Output**: Candidate methods with confidence scores
 
 #### 3. **Context Management Agent** (State Tracking)
-**Role**: Predict state transitions, track dependencies  
-**Inspired by**: MAP's Predictor  
-**Input**: Current state, proposed action  
-**Output**: Predicted state, constraint violations, dependencies  
+**Role**: Predict state transitions, track dependencies
+**Inspired by**: MAP's Predictor
+**Input**: Current state, proposed action
+**Output**: Predicted state, constraint violations, dependencies
 
 #### 4. **Execution Agent** (Action Validation)
-**Role**: Validate methods against domain rules  
-**Inspired by**: MAP's Monitor + Anterior Cingulate Cortex  
-**Input**: Proposed method, domain context  
-**Output**: Validation result, feedback, suggested fixes  
+**Role**: Validate methods against domain rules
+**Inspired by**: MAP's Monitor + Anterior Cingulate Cortex
+**Input**: Proposed method, domain context
+**Output**: Validation result, feedback, suggested fixes
 **KEY**: Prevents hallucinated methods/operators!
 
 #### 5. **Verification Agent** (Plan Soundness)
-**Role**: Ensure plan correctness and optimality  
-**Inspired by**: MAP's Evaluator + Verifier Task Mechanism  
-**Input**: Complete plan, goal, initial state  
-**Output**: Soundness check, quality score, issues  
+**Role**: Ensure plan correctness and optimality
+**Inspired by**: MAP's Evaluator + Verifier Task Mechanism
+**Input**: Complete plan, goal, initial state
+**Output**: Soundness check, quality score, issues
 
 #### 6. **Coordination Agent** (Orchestrator)
-**Role**: Manage agent interactions, planning workflow  
-**Inspired by**: MAP's Orchestrator  
-**Input**: Agent messages, current plan, goal  
-**Output**: Next agent to invoke, plan status, final plan  
+**Role**: Manage agent interactions, planning workflow
+**Inspired by**: MAP's Orchestrator
+**Input**: Agent messages, current plan, goal
+**Output**: Next agent to invoke, plan status, final plan
 
 ---
 

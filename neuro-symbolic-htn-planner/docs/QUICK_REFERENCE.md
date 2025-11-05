@@ -99,7 +99,7 @@ python tests/test_household_tasks.py
 #   results/household_tasks_results.json
 ```
 
-**Required**: 
+**Required**:
 - GITHUB_TOKEN in .env (for GPT-5, DeepSeek V3, Llama 4)
 - OR Ollama running (ollama serve)
 - OR other API keys (GROQ_API_KEY, GOOGLE_API_KEY, etc.)
@@ -141,13 +141,13 @@ See `docs/Git_Commit_Guide.md`
 
 ## 🎯 Key Features
 
-✅ Recursive decomposition  
-✅ State management with predicates  
-✅ Method-based task planning  
-✅ Knowledge gap detection  
-✅ Planning statistics  
-✅ Decomposition trace  
-✅ Natural language conversion  
+✅ Recursive decomposition
+✅ State management with predicates
+✅ Method-based task planning
+✅ Knowledge gap detection
+✅ Planning statistics
+✅ Decomposition trace
+✅ Natural language conversion
 
 ---
 
@@ -198,7 +198,7 @@ if not applicable_methods:
 - [x] Comprehensive documentation (PHASE3_STRATEGIC_DECOMPOSITION.md)
 ```
 
-**Status**: ✅ PHASE 3 COMPLETE  
+**Status**: ✅ PHASE 3 COMPLETE
 **Completion Date**: October 10, 2025
 
 ---
@@ -295,6 +295,6 @@ wc -l src/core/*.py test_*.py
 
 ---
 
-**Status**: ✅ STAGE 2 COMPLETE  
-**Next**: Phase 3 - Strategic Decomposition Engine  
+**Status**: ✅ STAGE 2 COMPLETE
+**Next**: Phase 3 - Strategic Decomposition Engine
 **Date**: October 10, 2025

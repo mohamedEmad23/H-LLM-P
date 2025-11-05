@@ -198,6 +198,6 @@ The following files are already in `.gitignore`:
 
 ---
 
-**Guide Created**: October 8, 2025  
-**Branch**: foundation/CoT  
+**Guide Created**: October 8, 2025
+**Branch**: foundation/CoT
 **Status**: Ready to Commit ✅

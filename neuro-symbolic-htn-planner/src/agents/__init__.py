@@ -42,21 +42,21 @@ from .workflows.extended_workflow import ExtendedWorkflow
 
 __all__ = [
     # Infrastructure
-    'BaseAgent',
-    'MessageBus',
-    'Message',
-    'MessageType',
-    'MessagePriority',
-    'AgentStateManager',
-    'AgentCoordinator',
+    "BaseAgent",
+    "MessageBus",
+    "Message",
+    "MessageType",
+    "MessagePriority",
+    "AgentStateManager",
+    "AgentCoordinator",
     # Phase 4A - Core Agents
-    'DecompositionAgent',
-    'ExecutionAgent',
-    'VerificationAgent',
+    "DecompositionAgent",
+    "ExecutionAgent",
+    "VerificationAgent",
     # Phase 4B - Extended Agents
-    'PlanningAgent',
-    'ContextAgent',
+    "PlanningAgent",
+    "ContextAgent",
     # Workflows
-    'CoreWorkflow',
-    'ExtendedWorkflow',
+    "CoreWorkflow",
+    "ExtendedWorkflow",
 ]

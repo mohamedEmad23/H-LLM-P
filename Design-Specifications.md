@@ -206,7 +206,7 @@ TIER_3_PROVIDERS = {
 ```PYTHON
 class ModelRouter:
     """Intelligent routing of tasks to appropriate LLM models"""
-    
+
     ROUTING_RULES = {
         "complexity": {
             "simple": ["qwen-7b-hf", "groq-llama-70b"],
@@ -224,8 +224,8 @@ class ModelRouter:
             "standard": ["qwen-7b-hf", "deepseek-v3"]
         }
     }
-    
-    def route(self, task_type: str, complexity: str, 
+
+    def route(self, task_type: str, complexity: str,
               priority: str) -> str:
         """Select best model for task"""
         # Implementation in Phase 4A

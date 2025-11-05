@@ -1,7 +1,7 @@
 # Phase 3: Strategic Decomposition Engine (Layer 1)
 
-**Implementation Date**: October 10, 2025  
-**Status**: ✅ COMPLETE  
+**Implementation Date**: October 10, 2025
+**Status**: ✅ COMPLETE
 **Files Created**: 2 (~1,800 lines)
 
 ---
@@ -75,20 +75,20 @@ Phase 3 implements the **Strategic Decomposition Engine (Layer 1)**, the core in
 class StrategicDecompositionEngine:
     """
     Strategic Decomposition Engine (Layer 1)
-    
+
     Uses an ensemble of LLMs with Chain of Thought prompting to decompose
     high-level goals into HTN methods.
     """
-    
+
     def __init__(self):
         self.llm_providers: Dict[str, BaseLLMClient] = {}
         self.prompt_builder = PromptBuilder(PromptStrategy.REASONING)
         self.parser = ResponseParser()
         self.benchmarks: List[BenchmarkReport] = []
-    
+
     def add_llm_provider(self, name: str, client: BaseLLMClient):
         """Add an LLM provider to the ensemble."""
-    
+
     def decompose_task(
         self,
         task_name: str,
@@ -99,7 +99,7 @@ class StrategicDecompositionEngine:
     ) -> Dict[str, Any]:
         """
         Decompose a task using the LLM ensemble.
-        
+
         Returns:
             - best_method: The best ParsedMethod found
             - benchmark_report: BenchmarkReport (if benchmark=True)
@@ -137,10 +137,10 @@ class BenchmarkReport:
     results_per_llm: Dict[str, DecompositionResult]
     best_llm: Optional[str]
     timestamp: str
-    
+
     def to_markdown(self) -> str:
         """Generate human-readable markdown report."""
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to JSON-serializable dictionary."""
 ```
@@ -200,7 +200,7 @@ def test_make_coffee(self):
             "brewed(X)", "poured(X)"
         ]
     )
-    
+
     result = self.engine.decompose_task(
         task_name="make_coffee",
         task_description="Make a cup of coffee from beans",
@@ -284,8 +284,8 @@ def test_set_table(self):
 
 ### GitHub Models (Latest - Phase 3 Update)
 
-**Endpoint**: `https://models.github.ai/inference`  
-**Authentication**: GitHub PAT with `models` scope  
+**Endpoint**: `https://models.github.ai/inference`
+**Authentication**: GitHub PAT with `models` scope
 **Updated Models** (14 total):
 
 ```python
@@ -294,25 +294,25 @@ SUPPORTED_MODELS = {
     "openai/gpt-5": "GPT-5 (Latest, Azure hosted)",  # NEW ✅
     "openai/gpt-4o": "GPT-4o (128k context)",
     "openai/gpt-4o-mini": "GPT-4o Mini (128k context)",
-    
+
     # Meta Llama models
     "meta-llama/Llama-4-Scout": "Llama 4 Scout (Latest)",  # NEW ✅
     "meta-llama/Llama-3.3-70B-Instruct": "Llama 3.3 70B (128k context)",
     "meta-llama/Llama-3.2-90B-Vision-Instruct": "Llama 3.2 90B Vision",
     "meta-llama/Llama-3.1-405B-Instruct": "Llama 3.1 405B",
-    
+
     # Mistral models
     "mistralai/Mistral-large-2411": "Mistral Large (128k context)",
     "mistralai/Mistral-Nemo": "Mistral Nemo (128k context)",
-    
+
     # Phi models
     "microsoft/Phi-4": "Phi-4 (14B parameters)",
-    
+
     # DeepSeek models
     "deepseek-ai/DeepSeek-V3": "DeepSeek V3 (Latest, 671B MoE)",  # UPDATED ✅
     "deepseek-ai/DeepSeek-R1": "DeepSeek R1 (Reasoning model)",
     "deepseek-ai/DeepSeek-V2.5": "DeepSeek V2.5 (Previous generation)",  # NEW ✅
-    
+
     # Cohere models
     "CohereForAI/c4ai-command-r-plus-08-2024": "Cohere Command R+ (128k context)"
 }
@@ -476,7 +476,7 @@ if task_name not in planner.methods:
         domain_context=get_domain_context(),
         benchmark=False  # Fast mode for runtime
     )
-    
+
     if result["best_method"]:
         # Convert ParsedMethod to HTN Method
         method = convert_to_htn_method(result["best_method"])

@@ -1,6 +1,6 @@
 # GitHub Models Client - Fixed and Working
 
-**Date**: October 14, 2025  
+**Date**: October 14, 2025
 **Status**: ✅ 2 out of 3 models working (DeepSeek V3, Llama 4 Scout)
 
 ---
@@ -9,7 +9,7 @@
 
 Successfully integrated GitHub Models API using Azure AI Inference SDK. Two models are fully functional:
 - ✅ **DeepSeek V3** (671B MoE) - Primary choice
-- ✅ **Llama 4 Scout** (17B, 16 Experts, Multimodal)  
+- ✅ **Llama 4 Scout** (17B, 16 Experts, Multimodal)
 - ❌ **GPT-5** - Has issues (empty responses/hangs)
 
 ---
@@ -17,7 +17,7 @@ Successfully integrated GitHub Models API using Azure AI Inference SDK. Two mode
 ## Issues Fixed
 
 ### 1. `top_p` Parameter Not Supported (GPT-5 & GPT-4o)
-**Problem**: GPT-5 and GPT-4o models don't support the `top_p` parameter  
+**Problem**: GPT-5 and GPT-4o models don't support the `top_p` parameter
 **Error**: `Unsupported parameter: 'top_p' is not supported with this model`
 
 **Solution**: Modified `github_models_client.py` to exclude `top_p` for OpenAI models:
@@ -40,7 +40,7 @@ else:
 ```
 
 ### 2. Availability Check Hanging
-**Problem**: `is_available()` method hangs due to Azure SDK retries  
+**Problem**: `is_available()` method hangs due to Azure SDK retries
 **Solution**: Skip availability check for known working models (DeepSeek V3, Llama 4 Scout)
 
 ---
@@ -55,10 +55,10 @@ else:
 - **Speed**: ~2-3 seconds per request
 - **Example Response**:
   ```
-  "HTN (Hierarchical Task Network) planning in AI is a method that 
-  decomposes complex tasks into smaller, manageable subtasks in a 
-  hierarchical structure. It uses domain knowledge to guide the 
-  decomposition process, making it more efficient than classical 
+  "HTN (Hierarchical Task Network) planning in AI is a method that
+  decomposes complex tasks into smaller, manageable subtasks in a
+  hierarchical structure. It uses domain knowledge to guide the
+  decomposition process, making it more efficient than classical
   planning for problems with high-level task structures."
   ```
 
@@ -71,9 +71,9 @@ else:
 - **Speed**: ~2 seconds per request
 - **Example Response**:
   ```
-  "HTN (Hierarchical Task Network) planning is a type of artificial 
-  intelligence planning technique that breaks down complex tasks into 
-  smaller sub-tasks in a hierarchical manner, allowing for more 
+  "HTN (Hierarchical Task Network) planning is a type of artificial
+  intelligence planning technique that breaks down complex tasks into
+  smaller sub-tasks in a hierarchical manner, allowing for more
   efficient and flexible planning."
   ```
 
@@ -94,7 +94,7 @@ else:
 ### Current LLM Provider Setup (5 providers)
 
 1. ✅ **DeepSeek V3** (GitHub Models) - 671B MoE
-2. ✅ **Ollama** (Local) - llama3.1:8b  
+2. ✅ **Ollama** (Local) - llama3.1:8b
 3. ✅ **Groq** (Cloud API) - llama-3.3-70b-versatile
 4. ✅ **Gemini** (Google API) - gemini-2.0-flash-exp
 5. ✅ **Cohere** (Cloud API) - command-r-plus-08-2024
@@ -218,7 +218,7 @@ Based on initial testing, expected DeepSeek V3 performance:
 ✅ **GitHub Models integration successful!**
 
 DeepSeek V3 (671B MoE) is now fully integrated as the 5th LLM provider, bringing the total to:
-- 5 working providers  
+- 5 working providers
 - Mix of local (Ollama) and cloud (Groq, Gemini, Cohere, DeepSeek V3)
 - Multiple model sizes (8B to 671B parameters)
 - Speed range from ultra-fast (Groq ~2s) to slower but local (Ollama ~250s)

@@ -1,7 +1,7 @@
 # Critical Design Decisions - Professor Review Required
 
-**Date**: October 14, 2025  
-**Status**: Awaiting Professor Approval Before Implementation  
+**Date**: October 14, 2025
+**Status**: Awaiting Professor Approval Before Implementation
 **Context**: Multi-Agent HTN Planner + Memory System Integration
 
 ---
@@ -36,7 +36,7 @@ We have completed the research and architectural design for:
   - MAP paper provides direct comparison baseline (74% success on ToH 3-disk)
   - Fixed state space (easier to validate)
   - Matches MAP's approach (most relevant to our multi-agent architecture)
-  
+
 - **Cons**:
   - Less practical/real-world relevance
   - Limited memory system usage (state space is small)
@@ -49,7 +49,7 @@ We have completed the research and architectural design for:
   - 100% success rate with current Strategic Decomposition Engine
   - Real-world applicability (robotics potential)
   - Dynamic state space (user-defined predicates)
-  
+
 - **Cons**:
   - May be "too easy" for multi-agent system (already 100% success)
   - Less challenging than MAP benchmarks
@@ -61,7 +61,7 @@ We have completed the research and architectural design for:
   - Rich domain knowledge (requires extensive memory/RAG)
   - Dynamic, complex state space
   - Natural fit for multi-agent (PlanningAgent → write spec, DecompositionAgent → break into files, ExecutionAgent → write code, VerificationAgent → test)
-  
+
 - **Cons**:
   - No established benchmarks for multi-agent planning
   - Difficult to measure "correctness"
@@ -72,7 +72,7 @@ We have completed the research and architectural design for:
   - High real-world impact
   - Requires extensive domain knowledge (memory/RAG critical)
   - Complex reasoning with uncertainty
-  
+
 - **Cons**:
   - Requires specialized medical datasets (ethical/privacy concerns)
   - No access to medical experts for validation
@@ -84,7 +84,7 @@ We have completed the research and architectural design for:
   - MAP tested on these (27.4% Mystery BlocksWorld, 24% Logistics)
   - Practical business applications
   - Complex state space with constraints
-  
+
 - **Cons**:
   - Requires PDDL domain knowledge
   - May be too domain-specific
@@ -95,7 +95,7 @@ We have completed the research and architectural design for:
   - Test both simple (household) and complex (ToH, Graph) tasks
   - Shows scalability of multi-agent system
   - Comprehensive evaluation
-  
+
 - **Cons**:
   - Broader scope (more implementation time)
   - Harder to tell a cohesive story in thesis
@@ -114,7 +114,7 @@ We have completed the research and architectural design for:
   - Easier to validate (known correct answers)
   - Simpler predictor agent (deterministic state transitions)
   - Direct comparison to MAP benchmarks
-  
+
 - **Cons**:
   - Less flexible (hard to generalize)
   - Doesn't showcase HTN planner's strength (user-defined domains)
@@ -124,7 +124,7 @@ We have completed the research and architectural design for:
   - More general and flexible
   - Showcases HTN planner capabilities
   - Real-world applicability
-  
+
 - **Cons**:
   - Harder to validate (no "ground truth")
   - Context agent must track arbitrary predicates
@@ -319,20 +319,20 @@ We have completed the research and architectural design for:
 
 #### Option A: **Each Agent = Different LLM Provider**
 - Example: PlanningAgent=GPT-4, DecompositionAgent=DeepSeek V3, ExecutionAgent=Groq
-- **Pros**: 
+- **Pros**:
   - Leverages strengths of each model (Groq for speed, DeepSeek for reasoning)
   - Novel approach (heterogeneous multi-agent system)
-- **Cons**: 
+- **Cons**:
   - Complex to manage
   - Harder to attribute performance
 
 #### Option B: **All Agents = Same LLM Provider**
 - Example: All agents use GPT-4 (or DeepSeek V3)
-- **Pros**: 
+- **Pros**:
   - Simpler to implement and debug
   - Clear comparison (multi-agent vs single-LLM with same model)
   - Matches MAP approach
-- **Cons**: 
+- **Cons**:
   - Doesn't leverage our 5-provider ecosystem
 
 #### Option C: **Hybrid** (Critical agents = powerful LLM, simple agents = fast LLM)
@@ -624,7 +624,7 @@ This document contains **12 critical decisions** across **8 sections** that need
 
 **Most Critical**: Domain selection (Question 1.1) - this decision cascades to all others.
 
-**Recommended Approach**: 
+**Recommended Approach**:
 1. Meet with professor using this document as guide
 2. Record decisions using template above
 3. Create implementation roadmap based on decisions
@@ -642,6 +642,6 @@ This document contains **12 critical decisions** across **8 sections** that need
 
 **Document Status**: ✅ Ready for Professor Review
 
-**Created**: October 14, 2025  
-**Author**: Thesis Student + AI Assistant  
+**Created**: October 14, 2025
+**Author**: Thesis Student + AI Assistant
 **Purpose**: Pre-implementation decision-making guide

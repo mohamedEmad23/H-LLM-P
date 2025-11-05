@@ -28,7 +28,12 @@ check_for_unknown_edges = GraphOperators.check_for_unknown_edges
 IncompleteGraphMethods = GraphMethods
 
 __all__ = [
-    'GraphState', 'GraphOperators', 'GraphMethods', 'IncompleteGraphMethods',
-    'create_incomplete_graph', 'research_unknown_edge', 'move_to_node',
-    'check_for_unknown_edges'
+    "GraphState",
+    "GraphOperators",
+    "GraphMethods",
+    "IncompleteGraphMethods",
+    "create_incomplete_graph",
+    "research_unknown_edge",
+    "move_to_node",
+    "check_for_unknown_edges",
 ]

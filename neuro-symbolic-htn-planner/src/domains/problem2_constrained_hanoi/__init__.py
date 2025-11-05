@@ -30,6 +30,10 @@ move_disk = HanoiOperators.move_disk
 ConstrainedHanoiMethods = HanoiMethods
 
 __all__ = [
-    'HanoiState', 'HanoiOperators', 'HanoiMethods', 'ConstrainedHanoiMethods',
-    'create_constrained_hanoi', 'move_disk'
+    "HanoiState",
+    "HanoiOperators",
+    "HanoiMethods",
+    "ConstrainedHanoiMethods",
+    "create_constrained_hanoi",
+    "move_disk",
 ]

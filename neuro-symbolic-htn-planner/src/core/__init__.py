@@ -22,22 +22,18 @@ __all__ = [
     # State management
     "State",
     "StateManager",
-    
     # Task management
     "Task",
     "PrimitiveTask",
     "CompoundTask",
     "TaskManager",
     "TaskType",
-    
     # Operators
     "Operator",
     "OperatorLibrary",
-    
     # Methods
     "Method",
     "MethodLibrary",
-    
     # Planner
     "HTNPlanner",
     "PlanningResult",

@@ -9,7 +9,7 @@
 3. Once logged in, click **"New token"**
 4. Give it a name like "HTN-Planner"
 5. Set permissions to **"Read"** (we only need to run models, not upload)
-6. Click **"Generate"** 
+6. Click **"Generate"**
 7. **Copy the token** (starts with `hf_...`)
 
 ### Step 2: Set Your Environment Variable

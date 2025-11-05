@@ -1,9 +1,9 @@
 # Neuro-Symbolic HTN Planner: Architecture Evolution & Testing Guide
 
-**Thesis Title**: Neuro-Symbolic Hierarchical Task Network Planning with Large Language Models  
-**Author**: Mohammed Emad  
-**Supervisor**: Professor [Name]  
-**Date**: October 26, 2025  
+**Thesis Title**: Neuro-Symbolic Hierarchical Task Network Planning with Large Language Models
+**Author**: Mohammed Emad
+**Supervisor**: Professor [Name]
+**Date**: October 26, 2025
 
 ---
 
@@ -92,17 +92,17 @@ graph TD
     B --> C{Knowledge Gap<br/>Detected?}
     C -->|No| D[Symbolic Planning]
     C -->|Yes| E[LLM CoT Integration]
-    
+
     E -->|Success| F[Task Decomposition]
     E -->|Failure| X[❌ Planning Failed]
-    
+
     F --> G[HTN Method Generation]
     G --> D
     D --> H{Plan Valid?}
     H -->|Yes| I[✅ Final Plan]
     H -->|No - Recursion Limit| J[❌ Max Depth Exceeded]
     H -->|No - Exception| K[❌ Planning Error]
-    
+
     style X fill:#ff6b6b
     style J fill:#ff6b6b
     style K fill:#ff6b6b
@@ -169,13 +169,13 @@ graph TD
     C --> F[Llama 4 Scout]
     C --> G[Gemini 2.0]
     C --> H[Cohere Command]
-    
+
     D --> I[CoT Prompting]
     E --> I
     F --> I
     G --> I
     H --> I
-    
+
     I --> J[Response Parser]
     J --> K[Benchmark Report]
     K --> L[Best HTN Method]
@@ -239,31 +239,31 @@ print(f'Best LLM: {result[\"benchmark_report\"][\"best_llm\"]}')
 ```mermaid
 graph TD
     A[Task Input] --> B[DecompositionAgent]
-    
+
     B --> B1{Primary LLM}
     B1 -->|Success| C[HTN Plan Generation]
     B1 -->|Failure| B2{Fallback LLM<br/>Groq}
     B2 -->|Success| C
     B2 -->|Failure| BX[❌ Decomposition Failed]
-    
+
     C --> D[ExecutionAgent<br/>Symbolic Only]
     D --> E{Plan Execution<br/>Valid?}
     E -->|Success| F[VerificationAgent]
     E -->|Failure| EX[❌ Execution Error]
-    
+
     F --> F1{Primary LLM}
     F1 -->|Success| G[Quality Assessment]
     F1 -->|Failure| F2{Fallback LLM<br/>Gemini}
     F2 -->|Success| G
     F2 -->|Failure| F3[Rule-Based<br/>Verification]
     F3 --> G
-    
+
     G --> H[✅ Final Result]
-    
+
     B -.Message Bus.-> I[Agent State Manager]
     D -.Message Bus.-> I
     F -.Message Bus.-> I
-    
+
     style BX fill:#ff6b6b
     style EX fill:#ff6b6b
     style H fill:#51cf66
@@ -279,11 +279,11 @@ graph TD
 1. **DecompositionAgent**:
    - Primary LLM → Fallback LLM (Groq recommended)
    - No rule-based fallback (requires LLM)
-   
+
 2. **ExecutionAgent**:
    - Pure symbolic execution (no LLM needed)
    - Error handling for invalid operations
-   
+
 3. **VerificationAgent**:
    - Primary LLM → Fallback LLM → Rule-based verification
    - Most robust fallback chain
@@ -364,33 +364,33 @@ print(f'Total Time: {result[\"total_time_ms\"]}ms')
 ```mermaid
 graph TD
     A[Task Input] --> B[PlanningAgent]
-    
+
     B --> B1{Primary LLM}
     B1 -->|Success| C[Strategic Analysis]
     B1 -->|Failure| B2{Fallback LLM<br/>HF Llama 70B}
     B2 -->|Success| C
     B2 -->|Failure| B3[Rule-Based<br/>Heuristics]
     B3 --> C
-    
+
     C --> D[DecompositionAgent]
     D --> D1{Primary LLM}
     D1 -->|Success| E[HTN Plan]
     D1 -->|Failure| D2{Fallback LLM<br/>Groq}
     D2 -->|Success| E
     D2 -->|Failure| DX[❌ Decomposition Failed]
-    
+
     E --> F[ExecutionAgent<br/>Symbolic Only]
     F --> G{Execution<br/>Valid?}
     G -->|Success| H[VerificationAgent]
     G -->|Failure| GX[❌ Execution Error]
-    
+
     H --> H1{Primary LLM}
     H1 -->|Success| I[Quality Assessment]
     H1 -->|Failure| H2{Fallback LLM<br/>Gemini}
     H2 -->|Success| I
     H2 -->|Failure| H3[Rule-Based<br/>Checks]
     H3 --> I
-    
+
     I --> J[ContextAgent]
     J --> K[Context Summary]
     K --> L{Success?}
@@ -398,17 +398,17 @@ graph TD
     L -->|No - Retry Loop| N{Retry Count<br/>< Max?}
     N -->|Yes| B
     N -->|No| O[❌ Max Retries Exceeded]
-    
+
     J -.Context Feedback.-> P[Shared Context Store]
     P -.Historical Data.-> B
-    
+
     B -.-> Q[Message Bus]
     D -.-> Q
     F -.-> Q
     H -.-> Q
     J -.-> Q
     Q -.-> R[Agent State Manager]
-    
+
     style DX fill:#ff6b6b
     style GX fill:#ff6b6b
     style O fill:#ff6b6b
@@ -428,18 +428,18 @@ graph TD
 1. **PlanningAgent**:
    - Primary LLM → Fallback LLM → Rule-based heuristics
    - **Most robust**: 3-level fallback chain
-   
+
 2. **DecompositionAgent**:
    - Primary LLM → Fallback LLM
    - Same as 3-agent system
-   
+
 3. **ExecutionAgent**:
    - Symbolic execution only (no LLM dependency)
-   
+
 4. **VerificationAgent**:
    - Primary LLM → Fallback LLM → Rule-based verification
    - Same as 3-agent system
-   
+
 5. **ContextAgent**:
    - Has fallback_client configured
    - Primarily used for passive tracking (low failure risk)
@@ -500,21 +500,21 @@ graph TD
     B --> F[Execution Agent]
     B --> G[Verification Agent]
     B --> H[Memory Agent]
-    
+
     C --> I[Strategy Analysis]
     D --> J[Method Generation]
     E --> K[State Tracking]
     F --> L[Action Validation]
     G --> M[Quality Assessment]
     H --> N[Knowledge Retrieval]
-    
+
     I --> O[Message Bus]
     J --> O
     K --> O
     L --> O
     M --> O
     N --> O
-    
+
     O --> P[Coordination Agent]
     P --> Q[Integrated Plan]
 ```
@@ -569,7 +569,7 @@ graph TD
     B --> C{Complexity?}
     C -->|Simple| D[Direct LLM]
     C -->|Complex| E[Multi-Hop Retrieval]
-    
+
     E --> F[HyDE Generation]
     F --> G[Vector Search]
     G --> H[BM25 Search]
@@ -578,7 +578,7 @@ graph TD
     J --> K[Context Compression]
     K --> L[LLM Integration]
     L --> M[Response Generation]
-    
+
     M --> N[Knowledge Update]
     N --> O[Vector Database]
 ```
@@ -734,14 +734,14 @@ from llm.ollama_client import OllamaClient
 async def test_3agent_workflow():
     # Initialize agents
     llm_client = OllamaClient(model_name='llama3.1:8b')
-    
+
     decomp_agent = DecompositionAgent(llm_client=llm_client)
     exec_agent = ExecutionAgent(llm_client=None)  # Symbolic only
     verif_agent = VerificationAgent(llm_client=llm_client)
-    
+
     # Create workflow
     workflow = CoreWorkflow(decomp_agent, exec_agent, verif_agent)
-    
+
     # Test Tower of Hanoi
     result = await workflow.process_task({
         'task': 'solve_hanoi(3, A, C, B)',
@@ -751,13 +751,13 @@ async def test_3agent_workflow():
         'operators': {},  # Will be loaded from domain
         'constraints': []
     })
-    
+
     print('=== 3-AGENT WORKFLOW RESULTS ===')
     print(f'Success: {result[\"success\"]}')
     print(f'Quality Score: {result[\"quality_score\"]:.1f}/100')
     print(f'Total Time: {result[\"total_time_ms\"]:.1f}ms')
     print(f'Plan Length: {len(result[\"execution\"][\"plan\"])} steps')
-    
+
     # Show workflow statistics
     stats = workflow.stats
     print(f'\\nWorkflow Stats:')
@@ -800,13 +800,13 @@ from llm.ollama_client import OllamaClient
 async def performance_comparison():
     # Setup LLM clients
     llm_client = OllamaClient(model_name='llama3.1:8b')
-    
+
     # 3-Agent Workflow
     decomp_3 = DecompositionAgent(llm_client=llm_client)
     exec_3 = ExecutionAgent(llm_client=None)
     verif_3 = VerificationAgent(llm_client=llm_client)
     workflow_3 = CoreWorkflow(decomp_3, exec_3, verif_3)
-    
+
     # 5-Agent Workflow
     planning_5 = PlanningAgent(llm_client=llm_client, fallback_client=None)
     decomp_5 = DecompositionAgent(llm_client=llm_client)
@@ -814,7 +814,7 @@ async def performance_comparison():
     verif_5 = VerificationAgent(llm_client=llm_client)
     context_5 = ContextAgent(llm_client=llm_client, fallback_client=None)
     workflow_5 = ExtendedWorkflow(planning_5, decomp_5, exec_5, verif_5, context_5)
-    
+
     # Test task
     task_input = {
         'task': 'solve_hanoi(3, A, C, B)',
@@ -822,32 +822,32 @@ async def performance_comparison():
         'initial_state': {'pegs': {'A': [3,2,1], 'B': [], 'C': []}},
         'goal': {'pegs': {'A': [], 'B': [], 'C': [3,2,1]}}
     }
-    
+
     print('=== PERFORMANCE COMPARISON: 3-AGENT vs 5-AGENT ===\\n')
-    
+
     # Test 3-agent
     start_3 = time.time()
     result_3 = await workflow_3.process_task(task_input)
     time_3 = (time.time() - start_3) * 1000
-    
+
     # Test 5-agent
     start_5 = time.time()
     result_5 = await workflow_5.process_task(task_input)
     time_5 = (time.time() - start_5) * 1000
-    
+
     # Results
     print(f'3-Agent Workflow:')
     print(f'  Success: {result_3[\"success\"]}')
     print(f'  Quality: {result_3[\"quality_score\"]:.1f}/100')
     print(f'  Time: {time_3:.1f}ms')
     print(f'  Plan Steps: {len(result_3[\"execution\"][\"plan\"])}')
-    
+
     print(f'\\n5-Agent Workflow:')
     print(f'  Success: {result_5[\"success\"]}')
     print(f'  Quality: {result_5[\"quality_score\"]:.1f}/100')
     print(f'  Time: {time_5:.1f}ms')
     print(f'  Plan Steps: {len(result_5[\"execution\"][\"plan\"])}')
-    
+
     print(f'\\nComparison:')
     print(f'  Overhead: +{time_5-time_3:.1f}ms ({(time_5/time_3-1)*100:.0f}%)')
     print(f'  Quality Delta: {result_5[\"quality_score\"]-result_3[\"quality_score\"]:.1f}')
@@ -881,18 +881,18 @@ from llm.ollama_client import OllamaClient
 async def live_demo():
     print('🚀 NEURO-SYMBOLIC HTN PLANNER - LIVE DEMO')
     print('=' * 50)
-    
+
     # Setup agents with real-time logging
     llm_client = OllamaClient(model_name='llama3.1:8b')
-    
+
     planning = PlanningAgent(llm_client=llm_client, fallback_client=None)
     decomp = DecompositionAgent(llm_client=llm_client)
     exec_agent = ExecutionAgent(llm_client=None)
     verif = VerificationAgent(llm_client=llm_client)
     context = ContextAgent(llm_client=llm_client, fallback_client=None)
-    
+
     workflow = ExtendedWorkflow(planning, decomp, exec_agent, verif, context)
-    
+
     # Demo tasks
     tasks = [
         {
@@ -910,35 +910,35 @@ async def live_demo():
             'goal': {'coffee_ready': True}
         }
     ]
-    
+
     for task_info in tasks:
         print(f'\\n🎯 Processing: {task_info[\"name\"]}')
         print(f'Task: {task_info[\"task\"]}')
         print('-' * 30)
-        
+
         start_time = asyncio.get_event_loop().time()
-        
+
         result = await workflow.process_task({
             'task': task_info['task'],
             'domain': task_info['domain'],
             'initial_state': task_info['initial_state'],
             'goal': task_info['goal']
         })
-        
+
         elapsed = asyncio.get_event_loop().time() - start_time
-        
+
         print(f'✅ Success: {result[\"success\"]}')
         print(f'⭐ Quality: {result[\"quality_score\"]:.1f}/100')
         print(f'⏱️  Time: {elapsed:.2f}s')
-        
+
         if 'planning' in result:
             planning = result['planning']
             print(f'🧠 Strategy: {planning[\"recommended_strategy\"][\"name\"]}')
-        
+
         if 'context' in result:
             ctx = result['context']
             print(f'📊 Interactions: {ctx[\"interaction_count\"]}')
-        
+
         print()
 
 asyncio.run(live_demo())
@@ -1117,9 +1117,9 @@ This thesis presents a comprehensive evolution from basic CoT + HTN integration 
 
 ---
 
-**Prepared for**: Professor [Supervisor Name]  
-**Date**: October 26, 2025  
-**Contact**: mohammed.emad@email.com  
+**Prepared for**: Professor [Supervisor Name]
+**Date**: October 26, 2025
+**Contact**: mohammed.emad@email.com
 
 ---
 

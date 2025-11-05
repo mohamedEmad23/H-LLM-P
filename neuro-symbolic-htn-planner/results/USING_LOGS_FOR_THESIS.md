@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-1. **Open the Markdown trace**: 
+1. **Open the Markdown trace**:
    ```
    results/execution_traces/execution_trace_20251101_220318.md
    ```
@@ -28,15 +28,15 @@ Phase 1 attempted to find the shortest path from node A to D while passing throu
 ```
 Agent: SingleLLM
 Provider: Groq (llama3-70b)
-Prompt: "Find shortest path from A to D passing through B. 
+Prompt: "Find shortest path from A to D passing through B.
          Edges: A→B=4, B→C=UNKNOWN, C→D=5, A→C=15"
 
-Response: "I'll navigate: A→B (cost 4), then B→C... 
+Response: "I'll navigate: A→B (cost 4), then B→C...
            Wait, I don't know weight(B,C). I'll guess it's 1."
 ```
 
 **Failure Analysis**:
-- **Failure Point**: `move_to_node(C)` 
+- **Failure Point**: `move_to_node(C)`
 - **Root Cause**: Unknown edge weight between B and C. The system lacks a research mechanism to discover this information.
 - **Missing Capability**: Modular tool-calling architecture that would allow dynamic knowledge acquisition.
 
@@ -67,11 +67,11 @@ Content: {
 **Step 2: Task Decomposition**
 ```
 Agent: DecompositionAgent
-LLM Call: "Decompose task: find shortest path A→D via B. 
+LLM Call: "Decompose task: find shortest path A→D via B.
            Tools available: research_unknown_edge, move_to_node"
-           
-Response: "Plan: 1) Check for unknown edges, 
-                 2) Research any unknowns, 
+
+Response: "Plan: 1) Check for unknown edges,
+                 2) Research any unknowns,
                  3) Navigate optimal path"
 ```
 
@@ -110,7 +110,7 @@ Phase 4B demonstrates strategic synthesis capabilities by discovering optimal al
 Agent: PlanningAgent
 LLM Call: "Solve 5-disk Hanoi with 4 pegs. Research optimal algorithms."
 
-Response: "Frame-Stewart algorithm discovered! For 4+ pegs, 
+Response: "Frame-Stewart algorithm discovered! For 4+ pegs,
            use recursive split strategy. Reduces 31 moves to 13 moves."
 ```
 
@@ -203,7 +203,7 @@ avg_latency = sum(latencies) / len(latencies)
 print(f"Average LLM latency: {avg_latency:.2f}ms")
 ```
 
-**Output for thesis**: 
+**Output for thesis**:
 > "Average LLM response latency was 345.2ms (σ=78.3ms) across all phases, indicating real-time viability for interactive planning tasks."
 
 ### Token Usage Analysis

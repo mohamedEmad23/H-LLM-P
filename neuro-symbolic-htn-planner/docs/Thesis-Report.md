@@ -36,13 +36,13 @@ This thesis proposes a novel neuro-symbolic framework that dynamically augments 
 The primary contributions of this thesis are:
 
 1. **A Hybrid Neuro-Symbolic Architecture:** The design of a novel framework that seamlessly interleaves the sound, deductive search of a symbolic HTN planner with the approximate, generative capabilities of an LLM. The symbolic planner maintains control, invoking the LLM only as an external knowledge source when its own explicit knowledge is insufficient.
-    
+
 2. **A Formal Soundness Guarantee Mechanism:** The introduction of a "verifier task" mechanism, a formal construct that leverages the symbolic planner's own logic to rigorously validate the effects of an LLM-generated sub-plan. This ensures that any final plan produced by the system is guaranteed to be correct, a critical property that purely LLM-based planners lack.
-    
+
 3. **The GPT-HTN-Refine Algorithm:** The design, formalization, and analysis of a custom algorithm, GPT-HTN-Refine, that implements the proposed neuro-symbolic framework. The algorithm details the process of knowledge gap detection, contextual prompt construction, LLM response parsing, and verifier task injection.
-    
+
 4. **A Practical Implementation Roadmap:** A comprehensive guide for implementing the proposed system using modern, accessible tools, including the PyHop planner and standard LLM APIs. This provides a clear path for future research and practical application of the framework.
-    
+
 
 By combining the strengths of both symbolic and neural approaches, this work aims to create a new class of planning systems that are more robust, flexible, and practical for real-world application than either paradigm in isolation.
 
@@ -65,9 +65,9 @@ The state of the world at any given time is represented as a finite set of groun
 The central concept in HTN planning is the "task," which represents an activity to be performed. Tasks are divided into two distinct categories, reflecting the hierarchical nature of the planning process.1
 
 - **Primitive Tasks:** These are the atomic units of action within the domain. A primitive task corresponds to an action that can be directly executed by an agent, causing a direct change in the world state. Examples include `pick-up(blockA)`, `drive(truck1, london, paris)`, or `load(packageA, truck1)`. Each primitive task is formally defined by an "operator".1
-    
+
 - **Compound Tasks:** These are abstract, high-level tasks that cannot be directly executed. Instead, they represent complex goals or activities that must be decomposed into a network of simpler subtasks (which can be either primitive or, recursively, other compound tasks). Examples include `build-a-tower`, `deliver-package(packageA, paris)`, or `clean-room`. Compound tasks define _what_ needs to be accomplished, but not _how_.1
-    
+
 
 This explicit separation between the "what" (compound tasks) and the "how" (the methods for decomposition) is a crucial structural feature. It is precisely this separation that makes the HTN paradigm uniquely suited for neuro-symbolic integration. The symbolic system defines the high-level goals and structure, while the LLM can be called upon to provide a specific "how" when one is not explicitly defined in the symbolic knowledge base. This allows for a targeted intervention that fills a knowledge gap without disrupting the overarching logical framework of the planner.
 
@@ -86,20 +86,20 @@ The domain knowledge in an HTN system is encoded in two primary structures: oper
 An operator is the formal definition of a primitive task. It is typically represented as a tuple consisting of:
 
 - **Name:** A unique identifier for the action, including its parameters (e.g., `load(?pkg,?truck,?loc)`).
-    
+
 - **Preconditions:** A set of logical predicates that must be true in the current state for the operator to be applicable. For example, to load a package, both the package and the truck must be at the same location.
-    
+
 - **Effects:** A description of how the operator changes the world state. This is often split into an "add-list" (predicates that become true) and a "delete-list" (predicates that become false). For instance, after loading a package, the predicate `at(?pkg,?loc)` is deleted, and `in(?pkg,?truck)` is added.1
-    
+
 
 #### Methods
 
 Methods are the core of the procedural knowledge in an HTN planner. A method specifies one valid way to decompose a compound task into a more detailed task network of subtasks.1 A method is formally composed of:
 
 - **Head:** The compound task that the method decomposes (e.g., `deliver-package(?pkg,?dest)`).
-    
+
 - **Body (or Subtasks):** A task network of subtasks that, when completed, achieves the compound task. For example, the body for `deliver-package` might be the sequence of subtasks: `get-truck`, `load-package`, `drive-truck`, `unload-package`.
-    
+
 
 A single compound task can have multiple associated methods. This allows the planner to choose different strategies for accomplishing the same high-level goal based on the current state of the world. For example, there might be one method for delivering a package within the same city (using a truck) and another for delivering it between cities (using a plane). The planner selects an applicable method by checking its preconditions, which are conditions that must be met for that specific decomposition to be valid.1
 
@@ -108,17 +108,17 @@ A single compound task can have multiple associated methods. This allows the pla
 The HTN planning process is a recursive, top-down search for a valid decomposition of an initial task network.2 The algorithm can be summarized as follows:
 
 1. **Initialization:** The planner starts with an initial state and an initial task network, which typically contains one or more high-level compound tasks.
-    
+
 2. **Task Selection:** The planner selects a task from the current task network to process, respecting the ordering constraints.
-    
+
 3. **Decomposition/Execution:**
-    
+
     - If the selected task is **compound**, the planner searches its knowledge base for an applicable method whose head matches the task and whose preconditions are satisfied in the current state. If a valid method is found, the compound task is replaced in the network by the method's body (its subtasks), and the ordering constraints are updated accordingly.
-        
+
     - If the selected task is **primitive**, the planner checks if the preconditions of its corresponding operator are satisfied in the current state. If they are, the planner updates its internal state according to the operator's effects and adds the primitive action to the final plan.
-        
+
 4. **Recursion and Termination:** The planner recursively applies this process to the new task network. The process terminates successfully when the task network is empty, meaning all initial tasks have been decomposed into a sequence of executable primitive actions. If at any point the planner cannot find an applicable method for a compound task or cannot execute a primitive task, it must backtrack and try a different choice (e.g., a different method for a previous decomposition).3
-    
+
 
 This search for a valid decomposition is what distinguishes HTN planning. The solution is not just any sequence of actions that reaches a goal, but one that is consistent with the hierarchical structure and procedural knowledge encoded in the domain's methods.
 
@@ -209,46 +209,46 @@ The LLM, in contrast, acts as a world-class "improviser." When the conductor rea
 The architecture consists of three primary, interconnected modules that work in concert to achieve this dynamic planning capability.
 
 - **The Symbolic HTN Planner Core:** This is the foundational component of the system. It is a standard HTN planner, such as one based on the PyHop algorithm.3 Its responsibilities include maintaining the current world state as a set of ground predicates, managing the list of tasks to be accomplished, and executing the main planning loop. It processes tasks by applying known methods from its knowledge base to decompose compound tasks and applying operators to execute primitive tasks.
-    
+
 - **The Knowledge Gap Detector:** This module is integrated directly into the planner's main control loop. Its function is to identify the specific failure condition that signals a need for external knowledge. A "knowledge gap" is formally declared when the task at the head of the planner's task list is a compound task, and after iterating through the entire library of known methods, no method is found to be applicable in the current state. This trigger is precise and unambiguous, ensuring that the LLM is only invoked when absolutely necessary.
-    
+
 - **The LLM Query Engine:** This is the bridge between the symbolic and neural components. When a knowledge gap is detected, this module is activated. Its responsibilities are threefold:
-    
+
     1. **Prompt Construction:** It dynamically assembles a detailed, context-rich prompt to send to the LLM.
-        
+
     2. **API Communication:** It handles the technical details of sending the query to the LLM's API and receiving the response.
-        
+
     3. **Response Parsing:** It processes the unstructured, natural language text returned by the LLM and parses it into a structured, machine-readable format—specifically, a list of primitive task instances that can be injected back into the symbolic planner's task list.
-        
+
 
 ### 4.3 The Dynamic Planning Cycle
 
 The interplay between these components can be best understood by walking through a concrete example, such as the logistics transportation problem described in the `ChatHTN` work.1
 
 1. **Initial Task:** The symbolic planner is initialized with the state and the initial task `transportPackage(pck, src, dest)`.
-    
+
 2. **Symbolic Decomposition:** The planner finds a known method for `transportPackage`, which decomposes it into a sequence of subtasks: `truckTransport(pck, src, ap1)`, `planeTransport(pck, ap1, ap2)`, and `truckTransport(pck, ap2, dest)`.
-    
+
 3. **Successful Sub-Task:** The planner processes the first task, `truckTransport`. It finds a valid method in its knowledge base, decomposes it into primitive tasks (`loadTruck`, `drive`, `unloadTruck`), and successfully simulates their execution, updating its internal state.
-    
+
 4. **Knowledge Gap Detected:** The planner now moves to the next task, `planeTransport(pck, ap1, ap2)`. It searches its method library but finds no applicable method for this task in the current state. The Knowledge Gap Detector is triggered.
-    
+
 5. **LLM Query:** The LLM Query Engine is invoked. It constructs a prompt that includes:
-    
+
     - **The Goal:** "Generate a sequence of primitive tasks to achieve the compound task `planeTransport(pck, ap1, ap2)`."
-        
+
     - **Task Semantics:** "The preconditions are `at(pck, ap1)` and `airport(ap1)`, and the effects are `at(pck, ap2)`."
-        
+
     - **Current State:** A summary of relevant predicates, such as `at(plane1, ap1)`.
-        
+
     - **Available Actions:** A list of all known primitive task names and their parameters (e.g., `loadPlane(?plane,?pkg,?loc)`, `fly(?plane,?from,?to)`, etc.).
-        
+
 6. **LLM Response and Parsing:** The LLM returns a natural language response, such as: "To transport the package by plane, you should: 1. Load the package onto the plane. 2. Fly the plane to the destination airport. 3. Unload the package from the plane." The parser converts this into a formal list: `[loadPlane(plane1, pck, ap1), fly(plane1, ap1, ap2), unloadPlane(plane1, pck, ap2)]`.
-    
+
 7. **Injection and Verification:** The planner injects this new sub-plan into its main task list. Crucially, it also appends a dynamically generated verifier task, `planeTransport_verifier`, immediately after the sequence.
-    
+
 8. **Resumption of Symbolic Planning:** The symbolic planner resumes its normal operation. It executes `loadPlane`, `fly`, and `unloadPlane`, updating its state at each step. It then encounters `planeTransport_verifier` and checks its preconditions. If the LLM's plan was correct, the state will now satisfy `at(pck, ap2)`, the verifier task will succeed, and planning will continue with the final `truckTransport` task. If the LLM's plan was flawed, the verifier's preconditions will not be met, and this entire planning branch will fail, correctly preventing an unsound plan from being generated.
-    
+
 
 ### 4.4 Maintaining Soundness: The Verifier Task Mechanism
 
@@ -259,11 +259,11 @@ An LLM's response is not a sequence of formal operations but a textual suggestio
 Formally, for any compound task `c` with a defined set of effects `eff(c)`, a verifier task `c_ver` is a primitive task whose corresponding operator is defined as follows:
 
 - **Name:** `c_ver`
-    
+
 - **Preconditions:** `eff(c)`
-    
+
 - **Effects:** `∅` (empty)
-    
+
 
 When the symbolic planner attempts to execute the `c_ver` operator, it performs its standard, sound precondition check. It rigorously evaluates whether the predicates in `eff(c)` are true in its internal world state, which has been updated by the execution of the LLM-generated primitive actions. If and only if the check succeeds does the planner proceed. This mechanism effectively co-opts the trusted, logical machinery of the symbolic planner to act as a validator for the untrusted, generative output of the neural model. This "propose-then-verify" pattern is a powerful and generalizable strategy for safely integrating any powerful but unreliable generative system into a framework that requires formal guarantees. It cleanly separates the creative, hypothesis-generating process from the critical, hypothesis-testing process, leveraging the best of both the neural and symbolic worlds.
 
@@ -401,15 +401,15 @@ The GPT-HTN-Refine algorithm is realized through a recursive procedure, `Seek_Pl
 The algorithm proceeds as follows:
 
 - **Lines 6-8:** The base case for the recursion. If the task list is empty, the plan is complete and is returned.
-    
+
 - **Lines 13-21:** If the current task `t_0` is primitive, the algorithm checks if its operator is applicable. If so, it updates the state, adds the action to the plan, and recurses on the remaining tasks. If not, this branch of the search fails.
-    
+
 - **Lines 23-33:** If `t_0` is compound, the algorithm first attempts a symbolic solution. It iterates through all known methods in the domain knowledge. For each applicable method, it constructs a new task list containing the method's subtasks, the crucial `verifier_task`, and the remaining tasks. It then recurses. If any of these recursive calls return a valid solution, it is immediately returned.
-    
+
 - **Lines 35-44:** This is the neuro-symbolic extension. If the loop over symbolic methods completes without finding a solution, a "knowledge gap" is identified. The algorithm then calls the `LLM_Generate_Method` procedure. If the LLM successfully returns a list of subtasks, they are injected into the task list, along with a verifier task, and the search continues.
-    
+
 - **Line 47:** If both symbolic and LLM-based attempts fail, the function returns failure, causing the planner to backtrack.
-    
+
 
 ### 6.2 The `LLM_Generate_Method` Procedure
 
@@ -455,18 +455,18 @@ This sub-procedure encapsulates the interaction with the Large Language Model. I
 The key steps in this procedure are:
 
 - **Prompt Construction:** As detailed in `Construct_LLM_Prompt`, a highly structured prompt is assembled. Providing comprehensive context is crucial for guiding the LLM's generation process.1 This includes not just the task to be decomposed, but also its formal semantics (preconditions and effects), the relevant parts of the current world state, and a complete list of the available primitive actions. Specifying the exact output format minimizes the complexity of the parsing step.
-    
+
 - **Response Parsing and Validation:** After receiving the raw text response from the LLM, a parser (e.g., using regular expressions) attempts to extract a sequence of primitive task instances. This step is critical for robustness. The parser must validate that each extracted task name corresponds to a known primitive operator in the domain and that the number of arguments is correct. If the response is malformed or contains non-existent actions, the procedure fails, preventing invalid plans from entering the search space.
-    
+
 
 ### 6.3 Analysis of Computational Complexity
 
 The computational complexity of the GPT-HTN-Refine algorithm is a hybrid of its symbolic and neural components.
 
 - **Symbolic Complexity:** In the worst case, the symbolic search space of HTN planning can be undecidable if recursion is allowed, and EXPTIME-complete for decidable fragments like propositional TIHTN planning.1 The search involves exploring a tree of possible decompositions, where the branching factor is determined by the number of applicable methods for each compound task.
-    
+
 - **Neural Complexity:** The cost of an LLM inference is not directly tied to the combinatorial complexity of the planning problem's state space. Instead, it is primarily a function of the length of the input prompt and the generated output (completion). While a single API call can be computationally expensive and introduce latency, it is a constant-time operation with respect to the size of the search tree.
-    
+
 
 The overall complexity is therefore a trade-off. By invoking the LLM, the algorithm can potentially prune vast sections of the symbolic search tree. If the LLM provides a correct decomposition for a task that would have otherwise required the symbolic planner to explore thousands of failing branches, the total time to find a solution can be drastically reduced. Conversely, if the LLM repeatedly provides incorrect decompositions, the cost of these failed API calls adds significant overhead to the planning process.
 
@@ -475,11 +475,11 @@ The overall complexity is therefore a trade-off. By invoking the LLM, the algori
 The plans generated by GPT-HTN-Refine have unique properties when compared to both purely symbolic and purely neural planners.
 
 - **Robustness to Incomplete Knowledge:** The framework's primary advantage is its robustness. A standard HTN planner with an incomplete method library is brittle; it will fail on any problem that requires a missing method. GPT-HTN-Refine, by contrast, can potentially solve such problems by dynamically generating the missing knowledge, making it far more resilient to incomplete domain models.1
-    
+
 - **Guaranteed Soundness:** Compared to LLM-only planners (like ReAct or Plan-and-Execute), the framework provides a formal guarantee of soundness.1 Purely LLM-based approaches often generate plans that are semantically plausible but logically flawed, containing hallucinated actions or failing to satisfy preconditions. The verifier task mechanism of GPT-HTN-Refine eliminates this risk, ensuring that any returned plan is executable and correct with respect to the symbolic domain model.
-    
+
 - **Plan Optimality:** The framework does not guarantee plan optimality. Like most standard HTN planners, it performs a depth-first search and typically returns the first solution it finds.3 The decompositions provided by the LLM are generated based on plausibility and commonsense, not on an optimality criterion such as plan length or cost. Therefore, while the generated plans are correct, they may not be the most efficient solutions possible.
-    
+
 
 ---
 
@@ -496,26 +496,26 @@ The selection of the right tools is crucial for a successful implementation, esp
 For the symbolic planner core, **PyHop** is the recommended choice.3
 
 - **Justification:**
-    
+
     - **Language Synergy:** PyHop is written entirely in Python, the de facto standard language for machine learning and interacting with LLM APIs. This eliminates the need for cross-language wrappers or complex inter-process communication, allowing for seamless integration of the LLM query engine directly into the planner's code.4
-        
+
     - **Simplicity and Intelligibility:** The core PyHop planner is famously concise, comprising less than 150 lines of code.4 This simplicity makes it an ideal pedagogical tool and a perfect foundation for a research prototype. The focus can remain on the novel neuro-symbolic contributions rather than on deciphering a complex, monolithic planning system.6
-        
+
     - **Ease of Modification:** In PyHop, states, operators, and methods are all represented as standard Python objects and functions.4 This makes it trivial to modify the core planning loop to detect knowledge gaps and inject new tasks generated by the LLM.
-        
+
 
 #### LLM Integration: Python API Libraries
 
 For interacting with Large Language Models, standard Python libraries provide a robust and straightforward interface.
 
 - **OpenAI API (GPT series):** The official `openai` Python library is the standard for accessing models like GPT-4o.
-    
+
     - **Implementation:** The process involves obtaining an API key, setting it as an environment variable for security, and using the `OpenAI` client to make API calls. The primary function is `client.chat.completions.create`, which takes a `model` name and a list of `messages` as input. The `messages` list follows a conversational structure with specified roles ("system", "user", "assistant") to provide context and instructions to the model.7
-        
+
 - **Meta API (Llama series):** For open-source models like Llama 3, Meta provides the `llama-api-client` library.
-    
+
     - **Implementation:** The usage pattern is very similar to the OpenAI library. After setting an API key, the `LlamaAPIClient` is initialized. The `client.chat.completions.create` method is used to send requests, also taking a `model` name and a list of `messages` with "role" and "content" keys.11 This similarity makes it relatively easy to design the system to be model-agnostic.
-        
+
 
 ### 7.2 Step-by-Step Implementation Guide
 
@@ -607,13 +607,13 @@ if llm_subtasks:
 While the proposed toolkit is ideal for a prototype, several alternatives and extensions can be considered for more advanced implementations or future work.
 
 - **Alternative Planners:** For domains requiring more complex features like partial ordering of tasks or advanced numeric and temporal reasoning, a more powerful planner like **SHOP2** would be a better choice.14 SHOP2 is a highly influential, feature-rich HTN planner. While its original implementation is in LISP, a Java port,
-    
+
     **JSHOP2**, is available and might be more accessible.16 However, integrating with JSHOP2 from Python would require more complex engineering, possibly involving inter-process communication, which could add significant overhead to the project.
-    
+
 - **Local LLM Inference:** Relying on commercial APIs for LLMs can be costly and introduce latency. For many applications, especially those requiring privacy or low-latency responses, running an LLM locally is a superior alternative. Frameworks like **Ollama** and libraries from **Hugging Face Transformers** make it increasingly feasible to run powerful open-source models like Llama 3 on local hardware.18 Interacting with a local Ollama server from Python is straightforward and involves making requests to a local API endpoint, closely mirroring the code structure used for commercial APIs.19
-    
+
 - **Complementary Strategies for Knowledge Gaps:** The neuro-symbolic approach can be combined with other techniques for handling incomplete domain knowledge. For example, the framework could be extended to incorporate the ideas of task insertion with preferences from.1 In such a hybrid system, the planner could first attempt to solve a knowledge gap using symbolic task insertion. Only if that fails would it resort to the more computationally expensive LLM query. This would create a tiered system for addressing incompleteness, prioritizing cheaper, formal methods before invoking the powerful but costly neural component.
-    
+
 
 ---
 
@@ -630,18 +630,18 @@ The primary contribution of this work is the design, formalization, and practica
 Despite its strengths, the proposed framework has several inherent limitations that must be acknowledged.
 
 - **Dependence on LLM Quality and Reliability:** The framework's ability to overcome knowledge gaps is fundamentally contingent on the quality of the LLM's output. The generation of a correct and relevant task decomposition is not guaranteed. A weak, poorly prompted, or uncooperative LLM may produce nonsensical, incorrect, or irrelevant action sequences, which would cause the verifier task to fail and ultimately lead to planning failure. The system is robust to _incorrect_ LLM outputs (it will not produce an unsound plan), but it cannot recover from an LLM's _inability_ to produce a correct output.
-    
+
 - **Lack of Plan Optimality:** The framework prioritizes soundness and solvability over optimality. Standard HTN planners like PyHop typically perform a depth-first search and return the first valid plan they find, without any guarantee that it is optimal in terms of length, cost, or any other metric.3 The decompositions generated by the LLM are based on semantic plausibility, not on a formal cost model. Therefore, the resulting plans, while correct, may be less efficient than those produced by planners designed specifically for optimal planning.
-    
+
 - **Sensitivity to Prompt Engineering:** The performance of the LLM Query Engine is highly sensitive to the quality and structure of the prompt provided to the LLM.7 Crafting a prompt that effectively communicates the task, its context, and the required output format is a non-trivial engineering challenge that may require significant tuning and experimentation for each new domain.
-    
+
 
 ### 8.3 Future Work
 
 The framework presented in this thesis opens up several promising avenues for future research, aiming to build more intelligent, efficient, and interactive planning systems.
 
 - **Learning and Caching of Generated Methods:** A significant extension would be to enable the system to learn from its successful interactions with the LLM. When an LLM-generated decomposition is successfully executed and verified, the system could automatically formalize this decomposition into a new, permanent symbolic method and add it to its knowledge base.1 This would create a learning loop where the planner becomes more competent over time. Subsequent encounters with the same compound task could then be solved efficiently using the newly learned symbolic method, reducing reliance on expensive and time-consuming LLM API calls and effectively amortizing the cost of knowledge acquisition.
-    
+
 - **Interactive Refinement and Human-in-the-Loop Planning:** The current framework is fully autonomous, but it could be extended to incorporate a human user into the planning loop. Inspired by systems for interactive task learning 1, if the LLM generates a decomposition that is flawed or sub-optimal, the system could present it to a human expert for review and correction. The user could then edit, reorder, or replace subtasks in the proposed decomposition. This interactive refinement process would combine the rapid generation capabilities of the LLM, the formal verification of the symbolic planner, and the deep domain expertise of a human user, leading to a highly collaborative and effective planning process.
-    
+
 - **Extension to Probabilistic and Multi-Agent Domains:** The core neuro-symbolic principle of "propose-then-verify" could be adapted to more complex planning paradigms. In probabilistic planning, an LLM could be used to propose plausible outcomes or recovery strategies for actions with uncertain effects, which a symbolic model checker could then verify. In multi-agent planning, an LLM could generate communication or coordination protocols for a team of agents to achieve a joint task, with each agent's individual planner then verifying the feasibility and soundness of its part of the collaborative plan. Exploring these extensions would push the boundaries of neuro-symbolic reasoning into domains characterized by uncertainty and complex agent interactions.

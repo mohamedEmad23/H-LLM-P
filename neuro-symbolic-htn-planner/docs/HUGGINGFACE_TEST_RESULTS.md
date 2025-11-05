@@ -15,7 +15,7 @@ Successfully integrated Hugging Face Inference Providers API as a replacement fo
 |-------|----------|------|--------|--------|
 | Llama 3.3 70B | 15 | ~2s | 57 | ✅ Correct |
 
-### HTN Task Decomposition Test  
+### HTN Task Decomposition Test
 **Task**: Decompose `make_coffee()` into HTN subtasks
 
 | Model | Time | Tokens | Output Length | Quality |
@@ -53,7 +53,7 @@ Method: make_brewed_coffee
     3. add_coffee(grounds, filter)
     4. brew(coffee_maker)
     5. pour(coffee_maker, cup)
-    
+
 Note: Includes assumptions about water_amount constant
 ```
 **Analysis**: More detailed parameters, includes helpful notes. Slower (3.72s) but thorough.
@@ -207,5 +207,5 @@ engine.add_llm_provider("llama_3.1_8b", llama_8b)
 
 ---
 
-**Date**: October 22, 2025  
+**Date**: October 22, 2025
 **Status**: ✅ Complete and Ready for Integration

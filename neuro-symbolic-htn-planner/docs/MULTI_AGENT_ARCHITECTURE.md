@@ -1,8 +1,8 @@
 # Multi-Agent Architecture for Neuro-Symbolic HTN Planning
 
-**Authors**: Inspired by Modular Agentic Planner (MAP) research (Webb et al., 2023)  
-**Status**: Design Phase  
-**Date**: 2025-01-XX  
+**Authors**: Inspired by Modular Agentic Planner (MAP) research (Webb et al., 2023)
+**Status**: Design Phase
+**Date**: 2025-01-XX
 
 ---
 
@@ -70,8 +70,8 @@ Multi-agent advantages:
 ### 2.1 Core Agents
 
 #### Agent 1: **Planning Agent** (Strategic Analysis)
-**Role**: High-level goal analysis, strategy selection  
-**Inspired by**: MAP's TaskDecomposer + Anterior PFC (task decomposition)  
+**Role**: High-level goal analysis, strategy selection
+**Inspired by**: MAP's TaskDecomposer + Anterior PFC (task decomposition)
 **Responsibilities**:
 - Analyze high-level goals in context of HTN domain
 - Identify applicable decomposition strategies
@@ -104,8 +104,8 @@ Multi-agent advantages:
 ---
 
 #### Agent 2: **Decomposition Agent** (Method Generation)
-**Role**: Generate HTN methods (task → subtask sequences)  
-**Inspired by**: MAP's Actor + current Strategic Decomposition Engine  
+**Role**: Generate HTN methods (task → subtask sequences)
+**Inspired by**: MAP's Actor + current Strategic Decomposition Engine
 **Responsibilities**:
 - Generate multiple candidate methods for a given task
 - Propose subtask sequences with preconditions/effects
@@ -138,8 +138,8 @@ Multi-agent advantages:
 ---
 
 #### Agent 3: **Context Management Agent** (State Tracking)
-**Role**: Track state evolution, dependencies, constraints  
-**Inspired by**: MAP's Predictor + StateManager  
+**Role**: Track state evolution, dependencies, constraints
+**Inspired by**: MAP's Predictor + StateManager
 **Responsibilities**:
 - Predict state transitions from proposed actions
 - Detect precondition violations
@@ -172,8 +172,8 @@ Multi-agent advantages:
 ---
 
 #### Agent 4: **Execution Agent** (Action Validation)
-**Role**: Validate proposed actions and methods  
-**Inspired by**: MAP's Monitor + Anterior Cingulate Cortex (conflict monitoring)  
+**Role**: Validate proposed actions and methods
+**Inspired by**: MAP's Monitor + Anterior Cingulate Cortex (conflict monitoring)
 **Responsibilities**:
 - Check action validity against domain rules
 - Detect hallucinated methods/operators
@@ -205,8 +205,8 @@ Multi-agent advantages:
 ---
 
 #### Agent 5: **Verification Agent** (Plan Soundness)
-**Role**: Ensure overall plan correctness and optimality  
-**Inspired by**: MAP's Evaluator + Verifier Task Mechanism  
+**Role**: Ensure overall plan correctness and optimality
+**Inspired by**: MAP's Evaluator + Verifier Task Mechanism
 **Responsibilities**:
 - Check plan completeness (all goals achieved)
 - Verify causal links between subtasks
@@ -240,8 +240,8 @@ Multi-agent advantages:
 ---
 
 #### Agent 6: **Coordination Agent** (Orchestrator)
-**Role**: Manage agent interactions and planning workflow  
-**Inspired by**: MAP's Orchestrator + Algorithm 1  
+**Role**: Manage agent interactions and planning workflow
+**Inspired by**: MAP's Orchestrator + Algorithm 1
 **Responsibilities**:
 - Route messages between agents
 - Determine when subgoals are achieved
@@ -379,7 +379,7 @@ class MultiAgentOrchestrator:
     def __init__(self, fallback_to_ensemble=True):
         self.agents = self._initialize_agents()
         self.coordinator = CoordinationAgent()
-        
+
         # Fallback to ensemble if multi-agent fails
         if fallback_to_ensemble:
             self.ensemble = StrategicDecompositionEngine()
@@ -397,10 +397,10 @@ class HTNPlanner:
                 domain_context=domain,
                 current_state=state
             )
-            
+
             # Add generated method to domain
             domain.add_method(result["best_method"])
-        
+
         # Continue with traditional HTN planning
         return self.pyhop_plan(task, state, domain)
 ```
@@ -412,7 +412,7 @@ class BaseAgent:
         self.role = role
         self.llm = llm_client
         self.prompt_builder = prompt_builder
-    
+
     def generate(self, task, context):
         # Use existing prompt builder with agent-specific strategy
         system_prompt = self.prompt_builder.get_agent_system_prompt(self.role)
@@ -421,7 +421,7 @@ class BaseAgent:
             task=task,
             context=context
         )
-        
+
         return self.llm.generate(user_prompt, system_prompt=system_prompt)
 ```
 
@@ -445,65 +445,65 @@ Output:
 
 1. Initialize agents with LLM providers
 2. coordinator.start_planning(task, state, domain)
-3. 
+3.
 4. LOOP until goal achieved or max_iterations:
-5.   
+5.
 6.   # Planning Phase
 7.   planning_result = planning_agent.analyze(task, state, domain)
 8.   subgoals = planning_result["subgoals"]
 9.   strategy = planning_result["decomposition_strategy"]
-10.  
+10.
 11.  FOR each subgoal in subgoals:
-12.    
+12.
 13.    # Decomposition Phase (with validation loop)
 14.    LOOP until valid_method or max_attempts:
-15.      
+15.
 16.      # Generate candidate methods
 17.      decomp_result = decomposition_agent.generate_methods(
 18.        subgoal, strategy, state, domain
 19.      )
-20.      
+20.
 21.      # Validate with Execution Agent
 22.      validation = execution_agent.validate(
 23.        decomp_result["candidate_methods"], domain, state
 24.      )
-25.      
+25.
 26.      IF validation["is_valid"]:
 27.        break
 28.      ELSE:
 29.        # Provide feedback for regeneration
 30.        feedback = validation["feedback"]
-31.      
+31.
 32.    END LOOP
-33.    
+33.
 34.    # Context Update
 35.    predicted_state = context_agent.predict_state(
 36.      state, decomp_result["best_method"]
 37.    )
-38.    
+38.
 39.    # Add method to plan
 40.    plan.append(decomp_result["best_method"])
 41.    state = predicted_state
-42.    
+42.
 43.    # Check if subgoal achieved
 44.    IF coordinator.is_goal_achieved(subgoal, state):
 45.      subgoals.remove(subgoal)
-46.    
+46.
 47.  END FOR
-48.  
+48.
 49.  # Verification Phase
 50.  verification = verification_agent.verify_plan(
 51.    plan, task, initial_state, domain
 52.  )
-53.  
+53.
 54.  IF verification["is_sound"]:
 55.    return plan, metadata
 56.  ELSE:
 57.    # Regenerate problematic methods
 58.    plan = coordinator.fix_plan(plan, verification["issues"])
-59.  
+59.
 60. END LOOP
-61. 
+61.
 62. return plan, metadata
 ```
 
@@ -520,26 +520,26 @@ Domain: Cooking (15 operators, 8 methods)
 │  Input: task=make_coffee, state={has_ingredient(beans), has_ingredient(water), clean(machine)}
 │  Strategy: goal_recursion (decompose into sequential subgoals)
 │  Subgoals: [grind_beans, fill_water, brew_coffee, pour_coffee]
-│  
+│
 ├─ DECOMPOSITION AGENT (subgoal: grind_beans)
 │  Generated 3 candidate methods:
 │    1. method_grind_beans_standard: [get_beans → grind → store] (confidence: 0.92)
 │    2. method_grind_beans_fine: [get_beans → grind(fine) → store] (confidence: 0.87)
 │    3. method_grind_beans_coarse: [get_beans → grind(coarse) → store] (confidence: 0.84)
-│  
+│
 ├─ EXECUTION AGENT
 │  Validating method_grind_beans_standard...
 │  ✓ All operators exist in domain
 │  ✓ Preconditions achievable: has_ingredient(beans), clean(grinder)
 │  ✓ Effects consistent: ground_beans(container1)
 │  Status: VALID
-│  
+│
 ├─ CONTEXT AGENT
 │  Current state: {has_ingredient(beans), clean(grinder)}
 │  Applying: get_beans → grind → store
 │  Predicted state: {ground_beans(container1), clean(grinder)}
 │  Dependencies: None violated
-│  
+│
 ├─ COORDINATION AGENT
 │  Subgoal "grind_beans" achieved
 │  Moving to next subgoal: fill_water
@@ -551,23 +551,23 @@ Domain: Cooking (15 operators, 8 methods)
 │  Generated 2 candidate methods:
 │    1. method_fill_water_tank: [open_tank → pour_water → close_tank] (confidence: 0.95)
 │    2. method_fill_water_manual: [pour_water_directly] (confidence: 0.78)
-│  
+│
 ├─ EXECUTION AGENT
 │  Validating method_fill_water_tank...
 │  ✗ ERROR: Operator "open_tank" not in domain!
 │  Feedback: "Use only available operators: fill_water_reservoir"
-│  
+│
 ├─ DECOMPOSITION AGENT (retry with feedback)
 │  Regenerating with constraint: must use fill_water_reservoir
 │  Generated method: method_fill_water_corrected: [fill_water_reservoir(amount=250ml)]
-│  
+│
 ├─ EXECUTION AGENT
 │  Validating method_fill_water_corrected...
 │  ✓ Valid
-│  
+│
 ├─ CONTEXT AGENT
 │  Predicted state: {ground_beans(container1), water_filled(reservoir, 250ml)}
-│  
+│
 [... Iterations 3-4 for brew_coffee and pour_coffee ...]
 
 [Iteration 5 - Verification]
@@ -577,7 +577,7 @@ Domain: Cooking (15 operators, 8 methods)
 │  ✓ No causal loops detected
 │  ✓ Final state matches goal: coffee_ready(cup1)
 │  Quality score: 0.91 (4 methods, 12 operators, optimal path)
-│  
+│
 ├─ COORDINATION AGENT
 │  Planning COMPLETE
 │  Final plan: 4 methods, 12 operators
@@ -636,8 +636,8 @@ tests/
 ```python
 class BaseAgent:
     """Base class for all agents in the multi-agent system."""
-    
-    def __init__(self, 
+
+    def __init__(self,
                  agent_id: str,
                  role: str,
                  llm_client: BaseLLMClient,
@@ -647,15 +647,15 @@ class BaseAgent:
         self.llm = llm_client
         self.prompt_builder = prompt_builder
         self.memory = []  # Conversation history
-        
+
     def process_message(self, message: AgentMessage) -> AgentMessage:
         """Process incoming message and generate response."""
         raise NotImplementedError
-    
+
     def generate_response(self, prompt: str, context: Dict) -> str:
         """Generate LLM response with retry logic."""
         system_prompt = self.prompt_builder.get_agent_system_prompt(self.role)
-        
+
         try:
             response = self.llm.generate(
                 prompt,
@@ -682,7 +682,7 @@ class AgentMessage:
     timestamp: float
     conversation_id: str
     priority: int = 5
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 ```
@@ -692,20 +692,20 @@ class AgentMessage:
 ```python
 class MessageBus:
     """Central message routing system for agents."""
-    
+
     def __init__(self):
         self.agents: Dict[str, BaseAgent] = {}
         self.message_queue: List[AgentMessage] = []
         self.message_history: List[AgentMessage] = []
-    
+
     def register_agent(self, agent: BaseAgent):
         """Register an agent with the message bus."""
         self.agents[agent.agent_id] = agent
-    
+
     def send_message(self, message: AgentMessage):
         """Send message to specified agent or broadcast."""
         self.message_history.append(message)
-        
+
         if message.receiver == "broadcast":
             for agent in self.agents.values():
                 if agent.agent_id != message.sender:
@@ -718,7 +718,7 @@ class MessageBus:
                 response = agent.process_message(message)
                 if response:
                     self.send_message(response)
-    
+
     def get_conversation(self, conversation_id: str) -> List[AgentMessage]:
         """Retrieve all messages in a conversation."""
         return [m for m in self.message_history if m.conversation_id == conversation_id]
@@ -890,14 +890,14 @@ class LearnableAgent(BaseAgent):
         super().__init__(...)
         self.success_history = []
         self.failure_patterns = []
-    
+
     def update_from_feedback(self, task, success, feedback):
         """Update agent behavior based on planning outcomes."""
         if success:
             self.success_history.append((task, feedback))
         else:
             self.failure_patterns.append((task, feedback))
-        
+
         # Adjust prompting strategy based on learned patterns
         self.prompt_builder.adapt_to_feedback(self.failure_patterns)
 ```
@@ -908,7 +908,7 @@ For specific domains (robotics, healthcare):
 ```python
 class RoboticsExecutionAgent(ExecutionAgent):
     """Execution agent specialized for robotics domain."""
-    
+
     def validate(self, method, domain, state):
         # Additional robotics-specific checks
         self._check_physical_constraints(method)
@@ -921,7 +921,7 @@ class RoboticsExecutionAgent(ExecutionAgent):
 ```python
 class HumanFeedbackAgent(BaseAgent):
     """Agent that solicits human feedback for ambiguous decisions."""
-    
+
     def process_message(self, message):
         if message.content["confidence"] < 0.7:
             # Ask human for clarification
@@ -997,29 +997,29 @@ The multi-agent system will be considered successful if:
 ```python
 class PlanningAgent(BaseAgent):
     """Strategic planning agent for HTN decomposition."""
-    
+
     def __init__(self, agent_id: str, llm_client: BaseLLMClient, prompt_builder: PromptBuilder):
         super().__init__(agent_id, "planning", llm_client, prompt_builder)
-    
+
     def process_message(self, message: AgentMessage) -> AgentMessage:
         """Process planning request and generate subgoals."""
         if message.message_type != "request":
             return None
-        
+
         # Extract task and context
         task = message.content["task"]
         state = message.content["state"]
         domain = message.content["domain_context"]
-        
+
         # Generate planning prompt
         prompt = self._build_planning_prompt(task, state, domain)
-        
+
         # Get LLM response
         response = self.generate_response(prompt, context={})
-        
+
         # Parse response into subgoals
         subgoals = self._parse_subgoals(response)
-        
+
         # Create response message
         return AgentMessage(
             sender=self.agent_id,
@@ -1034,7 +1034,7 @@ class PlanningAgent(BaseAgent):
             conversation_id=message.conversation_id,
             priority=message.priority
         )
-    
+
     def _build_planning_prompt(self, task, state, domain):
         """Build prompt for planning agent."""
         return f"""Analyze this HTN planning task:

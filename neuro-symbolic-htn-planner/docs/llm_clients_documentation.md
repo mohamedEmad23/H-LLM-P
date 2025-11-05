@@ -91,8 +91,8 @@ class LLMConfig:
 
 ### 1. Gemini Client
 
-**File**: `src/llm/gemini_client.py` (352 lines)  
-**Provider**: Google AI Studio (free tier)  
+**File**: `src/llm/gemini_client.py` (352 lines)
+**Provider**: Google AI Studio (free tier)
 **SDK**: `google-genai` v1.41.0
 
 #### Features
@@ -137,8 +137,8 @@ print(response.content)
 
 ### 2. Groq Client
 
-**File**: `src/llm/groq_client.py` (369 lines)  
-**Provider**: Groq (ultra-fast inference)  
+**File**: `src/llm/groq_client.py` (369 lines)
+**Provider**: Groq (ultra-fast inference)
 **SDK**: `groq` v0.32.0
 
 #### Features
@@ -185,8 +185,8 @@ print(response.content)
 
 ### 3. Cohere Client
 
-**File**: `src/llm/cohere_client.py` (371 lines)  
-**Provider**: Cohere (enterprise-grade LLMs)  
+**File**: `src/llm/cohere_client.py` (371 lines)
+**Provider**: Cohere (enterprise-grade LLMs)
 **SDK**: `cohere` v5.18.0 (V2 API)
 
 #### Features
@@ -232,8 +232,8 @@ print(response.content)
 
 ### 4. Mistral Client
 
-**File**: `src/llm/mistral_client.py` (344 lines)  
-**Provider**: Mistral AI  
+**File**: `src/llm/mistral_client.py` (344 lines)
+**Provider**: Mistral AI
 **SDK**: `mistralai` v1.9.11
 
 #### Features
@@ -278,8 +278,8 @@ print(response.content)
 
 ### 5. Eden AI Client
 
-**File**: `src/llm/eden_client.py` (395 lines)  
-**Provider**: Eden AI (unified API)  
+**File**: `src/llm/eden_client.py` (395 lines)
+**Provider**: Eden AI (unified API)
 **SDK**: None (uses `requests` library)
 
 #### Features
@@ -334,8 +334,8 @@ POST https://api.edenai.run/v2/text/chat
 
 ### 6. GitHub Models Client
 
-**File**: `src/llm/github_models_client.py` (423 lines)  
-**Provider**: GitHub Models  
+**File**: `src/llm/github_models_client.py` (423 lines)
+**Provider**: GitHub Models
 **SDK**: `openai` v1.108.0 (OpenAI-compatible)
 
 #### Features
@@ -387,8 +387,8 @@ https://models.github.ai/inference
 
 ### 7. Ollama Client
 
-**File**: `src/llm/ollama_client.py` (475 lines)  
-**Provider**: Ollama (local LLM runtime)  
+**File**: `src/llm/ollama_client.py` (475 lines)
+**Provider**: Ollama (local LLM runtime)
 **SDK**: `ollama` v0.1.6
 
 #### Features
@@ -476,22 +476,22 @@ All clients use a unified exception hierarchy with proper error categorization:
 ```python
 class LLMException(Exception):
     """Base exception for all LLM errors"""
-    def __init__(self, message: str, provider: str = "unknown", 
+    def __init__(self, message: str, provider: str = "unknown",
                  original_error: Optional[Exception] = None, **kwargs)
 
 class LLMRateLimitError(LLMException):
     """Rate limit exceeded"""
-    def __init__(self, message: str, provider: str = "unknown", 
+    def __init__(self, message: str, provider: str = "unknown",
                  retry_after: int = 60, original_error: Optional[Exception] = None)
 
 class LLMAPIError(LLMException):
     """API returned an error"""
-    def __init__(self, message: str, provider: str = "unknown", 
+    def __init__(self, message: str, provider: str = "unknown",
                  status_code: Optional[int] = None, original_error: Optional[Exception] = None)
 
 class LLMTimeoutError(LLMException):
     """Request timed out"""
-    def __init__(self, message: str, provider: str = "unknown", 
+    def __init__(self, message: str, provider: str = "unknown",
                  timeout: Optional[float] = None, original_error: Optional[Exception] = None)
 
 class LLMConnectionError(LLMException):
@@ -632,7 +632,7 @@ def generate_with_fallback(prompt: str) -> str:
         gemini_client,    # Fallback to free tier
         ollama_client,    # Final fallback to local
     ]
-    
+
     for client in providers:
         try:
             response = client.generate(prompt)
@@ -640,7 +640,7 @@ def generate_with_fallback(prompt: str) -> str:
         except LLMException as e:
             logger.warning(f"Provider {client.provider_name} failed: {e}")
             continue
-    
+
     raise LLMException("All providers failed")
 ```
 
@@ -716,6 +716,6 @@ Based on test results with similar prompts (~20 tokens input, ~70-90 tokens outp
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: October 8, 2025  
+**Document Version**: 1.0
+**Last Updated**: October 8, 2025
 **Author**: HTN Planner Development Team

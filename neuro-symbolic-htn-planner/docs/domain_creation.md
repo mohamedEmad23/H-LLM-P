@@ -1,6 +1,6 @@
 ### Practical Framework for Implementing an HTN Planner with LLMs
 
-1. **Programming Language**: 
+1. **Programming Language**:
    - Python (widely used for AI and planning tasks)
 
 2. **HTN Planning Libraries**:
