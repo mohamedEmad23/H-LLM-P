@@ -231,7 +231,7 @@ class ExtendedWorkflow:
 
                 if not decomposition_result["success"]:
                     raise Exception(
-                        f"Decomposition failed: " f"{decomposition_result.get('error')}"
+                        f"Decomposition failed: {decomposition_result.get('error')}"
                     )
 
                 logger.info(
@@ -624,53 +624,53 @@ class ExtendedWorkflow:
 ╚══════════════════════════════════════════════════════════════╝
 
 📊 Overall Statistics:
-   Tasks Processed: {stats['tasks_processed']}
-   Successful: {stats['successful_tasks']}
-   Failed: {stats['failed_tasks']}
-   Success Rate: {stats['success_rate']:.1%}
-   Avg Retries: {stats['avg_retries_per_task']:.2f}
+   Tasks Processed: {stats["tasks_processed"]}
+   Successful: {stats["successful_tasks"]}
+   Failed: {stats["failed_tasks"]}
+   Success Rate: {stats["success_rate"]:.1%}
+   Avg Retries: {stats["avg_retries_per_task"]:.2f}
 
 ⏱️  Performance Metrics:
-   Total Time: {stats['avg_total_time_ms']:.1f}ms avg
-   Planning: {stats['avg_planning_time_ms']:.1f}ms avg
-   Decomposition: {stats['avg_decomposition_time_ms']:.1f}ms avg
-   Execution: {stats['avg_execution_time_ms']:.1f}ms avg
-   Verification: {stats['avg_verification_time_ms']:.1f}ms avg
-   Context: {stats['avg_context_time_ms']:.1f}ms avg
+   Total Time: {stats["avg_total_time_ms"]:.1f}ms avg
+   Planning: {stats["avg_planning_time_ms"]:.1f}ms avg
+   Decomposition: {stats["avg_decomposition_time_ms"]:.1f}ms avg
+   Execution: {stats["avg_execution_time_ms"]:.1f}ms avg
+   Verification: {stats["avg_verification_time_ms"]:.1f}ms avg
+   Context: {stats["avg_context_time_ms"]:.1f}ms avg
 
 🎯 Advanced Features:
-   Strategies Evaluated: {stats['strategies_evaluated']}
-   Avg Strategies/Task: {stats['avg_strategies_per_task']:.1f}
-   Context Retrievals: {stats['context_retrievals']}
-   Feedback Loops: {stats['feedback_loops_executed']}
+   Strategies Evaluated: {stats["strategies_evaluated"]}
+   Avg Strategies/Task: {stats["avg_strategies_per_task"]:.1f}
+   Context Retrievals: {stats["context_retrievals"]}
+   Feedback Loops: {stats["feedback_loops_executed"]}
 
 🤖 Agent Performance:
 
    PlanningAgent:
-      Success Rate: {stats['planning_agent_stats']['success_rate']:.1%}
-      Avg Confidence: {stats['planning_agent_stats']['avg_confidence']:.2f}
-      Fallback Rate: {stats['planning_agent_stats']['fallback_rate']:.1%}
+      Success Rate: {stats["planning_agent_stats"]["success_rate"]:.1%}
+      Avg Confidence: {stats["planning_agent_stats"]["avg_confidence"]:.2f}
+      Fallback Rate: {stats["planning_agent_stats"]["fallback_rate"]:.1%}
 
    DecompositionAgent:
-      Success Rate: {stats['decomposition_agent_stats']['success_rate']:.1%}
-      Avg Confidence: {stats['decomposition_agent_stats']['avg_confidence']:.2f}
-      Fallback Rate: {stats['decomposition_agent_stats']['fallback_rate']:.1%}
+      Success Rate: {stats["decomposition_agent_stats"]["success_rate"]:.1%}
+      Avg Confidence: {stats["decomposition_agent_stats"]["avg_confidence"]:.2f}
+      Fallback Rate: {stats["decomposition_agent_stats"]["fallback_rate"]:.1%}
 
    ExecutionAgent:
-      Success Rate: {stats['execution_agent_stats']['success_rate']:.1%}
-      Total Steps: {stats['execution_agent_stats']['total_steps_executed']}
-      LLM Fallback: {stats['execution_agent_stats']['llm_fallback_rate']:.1%}
+      Success Rate: {stats["execution_agent_stats"]["success_rate"]:.1%}
+      Total Steps: {stats["execution_agent_stats"]["total_steps_executed"]}
+      LLM Fallback: {stats["execution_agent_stats"]["llm_fallback_rate"]:.1%}
 
    VerificationAgent:
-      Success Rate: {stats['verification_agent_stats']['success_rate']:.1%}
-      Avg Quality: {stats['verification_agent_stats']['avg_quality_score']:.1f}
-      Fallback Rate: {stats['verification_agent_stats']['fallback_rate']:.1%}
+      Success Rate: {stats["verification_agent_stats"]["success_rate"]:.1%}
+      Avg Quality: {stats["verification_agent_stats"]["avg_quality_score"]:.1f}
+      Fallback Rate: {stats["verification_agent_stats"]["fallback_rate"]:.1%}
 
    ContextAgent:
-      Interactions Logged: {stats['context_agent_stats']['interactions_logged']}
-      States Tracked: {stats['context_agent_stats']['states_tracked']}
-      Contexts Retrieved: {stats['context_agent_stats']['contexts_retrieved']}
-      LLM Usage: {stats['context_agent_stats']['llm_usage_rate']:.1%}
+      Interactions Logged: {stats["context_agent_stats"]["interactions_logged"]}
+      States Tracked: {stats["context_agent_stats"]["states_tracked"]}
+      Contexts Retrieved: {stats["context_agent_stats"]["contexts_retrieved"]}
+      LLM Usage: {stats["context_agent_stats"]["llm_usage_rate"]:.1%}
 
 ╚══════════════════════════════════════════════════════════════╝
 """

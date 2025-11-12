@@ -342,10 +342,10 @@ Respond in JSON format:
             user_prompt = f"""Query: {query}
 
 Recent Interactions:
-{self._format_interactions(base_context['recent_interactions'])}
+{self._format_interactions(base_context["recent_interactions"])}
 
 Recent States:
-{self._format_states(base_context['recent_states'])}
+{self._format_states(base_context["recent_states"])}
 
 Analyze this data and provide insights."""
 

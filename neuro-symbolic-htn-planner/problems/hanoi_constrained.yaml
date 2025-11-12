@@ -1,0 +1,59 @@
+# Problem Type: Tower of Hanoi with Constraints
+# Difficulty: Hard
+# Category: Classic HTN Problem (Extended)
+
+problem_type: "tower_of_hanoi_constrained"
+description: "Solve Tower of Hanoi with disk color constraints and multi-agent coordination"
+
+initial_state:
+  num_disks: 4
+  num_pegs: 3
+  disk_colors:
+    disk_1: "red"
+    disk_2: "blue"
+    disk_3: "red"
+    disk_4: "blue"
+  initial_config:
+    peg_A: [4, 3, 2, 1]  # Bottom to top
+    peg_B: []
+    peg_C: []
+  agent_capabilities:
+    agent_red: ["red"]      # Can only move red disks
+    agent_blue: ["blue"]    # Can only move blue disks
+
+constraints:
+  max_moves: 30
+  color_restriction: true  # Agents can only move their color
+  peg_size_limit:
+    peg_A: 100
+    peg_B: 100
+    peg_C: 100
+  time_limit_seconds: 60
+
+expected_output:
+  final_config:
+    peg_A: []
+    peg_B: []
+    peg_C: [4, 3, 2, 1]
+  move_count: 15
+  agent_moves:
+    agent_red: 7
+    agent_blue: 8
+
+metadata:
+  difficulty: "hard"
+  category: "multi_agent_coordination"
+  tags: ["hanoi", "constraints", "multi_agent"]
+  time_complexity: "O(2^n)"
+  space_complexity: "O(n)"
+
+domain_hints:
+  primary_task: "move_tower"
+  subtasks:
+    - "move_disk_with_agent"
+    - "check_color_capability"
+    - "coordinate_agents"
+  key_operators:
+    - "move_disk"
+    - "validate_agent_capability"
+    - "update_peg_state"

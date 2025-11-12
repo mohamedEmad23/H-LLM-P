@@ -501,9 +501,9 @@ if __name__ == "__main__":
     fail_count = 0
 
     for model_name in models_to_test:
-        logger.info(f"\n{'='*60}")
+        logger.info(f"\n{'=' * 60}")
         logger.info(f"Testing model: {model_name}")
-        logger.info(f"{'='*60}")
+        logger.info(f"{'=' * 60}")
 
         try:
             # Initialize client
@@ -568,9 +568,9 @@ if __name__ == "__main__":
             fail_count += 1
 
     # Summary
-    logger.info(f"\n{'='*60}")
+    logger.info(f"\n{'=' * 60}")
     logger.info(f"Test Summary: {success_count} passed, {fail_count} failed")
-    logger.info(f"{'='*60}")
+    logger.info(f"{'=' * 60}")
 
     if fail_count == 0:
         logger.success("✅ All models working!")

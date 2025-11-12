@@ -57,17 +57,17 @@ class ParsedMethod:
     def __str__(self) -> str:
         """Return formatted string representation."""
         subtasks_str = "\n    ".join(
-            f"{i+1}. {name}({', '.join(params)})"
+            f"{i + 1}. {name}({', '.join(params)})"
             for i, (name, params) in enumerate(self.subtasks)
         )
         return f"""Method: {self.name}
-  Task: {self.task_name}({', '.join(self.parameters)})
+  Task: {self.task_name}({", ".join(self.parameters)})
   Preconditions:
-    {chr(10).join('- ' + p for p in self.preconditions) if self.preconditions else '- None'}
+    {chr(10).join("- " + p for p in self.preconditions) if self.preconditions else "- None"}
   Subtasks:
     {subtasks_str}
   Effects:
-    {chr(10).join('- ' + e for e in self.effects) if self.effects else '- None'}
+    {chr(10).join("- " + e for e in self.effects) if self.effects else "- None"}
   Confidence: {self.confidence:.2%}
 """
 
@@ -455,9 +455,9 @@ class ResponseParser:
         # Check subtasks
         for i, (task_name, params) in enumerate(method.subtasks):
             if not task_name:
-                issues.append(f"Subtask {i+1} has no name")
+                issues.append(f"Subtask {i + 1} has no name")
             if task_name and not re.match(r"^[a-zA-Z_]\w*$", task_name):
-                issues.append(f"Invalid subtask name at position {i+1}: {task_name}")
+                issues.append(f"Invalid subtask name at position {i + 1}: {task_name}")
 
         # Check for circular dependencies (basic check)
         if method.task_name in [st[0] for st in method.subtasks]:
@@ -598,7 +598,7 @@ Method: method2
     methods = parser.parse_multiple(multiple_response)
     print(f"Found {len(methods)} methods")
     for i, m in enumerate(methods):
-        print(f"\nMethod {i+1}: {m.name} (confidence: {m.confidence:.0%})")
+        print(f"\nMethod {i + 1}: {m.name} (confidence: {m.confidence:.0%})")
 
     print("\n" + "=" * 80)
     print("✅ Response Parser Examples Complete")

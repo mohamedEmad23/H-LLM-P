@@ -14,11 +14,15 @@
 # ============================================
 requirements-dev.txt
 setup.py
-AGENT-DEVELOPMENT-KIT/
+# AGENT-DEVELOPMENT-KIT/  # Re-enabled - needed for repo
 #test_core_components.py
 #test_htn_planner.py
 #test_simple_htn.py
-#tests/
+Idea-Vault/
+# neuro-symbolic-htn-planner/benchmarks/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/docs/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/results/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/tests/  # Re-enabled - needed for repo
 
 # ============================================
 # PYTHON
@@ -145,6 +149,13 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# ruff
+.ruff-cache/
+neuro-symbolic-htn-planner/.ruff-cache/
+
+# bandit
+bandit-report.json
 
 # Pyre type checker
 .pyre/

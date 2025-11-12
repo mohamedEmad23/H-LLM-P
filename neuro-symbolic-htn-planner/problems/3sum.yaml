@@ -1,0 +1,44 @@
+# Problem Type: 3-Sum (Array Triplet Search)
+# Difficulty: Medium
+# Category: Array Manipulation
+
+problem_type: "3sum"
+description: "Find all unique triplets in an array that sum to zero"
+
+# Initial state / Input data
+initial_state:
+  nums: [-1, 0, 1, 2, -1, -4]
+  target_sum: 0
+
+# Problem constraints
+constraints:
+  unique_triplets: true      # No duplicate triplets
+  sorted_indices: true       # Require i < j < k
+  sorted_output: true        # Sort output triplets
+
+# Expected output (for validation)
+expected_output:
+  triplets:
+    - [-1, -1, 2]
+    - [-1, 0, 1]
+  count: 2
+
+# Metadata for tracking/benchmarking
+metadata:
+  difficulty: "medium"
+  category: "array_manipulation"
+  tags: ["two_pointers", "sorting", "hashing"]
+  time_complexity: "O(n^2)"
+  space_complexity: "O(n)"
+
+# HTN Domain Hints (optional - helps LLM generate better domains)
+domain_hints:
+  primary_task: "find_all_triplets"
+  subtasks:
+    - "iterate_array"
+    - "check_triplet_sum"
+    - "deduplicate_results"
+  key_operators:
+    - "select_element"
+    - "compute_sum"
+    - "validate_uniqueness"

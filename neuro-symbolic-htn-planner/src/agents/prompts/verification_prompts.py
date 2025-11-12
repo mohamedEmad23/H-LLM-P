@@ -133,7 +133,7 @@ def format_execution_trace(trace: list) -> str:
         status = step.get("status", "unknown")
 
         lines.append(
-            f"Step {step_num}: {operator}({', '.join(map(str, params))}) " f"- {status}"
+            f"Step {step_num}: {operator}({', '.join(map(str, params))}) - {status}"
         )
 
     return "\n".join(lines)

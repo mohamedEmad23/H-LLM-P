@@ -105,7 +105,7 @@ class VerificationAgent(BaseAgent):
         optimal_steps = input_data.get("optimal_steps")
 
         logger.info(
-            f"Verifying plan with {len(execution_trace)} steps " f"in domain: {domain}"
+            f"Verifying plan with {len(execution_trace)} steps in domain: {domain}"
         )
 
         # Quick rule-based checks first
@@ -131,7 +131,7 @@ class VerificationAgent(BaseAgent):
         # Try fallback if primary failed
         if not llm_result["success"] and self.fallback_client:
             logger.warning(
-                f"Primary LLM failed, trying fallback: " f"{llm_result.get('error')}"
+                f"Primary LLM failed, trying fallback: {llm_result.get('error')}"
             )
             llm_result = await self._llm_verification(
                 system_prompt, user_prompt, is_fallback=True

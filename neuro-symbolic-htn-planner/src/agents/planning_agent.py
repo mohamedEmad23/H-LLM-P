@@ -193,9 +193,9 @@ Respond in JSON format:
 **Goal State**:
 {goal_str}
 
-**Constraints**: {', '.join(constraints) if constraints else 'None'}
+**Constraints**: {", ".join(constraints) if constraints else "None"}
 
-**Domain Context**: {context.get('domain_description', 'Standard HTN planning domain')}
+**Domain Context**: {context.get("domain_description", "Standard HTN planning domain")}
 
 Generate {self.max_strategies} alternative strategies, evaluate them, and recommend the best approach."""
 

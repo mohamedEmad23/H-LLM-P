@@ -252,7 +252,7 @@ class HuggingFaceClient(BaseLLMClient):
             )
         else:
             raise LLMAPIError(
-                f"Hugging Face API error ({response.status_code}): " f"{error_msg}",
+                f"Hugging Face API error ({response.status_code}): {error_msg}",
                 provider="huggingface",
                 status_code=response.status_code,
             )
@@ -345,7 +345,7 @@ class HuggingFaceClient(BaseLLMClient):
                 logger.info("Hugging Face API is available")
                 return True
 
-            logger.warning(f"Hugging Face API check failed: " f"{response.status_code}")
+            logger.warning(f"Hugging Face API check failed: {response.status_code}")
             return False
 
         except Exception as e:

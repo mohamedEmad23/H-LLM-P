@@ -119,7 +119,7 @@ class ExecutionAgent(BaseAgent):
             # Try LLM fallback if validation failed and fallback enabled
             if not is_valid and self.use_llm_fallback and self.llm_client:
                 logger.warning(
-                    f"Symbolic validation failed ({reason}), " f"trying LLM fallback"
+                    f"Symbolic validation failed ({reason}), trying LLM fallback"
                 )
                 is_valid, reason = await self._llm_validate(
                     operator, params, current_state, domain

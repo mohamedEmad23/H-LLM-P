@@ -198,14 +198,14 @@ Method: make_brewed_coffee
         """Build a minimal prompt for fast models."""
         return f"""Decompose this HTN task into subtasks:
 
-Task: {task.name}({', '.join(task.parameters)})
-{f'Description: {task.description}' if task.description else ''}
+Task: {task.name}({", ".join(task.parameters)})
+{f"Description: {task.description}" if task.description else ""}
 
-Available operators: {', '.join(domain_context.available_operators)}
+Available operators: {", ".join(domain_context.available_operators)}
 
 Provide the method decomposition in this format:
 Method: <method_name>
-  Task: {task.name}({', '.join('?' + p for p in task.parameters)})
+  Task: {task.name}({", ".join("?" + p for p in task.parameters)})
   Subtasks:
     1. <subtask_1>
     2. <subtask_2>
@@ -220,21 +220,21 @@ Method: <method_name>
 
 ## Domain Context
 Domain: {domain_context.domain_name}
-Available Operators: {', '.join(domain_context.available_operators)}
-Existing Methods: {', '.join(domain_context.available_methods) if domain_context.available_methods else 'None'}
-State Variables: {', '.join(domain_context.state_variables)}
+Available Operators: {", ".join(domain_context.available_operators)}
+Existing Methods: {", ".join(domain_context.available_methods) if domain_context.available_methods else "None"}
+State Variables: {", ".join(domain_context.state_variables)}
 
 """
 
         if include_examples and domain_context.domain_name.lower() in self.EXAMPLES:
             prompt += f"""## Learning Examples
-{self.EXAMPLES.get(domain_context.domain_name.lower(), self.EXAMPLES['blocks_world'])}
+{self.EXAMPLES.get(domain_context.domain_name.lower(), self.EXAMPLES["blocks_world"])}
 
 """
 
         prompt += f"""## Task to Decompose
-Task: {task.name}({', '.join(task.parameters)})
-{f'Description: {task.description}' if task.description else ''}
+Task: {task.name}({", ".join(task.parameters)})
+{f"Description: {task.description}" if task.description else ""}
 
 Preconditions:
 {self._format_list(task.preconditions)}
@@ -252,15 +252,15 @@ Please think step-by-step and provide:
 Use this format for the method:
 ```
 Method: <method_name>
-  Task: {task.name}({', '.join('?' + p for p in task.parameters)})
+  Task: {task.name}({", ".join("?" + p for p in task.parameters)})
   Preconditions:
-{self._format_list(['- ' + p for p in task.preconditions])}
+{self._format_list(["- " + p for p in task.preconditions])}
   Subtasks:
     1. <subtask_name>(<parameters>)
     2. <subtask_name>(<parameters>)
     ...
   Effects:
-{self._format_list(['- ' + e for e in task.effects])}
+{self._format_list(["- " + e for e in task.effects])}
 ```
 
 Begin your response with your reasoning, then provide the method decomposition.
@@ -285,7 +285,7 @@ class Task:
 ```
 
 ## Available Operators
-{chr(10).join(f'- {op}' for op in domain_context.available_operators)}
+{chr(10).join(f"- {op}" for op in domain_context.available_operators)}
 
 ## Required Output Format
 ```python
@@ -319,10 +319,10 @@ Provide the method implementation:
         prompt = f"""Decompose this HTN task into executable subtasks.
 
 Domain: {domain_context.domain_name}
-Operators: {', '.join(domain_context.available_operators[:10])}  # Limit for context
+Operators: {", ".join(domain_context.available_operators[:10])}  # Limit for context
 
-Task: {task.name}({', '.join(task.parameters)})
-{f'Description: {task.description}' if task.description else ''}
+Task: {task.name}({", ".join(task.parameters)})
+{f"Description: {task.description}" if task.description else ""}
 
 """
 
@@ -341,7 +341,7 @@ Method: example_method
         prompt += f"""Your Task Method:
 ```
 Method: <name>
-  Task: {task.name}({', '.join('?' + p for p in task.parameters)})
+  Task: {task.name}({", ".join("?" + p for p in task.parameters)})
   Subtasks:
     1. <subtask>(<params>)
     2. ...
@@ -577,7 +577,7 @@ def build_quick_prompt(task_name: str, description: str, operators: List[str]) -
     """
     return f"""Decompose: {task_name}
 Description: {description}
-Operators: {', '.join(operators)}
+Operators: {", ".join(operators)}
 
 Method:
   Task: {task_name}

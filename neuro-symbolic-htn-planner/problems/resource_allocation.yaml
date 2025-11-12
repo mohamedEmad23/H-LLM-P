@@ -1,0 +1,73 @@
+# Problem Type: Multi-Resource Allocation
+# Difficulty: Very Hard
+# Category: Optimization & Constraint Satisfaction
+
+problem_type: "resource_allocation"
+description: "Allocate limited resources to tasks with dependencies and deadlines"
+
+initial_state:
+  resources:
+    cpu_cores: 8
+    memory_gb: 16
+    gpu_units: 2
+  tasks:
+    task_1:
+      requires: {cpu_cores: 2, memory_gb: 4, gpu_units: 0}
+      duration: 10
+      priority: "high"
+      deadline: 30
+      dependencies: []
+    task_2:
+      requires: {cpu_cores: 4, memory_gb: 8, gpu_units: 1}
+      duration: 15
+      priority: "medium"
+      deadline: 50
+      dependencies: ["task_1"]
+    task_3:
+      requires: {cpu_cores: 1, memory_gb: 2, gpu_units: 1}
+      duration: 5
+      priority: "high"
+      deadline: 20
+      dependencies: []
+    task_4:
+      requires: {cpu_cores: 3, memory_gb: 6, gpu_units: 0}
+      duration: 12
+      priority: "low"
+      deadline: 60
+      dependencies: ["task_2"]
+
+constraints:
+  max_concurrent_tasks: 3
+  resource_overcommit: false
+  priority_scheduling: true
+  deadline_enforcement: true
+
+expected_output:
+  schedule:
+    - {task: "task_3", start_time: 0, end_time: 5}
+    - {task: "task_1", start_time: 0, end_time: 10}
+    - {task: "task_2", start_time: 10, end_time: 25}
+    - {task: "task_4", start_time: 25, end_time: 37}
+  makespan: 37
+  resource_utilization: 0.82
+  deadline_violations: 0
+
+metadata:
+  difficulty: "very_hard"
+  category: "scheduling"
+  tags: ["optimization", "resource_management", "constraint_satisfaction"]
+  time_complexity: "NP-Hard"
+  space_complexity: "O(n*m)"
+
+domain_hints:
+  primary_task: "schedule_all_tasks"
+  subtasks:
+    - "check_resource_availability"
+    - "resolve_dependencies"
+    - "prioritize_tasks"
+    - "allocate_resources"
+  key_operators:
+    - "assign_task_to_slot"
+    - "reserve_resources"
+    - "validate_deadline"
+    - "release_resources"

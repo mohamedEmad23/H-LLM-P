@@ -167,8 +167,8 @@ def analyze_paths(state: ProbabilisticGraphState) -> Dict[str, Dict]:
             "route": "Start → B → End",
             "expected_time": ev,
             "worst_case": edge_b.get_worst_case_time(),
-            "risk": f"{edge_b.penalty_probability*100:.0f}% chance of +{edge_b.penalty_time} min penalty",
-            "calculation": f"({1-edge_b.penalty_probability}*{edge_b.base_time}) + ({edge_b.penalty_probability}*{edge_b.get_worst_case_time()}) = {ev} min",
+            "risk": f"{edge_b.penalty_probability * 100:.0f}% chance of +{edge_b.penalty_time} min penalty",
+            "calculation": f"({1 - edge_b.penalty_probability}*{edge_b.base_time}) + ({edge_b.penalty_probability}*{edge_b.get_worst_case_time()}) = {ev} min",
         }
 
     # Recommendation
