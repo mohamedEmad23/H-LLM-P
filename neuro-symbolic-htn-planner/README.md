@@ -8,7 +8,10 @@
 [![Code Size](https://img.shields.io/badge/Code-20K+_LOC-orange?style=for-the-badge&logo=github&logoColor=white)](.)
 [![Research](https://img.shields.io/badge/Research-Thesis_Project-purple?style=for-the-badge&logo=academia&logoColor=white)](.)
 
-<img src="docs/architecture-diagrams/full_system_architecture_graphviz.png" alt="System Architecture" width="100%"/>
+<a href="docs/architecture-diagrams/full_system_architecture_graphviz.png" target="_blank">
+  <img src="docs/architecture-diagrams/full_system_architecture_graphviz.png" alt="System Architecture" width="100%"/>
+</a>
+<p align="center"><em>Click image to view in full resolution</em></p>
 
 *A production-grade, multi-agent hierarchical task network planner with persistent memory management*
 
@@ -103,7 +106,10 @@ graph TB
     style J fill:#E8F5E9
 ```
 
-<img src="docs/architecture-diagrams/component_interactions_graphviz.png" alt="Component Interactions" width="100%"/>
+<a href="docs/architecture-diagrams/component_interactions_graphviz.png" target="_blank">
+  <img src="docs/architecture-diagrams/component_interactions_graphviz.png" alt="Component Interactions" width="100%"/>
+</a>
+<p align="center"><em>Click image to view in full resolution</em></p>
 
 </div>
 
