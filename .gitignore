@@ -148,6 +148,20 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
+
+# ============================================
+# GENERATED & CACHE FILES (Pre-commit hooks)
+# ============================================
+# Security reports
+bandit-report.json
+
+# Domain cache
+neuro-symbolic-htn-planner/cache/domains/
+cache/domains/
+
+# Generated artifacts
+*.tmp
+*.bak
 dmypy.json
 
 # ruff
