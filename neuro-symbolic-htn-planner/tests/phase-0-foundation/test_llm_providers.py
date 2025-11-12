@@ -102,41 +102,9 @@ else:
     except Exception as e:
         print(f"❌ Cohere: ERROR - {str(e)[:100]}")
 
-# Test 6: Mistral
-print("\n[6/7] Testing Mistral...")
-if not os.getenv("MISTRAL_API_KEY"):
-    print("❌ Mistral: NO API KEY")
-else:
-    try:
-        from llm.mistral_client import MistralClient
-
-        client = MistralClient(config=LLMConfig(model_name="mistral-large-latest"))
-        if client.is_available():
-            print("✅ Mistral: AVAILABLE")
-            response = client.generate("Say 'Hello'", max_tokens=10)
-            print(f"   Response: {response.content[:50]}...")
-        else:
-            print("❌ Mistral: NOT AVAILABLE")
-    except Exception as e:
-        print(f"❌ Mistral: ERROR - {str(e)[:100]}")
-
-# Test 7: Eden AI
-print("\n[7/7] Testing Eden AI...")
-if not os.getenv("EDEN_API_KEY"):
-    print("❌ Eden AI: NO API KEY")
-else:
-    try:
-        from llm.eden_client import EdenClient
-
-        client = EdenClient(config=LLMConfig(model_name="openai/gpt-4"))
-        if client.is_available():
-            print("✅ Eden AI: AVAILABLE")
-            response = client.generate("Say 'Hello'", max_tokens=10)
-            print(f"   Response: {response.content[:50]}...")
-        else:
-            print("❌ Eden AI: NOT AVAILABLE")
-    except Exception as e:
-        print(f"❌ Eden AI: ERROR - {str(e)[:100]}")
+print("\n" + "=" * 60)
+print("Test Complete - Review results above")
+print("=" * 60)
 
 print("\n" + "=" * 80)
 print("Diagnostic Complete")

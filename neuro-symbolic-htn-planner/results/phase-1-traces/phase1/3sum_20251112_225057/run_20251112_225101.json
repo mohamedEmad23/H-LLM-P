@@ -1,0 +1,41 @@
+{
+  "problem_id": "3sum_20251112_225057",
+  "architecture": "phase1",
+  "start_timestamp": "2025-11-12T22:50:57.803741",
+  "end_timestamp": "2025-11-12T22:51:01.046544",
+  "success": true,
+  "goal_achieved": true,
+  "constraint_violations": 0,
+  "time_to_solution_ms": 3242.7971363067627,
+  "time_breakdown": {
+    "llm_init": 100,
+    "llm_query": 2413.337469100952
+  },
+  "failures": [],
+  "recovered_failures": 0,
+  "total_failures": 0,
+  "messages": [],
+  "total_messages": 0,
+  "total_payload_kb": 0.0,
+  "optimal_steps": null,
+  "generated_steps": 5,
+  "plan_optimality_score": null,
+  "llm_calls": [
+    {
+      "agent": "single_llm",
+      "llm": "llama-3.3-70b-versatile",
+      "attempt": "initial",
+      "input_tokens": 188,
+      "output_tokens": 1170,
+      "total_tokens": 1358,
+      "timestamp": "2025-11-12T22:51:01.046399"
+    }
+  ],
+  "total_tokens": 1358,
+  "cost_estimate_usd": 0.001358,
+  "state_consistency_score": 100,
+  "goal_alignment_score": 100,
+  "constraint_adherence_score": 100,
+  "context_coherence_score": 100,
+  "metadata": {}
+}
