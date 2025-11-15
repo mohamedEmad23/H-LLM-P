@@ -53,7 +53,7 @@ expected_output:
   deadline_violations: 0
 
 metadata:
-  difficulty: "very_hard"
+  difficulty: "very hard"
   category: "scheduling"
   tags: ["optimization", "resource_management", "constraint_satisfaction"]
   time_complexity: "NP-Hard"

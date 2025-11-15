@@ -4,7 +4,7 @@ This module provides the interface for users to submit arbitrary problems
 to the HTN planning system via YAML configuration files.
 
 Phase-Agnostic Design:
-    - Works across Phase 1 (Single LLM), Phase 3 (Multi-Agent), Phase 5 (MMS)
+    - Works across Phase 1 (Single LLM), Phase 3 (Multi-Agent/3), Phase 4(Multi-Agent/5) ,Phase 5 (MMS)
     - Runtime detection of available components
     - Graceful degradation with intelligent fallback routing
 """
@@ -201,8 +201,9 @@ class SystemPhaseDetector:
         """
         return {
             "phase_5": cls.can_import("src.planning.domain_mapper"),
+            "phase_4": cls.can_import("src.agents.verification_agent"),
             "phase_3": cls.can_import("src.agents.coordinator"),
-            "phase_1": cls.can_import("src.core.htn_planner"),
+            "phase_1": cls.can_import("src.llm.groq_client"),  # Phase 1 just needs LLM client
         }
 
     @classmethod
@@ -210,12 +211,14 @@ class SystemPhaseDetector:
         """Get the most advanced available phase.
 
         Returns:
-            Phase identifier ('phase_5', 'phase_3', 'phase_1') or None
+            Phase identifier ('phase_5', 'phase_4', 'phase_3', 'phase_1') or None
         """
         phases = cls.detect_available_phases()
 
         if phases["phase_5"]:
             return "phase_5"
+        elif phases["phase_4"]:
+            return "phase_4"
         elif phases["phase_3"]:
             return "phase_3"
         elif phases["phase_1"]:
@@ -383,6 +386,8 @@ class ProblemCLI:
         try:
             if best_phase == "phase_5":
                 self._solve_phase_5(problem)
+            elif best_phase == "phase_4":
+                self._solve_phase_4(problem)
             elif best_phase == "phase_3":
                 self._solve_phase_3(problem)
             elif best_phase == "phase_1":
@@ -400,8 +405,40 @@ class ProblemCLI:
             problem: Problem instance to solve
         """
         print("\n[Phase 5] Full integration with domain mapper in progress...")
-        print("Falling back to Phase 1 planning for demonstration...")
-        self._solve_phase_1(problem)
+        print("Falling back to Phase 4 strategic planning for demonstration...")
+        self._solve_phase_4(problem)
+    
+    def _solve_phase_4(self, problem: Problem) -> None:
+        """Solve using Phase 4 (Strategic Multi-Agent with Verification).
+
+        Args:
+            problem: Problem instance to solve
+        """
+        print("\n[Phase 4] Strategic Multi-Agent HTN Planning")
+        print(f"Problem: {problem.problem_type}")
+        print(f"Primary Task: {problem.domain_hints['primary_task']}")
+        
+        try:
+            from .phase4_executor import Phase4Executor
+            import asyncio
+            
+            # Execute using Phase 4 strategic multi-agent architecture
+            executor = Phase4Executor()
+            result = asyncio.run(executor.execute(problem))
+            
+            if result["success"]:
+                print("\n" + "=" * 60)
+                print("✓ Phase 4 execution completed successfully")
+                print(f"✓ Problem ID: {result['problem_id']}")
+                print("✓ Results saved to: results/phase-4-traces/")
+                print("=" * 60)
+            else:
+                print(f"\n❌ Phase 4 execution failed: {result.get('error')}")
+                
+        except ImportError as e:
+            print(f"\n⚠️  Phase 4 executor not available: {e}")
+            print("Falling back to Phase 3 planning...")
+            self._solve_phase_3(problem)
 
     def _solve_phase_3(self, problem: Problem) -> None:
         """Solve using Phase 3 (Multi-Agent without MMS).
@@ -409,9 +446,31 @@ class ProblemCLI:
         Args:
             problem: Problem instance to solve
         """
-        print("\n[Phase 3] Multi-agent planning not yet integrated with problem CLI.")
-        print("Falling back to Phase 1 planning...")
-        self._solve_phase_1(problem)
+        print("\n[Phase 3] Multi-Agent HTN Planning")
+        print(f"Problem: {problem.problem_type}")
+        print(f"Primary Task: {problem.domain_hints['primary_task']}")
+        
+        try:
+            from .phase3_executor import Phase3Executor
+            import asyncio
+            
+            # Execute using Phase 3 multi-agent architecture
+            executor = Phase3Executor()
+            result = asyncio.run(executor.execute(problem))
+            
+            if result["success"]:
+                print("\n" + "=" * 60)
+                print("✓ Phase 3 execution completed successfully")
+                print(f"✓ Problem ID: {result['problem_id']}")
+                print("✓ Results saved to: results/phase-3-traces/")
+                print("=" * 60)
+            else:
+                print(f"\n❌ Phase 3 execution failed: {result.get('error')}")
+                
+        except ImportError as e:
+            print(f"\n⚠️  Phase 3 executor not available: {e}")
+            print("Falling back to Phase 1 planning...")
+            self._solve_phase_1(problem)
 
     def _solve_phase_1(self, problem: Problem) -> None:
         """Solve using Phase 1 (Single LLM) with full HTN planning and benchmarking.

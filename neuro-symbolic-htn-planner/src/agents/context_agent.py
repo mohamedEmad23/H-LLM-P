@@ -31,7 +31,7 @@ class ContextAgent(BaseAgent):
         name: str = "ContextAgent",
         llm_client=None,
         fallback_client=None,
-        config: dict = None,
+        config: Optional[dict] = None,
     ):
         """
         Initialize ContextAgent
@@ -358,8 +358,8 @@ Analyze this data and provide insights."""
                 max_tokens=800,
             )
 
-            # Parse response
-            parsed = self._parse_llm_response(response)
+            # Parse response - extract content from LLMResponse
+            parsed = self._parse_llm_response(response.content)
 
             if parsed["success"]:
                 # Merge LLM insights with base context

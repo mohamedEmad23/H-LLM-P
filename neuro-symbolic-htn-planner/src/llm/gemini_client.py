@@ -29,6 +29,7 @@ try:
         LLMAPIError,
         LLMRateLimitError,
         LLMTimeoutError,
+        retry_on_failure,
     )
 except ImportError:
     # For standalone testing

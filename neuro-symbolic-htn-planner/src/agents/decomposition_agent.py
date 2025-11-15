@@ -194,8 +194,8 @@ class DecompositionAgent(BaseAgent):
                 max_tokens=self.max_tokens,
             )
 
-            # Parse response
-            parsed = parse_decomposition_response(response)
+            # Parse response - extract content from LLMResponse
+            parsed = parse_decomposition_response(response.content)
 
             if "error" in parsed:
                 logger.error(f"Failed to parse decomposition: {parsed['error']}")

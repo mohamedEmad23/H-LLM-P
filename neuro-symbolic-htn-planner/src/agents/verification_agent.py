@@ -323,8 +323,8 @@ class VerificationAgent(BaseAgent):
                 max_tokens=self.max_tokens,
             )
 
-            # Parse response
-            parsed = parse_verification_response(response)
+            # Parse response - extract content from LLMResponse
+            parsed = parse_verification_response(response.content)
 
             if "error" in parsed:
                 logger.error(f"Failed to parse verification: {parsed['error']}")

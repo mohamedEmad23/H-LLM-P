@@ -243,8 +243,8 @@ Generate {self.max_strategies} alternative strategies, evaluate them, and recomm
                 max_tokens=self.max_tokens,
             )
 
-            # Parse response
-            parsed = self._parse_planning_response(response)
+            # Parse response - extract content from LLMResponse
+            parsed = self._parse_planning_response(response.content)
 
             if parsed["success"]:
                 return parsed
