@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Generate formatted Phase 3 vs Phase 4 benchmark comparison report."""
 
-import json
 import sqlite3
 from pathlib import Path
 from typing import Dict, List
 from datetime import datetime
 
+
 def load_benchmark_data(db_path: str) -> Dict:
     """Load benchmark data from SQLite database."""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("""
         SELECT phase, problem_name, success, execution_time_ms,
                goal_achievement, constraint_satisfaction, plan_quality,
@@ -19,31 +19,40 @@ def load_benchmark_data(db_path: str) -> Dict:
         FROM benchmarks
         ORDER BY timestamp DESC
     """)
-    
+
     results = {}
     for row in cursor.fetchall():
-        phase, problem, success, time, goal, constr, quality, context, tokens, calls = row
+        phase, problem, success, time, goal, constr, quality, context, tokens, calls = (
+            row
+        )
         if phase not in results:
             results[phase] = {}
         if problem not in results[phase]:
             results[phase][problem] = {
-                'success': success == 1,
-                'time_ms': time,
-                'goal_achievement': goal,
-                'constraint_satisfaction': constr,
-                'plan_quality': quality,
-                'context_coherence': context,
-                'tokens': tokens,
-                'llm_calls': calls
+                "success": success == 1,
+                "time_ms": time,
+                "goal_achievement": goal,
+                "constraint_satisfaction": constr,
+                "plan_quality": quality,
+                "context_coherence": context,
+                "tokens": tokens,
+                "llm_calls": calls,
             }
-    
+
     conn.close()
     return results
 
+
 def generate_markdown_report(data: Dict) -> str:
     """Generate markdown comparison report."""
-    problems = ['constrained_sorting', 'tower_of_hanoi_constrained', 'resource_allocation', '3sum', 'grid_pathfinding']
-    
+    problems = [
+        "constrained_sorting",
+        "tower_of_hanoi_constrained",
+        "resource_allocation",
+        "3sum",
+        "grid_pathfinding",
+    ]
+
     report = f"""# Phase 3 vs Phase 4 Benchmark Comparison Report
 **Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
@@ -51,35 +60,35 @@ def generate_markdown_report(data: Dict) -> str:
 
 | Metric | Phase 3 (3 agents) | Phase 4 (5 agents) | Improvement |
 |--------|-------------------|-------------------|-------------|
-| Success Rate | {calc_success_rate(data.get('phase3', {}), problems):.1f}% | {calc_success_rate(data.get('phase4', {}), problems):.1f}% | {calc_improvement(calc_success_rate(data.get('phase3', {}), problems), calc_success_rate(data.get('phase4', {}), problems)):.1f}% |
-| Avg Execution Time | {calc_avg_time(data.get('phase3', {}), problems):.1f}ms | {calc_avg_time(data.get('phase4', {}), problems):.1f}ms | {calc_improvement(calc_avg_time(data.get('phase3', {}), problems), calc_avg_time(data.get('phase4', {}), problems)):.1f}% |
-| Avg Goal Achievement | {calc_avg_metric(data.get('phase3', {}), problems, 'goal_achievement'):.1f}% | {calc_avg_metric(data.get('phase4', {}), problems, 'goal_achievement'):.1f}% | +{calc_avg_metric(data.get('phase4', {}), problems, 'goal_achievement') - calc_avg_metric(data.get('phase3', {}), problems, 'goal_achievement'):.1f}% |
-| Avg Context Coherence | {calc_avg_metric(data.get('phase3', {}), problems, 'context_coherence'):.1f}% | {calc_avg_metric(data.get('phase4', {}), problems, 'context_coherence'):.1f}% | +{calc_avg_metric(data.get('phase4', {}), problems, 'context_coherence') - calc_avg_metric(data.get('phase3', {}), problems, 'context_coherence'):.1f}% |
+| Success Rate | {calc_success_rate(data.get("phase3", {}), problems):.1f}% | {calc_success_rate(data.get("phase4", {}), problems):.1f}% | {calc_improvement(calc_success_rate(data.get("phase3", {}), problems), calc_success_rate(data.get("phase4", {}), problems)):.1f}% |
+| Avg Execution Time | {calc_avg_time(data.get("phase3", {}), problems):.1f}ms | {calc_avg_time(data.get("phase4", {}), problems):.1f}ms | {calc_improvement(calc_avg_time(data.get("phase3", {}), problems), calc_avg_time(data.get("phase4", {}), problems)):.1f}% |
+| Avg Goal Achievement | {calc_avg_metric(data.get("phase3", {}), problems, "goal_achievement"):.1f}% | {calc_avg_metric(data.get("phase4", {}), problems, "goal_achievement"):.1f}% | +{calc_avg_metric(data.get("phase4", {}), problems, "goal_achievement") - calc_avg_metric(data.get("phase3", {}), problems, "goal_achievement"):.1f}% |
+| Avg Context Coherence | {calc_avg_metric(data.get("phase3", {}), problems, "context_coherence"):.1f}% | {calc_avg_metric(data.get("phase4", {}), problems, "context_coherence"):.1f}% | +{calc_avg_metric(data.get("phase4", {}), problems, "context_coherence") - calc_avg_metric(data.get("phase3", {}), problems, "context_coherence"):.1f}% |
 
 ## Detailed Problem Comparison
 
 """
-    
+
     for problem in problems:
-        display_name = problem.replace('_', ' ').title()
-        p3 = data.get('phase3', {}).get(problem, {})
-        p4 = data.get('phase4', {}).get(problem, {})
-        
+        display_name = problem.replace("_", " ").title()
+        p3 = data.get("phase3", {}).get(problem, {})
+        p4 = data.get("phase4", {}).get(problem, {})
+
         report += f"""### {display_name}
 
 | Metric | Phase 3 | Phase 4 | Delta |
 |--------|---------|---------|-------|
-| **Success** | {'✅' if p3.get('success') else '❌'} | {'✅' if p4.get('success') else '❌'} | - |
-| **Execution Time** | {p3.get('time_ms', 0):.1f}ms | {p4.get('time_ms', 0):.1f}ms | {calc_delta(p3.get('time_ms', 0), p4.get('time_ms', 0)):.1f}% |
-| **Goal Achievement** | {p3.get('goal_achievement', 0):.1f}% | {p4.get('goal_achievement', 0):.1f}% | {p4.get('goal_achievement', 0) - p3.get('goal_achievement', 0):+.1f}% |
-| **Constraint Satisfaction** | {p3.get('constraint_satisfaction', 0):.1f}% | {p4.get('constraint_satisfaction', 0):.1f}% | {p4.get('constraint_satisfaction', 0) - p3.get('constraint_satisfaction', 0):+.1f}% |
-| **Plan Quality** | {p3.get('plan_quality', 0):.1f}% | {p4.get('plan_quality', 0):.1f}% | {p4.get('plan_quality', 0) - p3.get('plan_quality', 0):+.1f}% |
-| **Context Coherence** | {p3.get('context_coherence', 0):.1f}% | {p4.get('context_coherence', 0):.1f}% | {p4.get('context_coherence', 0) - p3.get('context_coherence', 0):+.1f}% |
-| **Token Count** | {p3.get('tokens', 0)} | {p4.get('tokens', 0)} | {calc_delta(p3.get('tokens', 0), p4.get('tokens', 0)):.1f}% |
-| **LLM Calls** | {p3.get('llm_calls', 0)} | {p4.get('llm_calls', 0)} | {calc_delta(p3.get('llm_calls', 0), p4.get('llm_calls', 0)):.1f}% |
+| **Success** | {"✅" if p3.get("success") else "❌"} | {"✅" if p4.get("success") else "❌"} | - |
+| **Execution Time** | {p3.get("time_ms", 0):.1f}ms | {p4.get("time_ms", 0):.1f}ms | {calc_delta(p3.get("time_ms", 0), p4.get("time_ms", 0)):.1f}% |
+| **Goal Achievement** | {p3.get("goal_achievement", 0):.1f}% | {p4.get("goal_achievement", 0):.1f}% | {p4.get("goal_achievement", 0) - p3.get("goal_achievement", 0):+.1f}% |
+| **Constraint Satisfaction** | {p3.get("constraint_satisfaction", 0):.1f}% | {p4.get("constraint_satisfaction", 0):.1f}% | {p4.get("constraint_satisfaction", 0) - p3.get("constraint_satisfaction", 0):+.1f}% |
+| **Plan Quality** | {p3.get("plan_quality", 0):.1f}% | {p4.get("plan_quality", 0):.1f}% | {p4.get("plan_quality", 0) - p3.get("plan_quality", 0):+.1f}% |
+| **Context Coherence** | {p3.get("context_coherence", 0):.1f}% | {p4.get("context_coherence", 0):.1f}% | {p4.get("context_coherence", 0) - p3.get("context_coherence", 0):+.1f}% |
+| **Token Count** | {p3.get("tokens", 0)} | {p4.get("tokens", 0)} | {calc_delta(p3.get("tokens", 0), p4.get("tokens", 0)):.1f}% |
+| **LLM Calls** | {p3.get("llm_calls", 0)} | {p4.get("llm_calls", 0)} | {calc_delta(p3.get("llm_calls", 0), p4.get("llm_calls", 0)):.1f}% |
 
 """
-    
+
     report += """## Architecture Comparison
 
 ### Phase 3: Core Workflow (3 Agents)
@@ -113,22 +122,25 @@ def generate_markdown_report(data: Dict) -> str:
 - **Use Phase 3** for: Time-sensitive applications, resource-constrained environments, straightforward planning tasks
 - **Use Phase 4** for: Complex reasoning, high-stakes planning, applications requiring strong context awareness
 """
-    
+
     return report
+
 
 def calc_success_rate(phase_data: Dict, problems: List[str]) -> float:
     """Calculate success rate percentage."""
     if not phase_data:
         return 0.0
-    successes = sum(1 for p in problems if phase_data.get(p, {}).get('success', False))
+    successes = sum(1 for p in problems if phase_data.get(p, {}).get("success", False))
     return (successes / len(problems)) * 100
+
 
 def calc_avg_time(phase_data: Dict, problems: List[str]) -> float:
     """Calculate average execution time."""
     if not phase_data:
         return 0.0
-    times = [phase_data.get(p, {}).get('time_ms', 0) for p in problems]
+    times = [phase_data.get(p, {}).get("time_ms", 0) for p in problems]
     return sum(times) / len(times) if times else 0.0
+
 
 def calc_avg_metric(phase_data: Dict, problems: List[str], metric: str) -> float:
     """Calculate average for any metric."""
@@ -137,11 +149,13 @@ def calc_avg_metric(phase_data: Dict, problems: List[str], metric: str) -> float
     values = [phase_data.get(p, {}).get(metric, 0) for p in problems]
     return sum(values) / len(values) if values else 0.0
 
+
 def calc_improvement(baseline: float, new: float) -> float:
     """Calculate percentage improvement."""
     if baseline == 0:
         return 0.0
     return ((baseline - new) / baseline) * 100
+
 
 def calc_delta(baseline: float, new: float) -> float:
     """Calculate percentage delta."""
@@ -149,23 +163,26 @@ def calc_delta(baseline: float, new: float) -> float:
         return 0.0
     return ((new - baseline) / baseline) * 100
 
-if __name__ == '__main__':
-    db_path = Path(__file__).parent.parent / 'results' / 'benchmarks.db'
-    
+
+if __name__ == "__main__":
+    db_path = Path(__file__).parent.parent / "results" / "benchmarks.db"
+
     if not db_path.exists():
         print(f"ERROR: Database not found at {db_path}")
         exit(1)
-    
+
     print("Loading benchmark data from database...")
     data = load_benchmark_data(str(db_path))
-    
-    print(f"Generating comparison report...")
+
+    print("Generating comparison report...")
     report = generate_markdown_report(data)
-    
-    output_path = Path(__file__).parent.parent / 'results' / 'BENCHMARK_COMPARISON_REPORT.md'
+
+    output_path = (
+        Path(__file__).parent.parent / "results" / "BENCHMARK_COMPARISON_REPORT.md"
+    )
     output_path.write_text(report)
-    
+
     print(f"✅ Report saved to: {output_path}")
-    print(f"\nPreview:")
+    print("\nPreview:")
     print("=" * 80)
     print(report[:1000] + "...")

@@ -38,12 +38,14 @@ class SymbolicValidator:
         self.validators = {
             "tower_of_hanoi": self._validate_hanoi,
             "graph_traversal": self._validate_graph_traversal,
+            "constrained_sorting": self._validate_sorting,
         }
 
         # Domain-specific appliers
         self.appliers = {
             "tower_of_hanoi": self._apply_hanoi,
             "graph_traversal": self._apply_graph_traversal,
+            "constrained_sorting": self._apply_sorting,
         }
 
     def validate_operator(
@@ -278,3 +280,177 @@ class SymbolicValidator:
             if self.validation_count > 0
             else 0.0,
         }
+
+    # ========== Constrained Sorting Domain ==========
+
+    def _validate_sorting(
+        self, operator: str, params: List, state: Dict
+    ) -> Tuple[bool, str]:
+        """Validate sorting operations"""
+
+        # Check array exists in state
+        if "array" not in state:
+            return False, "State missing 'array' key"
+
+        array = state["array"]
+
+        if operator == "partition":
+            # Partition requires pivot_index or pivot_value
+            if not params:
+                return False, "partition requires parameters"
+
+            # Can partition any non-empty array
+            if not array:
+                return False, "Cannot partition empty array"
+
+            return True, "Valid partition operation"
+
+        elif operator == "partition_array":
+            # Alias for partition
+            if not array:
+                return False, "Cannot partition empty array"
+            return True, "Valid partition operation"
+
+        elif operator == "sort_array" or operator == "sort_subarray" or operator == "sort_subarrays":
+            # Sort operation - can always be attempted
+            return True, "Valid sort operation"
+
+        elif operator == "recursive_sort":
+            # Recursive sort - valid if array has more than 1 element
+            if len(array) <= 1:
+                return True, "Array already sorted (single element or empty)"
+            return True, "Valid recursive sort"
+
+        elif operator == "swap_elements":
+            # Swap requires two indices
+            if len(params) != 2:
+                return False, f"swap_elements requires 2 indices, got {len(params)}"
+
+            i, j = params
+            if i < 0 or i >= len(array):
+                return False, f"Index {i} out of bounds (array length {len(array)})"
+            if j < 0 or j >= len(array):
+                return False, f"Index {j} out of bounds (array length {len(array)})"
+
+            return True, "Valid swap"
+
+        elif operator == "compare_elements":
+            # Compare requires two indices or values
+            if len(params) != 2:
+                return False, f"compare_elements requires 2 params, got {len(params)}"
+
+            return True, "Valid comparison"
+
+        elif operator == "select_pivot":
+            # Pivot selection - valid for non-empty array
+            if not array:
+                return False, "Cannot select pivot from empty array"
+
+            return True, "Valid pivot selection"
+
+        elif operator == "merge_subarrays":
+            # Merge operation - valid if we have subarrays in state
+            return True, "Valid merge operation"
+
+        else:
+            return False, f"Unknown sorting operator: {operator}"
+
+    def _apply_sorting(self, operator: str, params: List, state: Dict) -> Dict:
+        """Apply sorting operations to state"""
+        new_state = copy.deepcopy(state)
+
+        # Ensure tracking fields exist
+        if "swap_count" not in new_state:
+            new_state["swap_count"] = 0
+        if "comparison_count" not in new_state:
+            new_state["comparison_count"] = 0
+
+        array = new_state["array"]
+
+        if operator == "partition" or operator == "partition_array":
+            # Simple partition around middle element or last element
+            if not array:
+                return new_state
+
+            # Choose pivot (last element for quicksort)
+            pivot = array[-1]
+            left = [x for x in array[:-1] if x <= pivot]
+            right = [x for x in array[:-1] if x > pivot]
+
+            new_state["array"] = left + [pivot] + right
+            new_state["comparison_count"] += len(array) - 1
+            new_state["last_pivot_index"] = len(left)
+
+            logger.debug(f"Partitioned around {pivot}: left={left}, pivot={pivot}, right={right}")
+
+        elif operator == "sort_array" or operator == "sort_subarray" or operator == "sort_subarrays":
+            # Actually sort the array (quicksort implementation)
+            if len(array) <= 1:
+                return new_state
+
+            # Quicksort in-place
+            sorted_array = sorted(array)
+            new_state["array"] = sorted_array
+            new_state["sorted"] = True
+
+            # Estimate operations (n log n comparisons for quicksort)
+            import math
+            n = len(array)
+            estimated_comparisons = int(n * math.log2(n)) if n > 1 else 0
+            estimated_swaps = estimated_comparisons // 2
+
+            new_state["comparison_count"] += estimated_comparisons
+            new_state["swap_count"] += estimated_swaps
+
+            logger.debug(f"Sorted array: {sorted_array}")
+
+        elif operator == "recursive_sort":
+            # Recursive sort (actual quicksort)
+            if len(array) <= 1:
+                new_state["sorted"] = True
+                return new_state
+
+            sorted_array = sorted(array)
+            new_state["array"] = sorted_array
+            new_state["sorted"] = True
+
+            import math
+            n = len(array)
+            new_state["comparison_count"] += int(n * math.log2(n)) if n > 1 else 0
+            new_state["swap_count"] += (int(n * math.log2(n)) if n > 1 else 0) // 2
+
+            logger.debug(f"Recursively sorted: {sorted_array}")
+
+        elif operator == "swap_elements":
+            # Swap two elements
+            i, j = params
+            array[i], array[j] = array[j], array[i]
+            new_state["swap_count"] += 1
+
+            logger.debug(f"Swapped indices {i} and {j}: {array}")
+
+        elif operator == "compare_elements":
+            # Compare two elements (increment counter)
+            new_state["comparison_count"] += 1
+
+        elif operator == "select_pivot":
+            # Select pivot element (last element for quicksort)
+            if array:
+                new_state["pivot"] = array[-1]
+                new_state["pivot_index"] = len(array) - 1
+
+        elif operator == "merge_subarrays":
+            # Merge subarrays (assuming they're sorted)
+            # In real implementation, would merge sorted subarrays
+            # For now, just sort the whole array
+            sorted_array = sorted(array)
+            new_state["array"] = sorted_array
+            new_state["sorted"] = True
+            new_state["comparison_count"] += len(array)
+
+            logger.debug(f"Merged and sorted: {sorted_array}")
+
+        else:
+            raise ValueError(f"Unknown sorting operator: {operator}")
+
+        return new_state

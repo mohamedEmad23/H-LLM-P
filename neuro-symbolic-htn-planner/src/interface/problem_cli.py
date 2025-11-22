@@ -203,7 +203,9 @@ class SystemPhaseDetector:
             "phase_5": cls.can_import("src.planning.domain_mapper"),
             "phase_4": cls.can_import("src.agents.verification_agent"),
             "phase_3": cls.can_import("src.agents.coordinator"),
-            "phase_1": cls.can_import("src.llm.groq_client"),  # Phase 1 just needs LLM client
+            "phase_1": cls.can_import(
+                "src.llm.groq_client"
+            ),  # Phase 1 just needs LLM client
         }
 
     @classmethod
@@ -407,7 +409,7 @@ class ProblemCLI:
         print("\n[Phase 5] Full integration with domain mapper in progress...")
         print("Falling back to Phase 4 strategic planning for demonstration...")
         self._solve_phase_4(problem)
-    
+
     def _solve_phase_4(self, problem: Problem) -> None:
         """Solve using Phase 4 (Strategic Multi-Agent with Verification).
 
@@ -417,15 +419,15 @@ class ProblemCLI:
         print("\n[Phase 4] Strategic Multi-Agent HTN Planning")
         print(f"Problem: {problem.problem_type}")
         print(f"Primary Task: {problem.domain_hints['primary_task']}")
-        
+
         try:
             from .phase4_executor import Phase4Executor
             import asyncio
-            
+
             # Execute using Phase 4 strategic multi-agent architecture
             executor = Phase4Executor()
             result = asyncio.run(executor.execute(problem))
-            
+
             if result["success"]:
                 print("\n" + "=" * 60)
                 print("✓ Phase 4 execution completed successfully")
@@ -434,7 +436,7 @@ class ProblemCLI:
                 print("=" * 60)
             else:
                 print(f"\n❌ Phase 4 execution failed: {result.get('error')}")
-                
+
         except ImportError as e:
             print(f"\n⚠️  Phase 4 executor not available: {e}")
             print("Falling back to Phase 3 planning...")
@@ -449,15 +451,15 @@ class ProblemCLI:
         print("\n[Phase 3] Multi-Agent HTN Planning")
         print(f"Problem: {problem.problem_type}")
         print(f"Primary Task: {problem.domain_hints['primary_task']}")
-        
+
         try:
             from .phase3_executor import Phase3Executor
             import asyncio
-            
+
             # Execute using Phase 3 multi-agent architecture
             executor = Phase3Executor()
             result = asyncio.run(executor.execute(problem))
-            
+
             if result["success"]:
                 print("\n" + "=" * 60)
                 print("✓ Phase 3 execution completed successfully")
@@ -466,7 +468,7 @@ class ProblemCLI:
                 print("=" * 60)
             else:
                 print(f"\n❌ Phase 3 execution failed: {result.get('error')}")
-                
+
         except ImportError as e:
             print(f"\n⚠️  Phase 3 executor not available: {e}")
             print("Falling back to Phase 1 planning...")

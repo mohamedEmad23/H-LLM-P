@@ -55,7 +55,7 @@ The system MUST execute problems using multi-agent coordinator.
 **And** agent communication is tracked in KPI 4
 **And** results are saved to `results/phase-3-traces/`
 
-### Requirement: Phase 4 Execution  
+### Requirement: Phase 4 Execution
 The system MUST execute problems using strategic multi-agent workflow.
 
 #### Scenario: Execute problem with Phase 4

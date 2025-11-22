@@ -23,6 +23,13 @@ Idea-Vault/
 # neuro-symbolic-htn-planner/docs/  # Re-enabled - needed for repo
 # neuro-symbolic-htn-planner/results/  # Re-enabled - needed for repo
 # neuro-symbolic-htn-planner/tests/  # Re-enabled - needed for repo
+B.Sc-Thesis-Construction/
+research-papers/
+HTN___Example/
+Journal-Construction/
+research-knowledge-base/
+conversion_errors.log
+Thesis-Resources/
 
 # ============================================
 # PYTHON

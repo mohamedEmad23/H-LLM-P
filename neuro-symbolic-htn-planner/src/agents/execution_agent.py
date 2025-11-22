@@ -148,15 +148,17 @@ class ExecutionAgent(BaseAgent):
 
             if new_state is None:
                 # No symbolic applier - simulate successful execution for benchmarking
-                logger.warning(f"No symbolic applier for {operator}, simulating execution")
+                logger.warning(
+                    f"No symbolic applier for {operator}, simulating execution"
+                )
                 new_state = copy.deepcopy(current_state)
                 # Mark that operator was executed symbolically
-                new_state["_executed_operators"] = new_state.get("_executed_operators", [])
-                new_state["_executed_operators"].append({
-                    "operator": operator,
-                    "params": params,
-                    "simulated": True
-                })
+                new_state["_executed_operators"] = new_state.get(
+                    "_executed_operators", []
+                )
+                new_state["_executed_operators"].append(
+                    {"operator": operator, "params": params, "simulated": True}
+                )
 
             # Record trace
             execution_trace.append(
