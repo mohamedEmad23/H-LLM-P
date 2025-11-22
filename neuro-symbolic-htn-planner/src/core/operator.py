@@ -1,59 +1,291 @@
-# Practical Framework for Implementing an HTN Planner Using LLMs
+"""
+Operator Module
 
-## Tools and Technologies
+This module defines operators (primitive actions) for the HTN planner.
+Operators represent actions that can be directly executed in the world,
+with preconditions and effects specified in STRIPS-style.
 
-1. **Programming Language: Python**
-   - Python is widely used for AI and planning tasks due to its extensive libraries and community support.
+Author: H-LLM-P Project
+Phase: 1 - Foundation (CoT + RAG)
+"""
 
-2. **HTN Planning Libraries:**
-   - **PyHop**: A simple HTN planner that can be extended for your needs. It is open-source and easy to integrate.
-   - **SHOP2**: Another HTN planner that is more advanced and can handle more complex planning tasks.
+from typing import Set, Callable, Any, Optional, Dict
+from dataclasses import dataclass, field
+from loguru import logger
 
-3. **Large Language Models (LLMs):**
-   - **Hugging Face Transformers**: Use pre-trained models available for free. You can fine-tune models like GPT-2 or BERT for your specific planning tasks.
-   - **OpenAI GPT-2**: Available for local installation and can be used without API costs.
+from .state_manager import State
 
-4. **Natural Language Processing Libraries:**
-   - **spaCy**: For text processing and parsing LLM responses.
-   - **NLTK**: Another option for natural language processing tasks.
 
-5. **Data Storage:**
-   - **SQLite**: A lightweight database for storing task definitions and planning methods.
-   - **JSON Files**: For simple storage of task definitions and configurations.
+@dataclass
+class Operator:
+    """
+    Defines the behavior of a primitive task.
 
-6. **Development Environment:**
-   - **Jupyter Notebook**: For prototyping and testing your HTN planner interactively.
-   - **VS Code**: A versatile code editor for developing your application.
+    An operator specifies:
+    - Preconditions: What must be true before execution
+    - Add effects: What becomes true after execution
+    - Delete effects: What becomes false after execution
+    - Executor: Python function that performs the actual action
 
-7. **Testing Framework:**
-   - **pytest**: For unit testing your HTN planner and ensuring the correctness of your implementation.
+    Example:
+        Operator(
+            name="pick_up",
+            preconditions={"at(robot, ?loc)", "at(?obj, ?loc)", "empty(robot_hand)"},
+            add_effects={"holding(robot, ?obj)"},
+            delete_effects={"at(?obj, ?loc)", "empty(robot_hand)"},
+            executor=lambda state, params: print(f"Picking up {params['obj']}")
+        )
 
-8. **Visualization Tools:**
-   - **Matplotlib**: For visualizing planning processes and results.
-   - **Graphviz**: For visualizing task networks and hierarchies.
+    Attributes:
+        name: Unique identifier for this operator
+        preconditions: Set of predicates that must hold before execution
+        add_effects: Set of predicates that become true after execution
+        delete_effects: Set of predicates that become false after execution
+        executor: Callable that simulates/executes the action
+        cost: Optional cost metric for plan optimization
+        duration: Optional duration for temporal planning
+    """
 
-## Optional Paid Tools (Low Priority)
+    name: str
+    preconditions: Set[str] = field(default_factory=set)
+    add_effects: Set[str] = field(default_factory=set)
+    delete_effects: Set[str] = field(default_factory=set)
+    executor: Optional[Callable] = field(default=None, repr=False)
+    cost: float = 1.0
+    duration: float = 1.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-1. **OpenAI API**: For accessing more advanced LLMs like GPT-3 or GPT-4. This requires an API key and incurs costs based on usage.
-2. **Google Cloud AI**: Offers various AI services, including LLMs, but also requires payment.
+    def __post_init__(self):
+        """Validate operator definition"""
+        # Ensure all fields are sets
+        if not isinstance(self.preconditions, set):
+            self.preconditions = set(self.preconditions)
+        if not isinstance(self.add_effects, set):
+            self.add_effects = set(self.add_effects)
+        if not isinstance(self.delete_effects, set):
+            self.delete_effects = set(self.delete_effects)
 
-## Implementation Steps
+        # Normalize predicates (remove extra whitespace)
+        self.preconditions = {p.strip() for p in self.preconditions if p.strip()}
+        self.add_effects = {p.strip() for p in self.add_effects if p.strip()}
+        self.delete_effects = {p.strip() for p in self.delete_effects if p.strip()}
 
-1. Set up your Python environment and install necessary libraries:
-   - pip install pyhop spacy nltk transformers matplotlib graphviz pytest
+        # Validation: Check for conflicts
+        conflict = self.add_effects & self.delete_effects
+        if conflict:
+            logger.warning(
+                f"Operator '{self.name}' has conflicting effects: {conflict}. "
+                "Add effects take precedence."
+            )
 
-2. Define your HTN planning domain using PyHop or SHOP2.
+    def is_applicable(self, state: State) -> bool:
+        """
+        Check if all preconditions are satisfied in the given state.
 
-3. Integrate the LLM for generating task decompositions:
-   - Use Hugging Face Transformers to load a pre-trained model.
-   - Implement the `LLM_Generate_Method` function to interact with the LLM.
+        Args:
+            state: The current world state
 
-4. Create a knowledge gap detector to identify when to query the LLM.
+        Returns:
+            True if the operator can be executed, False otherwise
+        """
+        return state.holds_all(self.preconditions)
 
-5. Implement the verifier task mechanism to ensure soundness.
+    def apply(self, state: State, parameters: Optional[Dict[str, Any]] = None) -> State:
+        """
+        Execute the operator and return the resulting state.
 
-6. Test your implementation using pytest to validate the planning process.
+        Args:
+            state: The current world state
+            parameters: Optional parameters for ground instantiation
 
-7. Visualize task networks and planning results using Matplotlib and Graphviz.
+        Returns:
+            The new state after applying effects
 
-By following this framework, you can effectively implement an HTN planner that leverages the capabilities of LLMs while minimizing costs.
+        Raises:
+            ValueError: If preconditions are not satisfied
+        """
+        if not self.is_applicable(state):
+            missing = self.preconditions - state.predicates
+            raise ValueError(
+                f"Operator '{self.name}' not applicable. "
+                f"Missing preconditions: {missing}"
+            )
+
+        # Apply effects to create new state
+        new_state = state.apply_effects(self.add_effects, self.delete_effects)
+
+        logger.info(f"✓ Executed operator: {self.name}")
+        logger.debug(f"  Added: {self.add_effects}")
+        logger.debug(f"  Deleted: {self.delete_effects}")
+
+        return new_state
+
+    def execute(
+        self, state: State, parameters: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        """
+        Execute the actual action in the world (simulation).
+
+        This calls the executor function if provided, which can perform
+        side effects like controlling a robot or updating external systems.
+
+        Args:
+            state: The current world state
+            parameters: Parameters for the action
+
+        Returns:
+            True if execution succeeded, False otherwise
+        """
+        if self.executor is None:
+            logger.warning(f"No executor defined for operator '{self.name}'")
+            return True  # Assume success if no executor
+
+        try:
+            params = parameters or {}
+            result = self.executor(state, params)
+
+            # If executor returns bool, use that; otherwise assume success
+            success = result if isinstance(result, bool) else True
+
+            if success:
+                logger.info(f"✓ Executed '{self.name}' successfully")
+            else:
+                logger.error(f"✗ Execution of '{self.name}' failed")
+
+            return success
+
+        except Exception as e:
+            logger.error(f"✗ Exception during execution of '{self.name}': {e}")
+            return False
+
+    def to_natural_language(self) -> str:
+        """
+        Convert operator to human-readable description.
+        Useful for LLM prompts and documentation.
+
+        Returns:
+            Natural language description of the operator
+        """
+        desc = f"Action: {self.name.replace('_', ' ')}\n"
+
+        if self.preconditions:
+            desc += "  Requires:\n"
+            for pre in sorted(self.preconditions):
+                desc += f"    - {pre}\n"
+
+        if self.add_effects:
+            desc += "  Effects (added):\n"
+            for eff in sorted(self.add_effects):
+                desc += f"    + {eff}\n"
+
+        if self.delete_effects:
+            desc += "  Effects (removed):\n"
+            for eff in sorted(self.delete_effects):
+                desc += f"    - {eff}\n"
+
+        return desc.strip()
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert operator to dictionary for serialization"""
+        return {
+            "name": self.name,
+            "preconditions": list(self.preconditions),
+            "add_effects": list(self.add_effects),
+            "delete_effects": list(self.delete_effects),
+            "cost": self.cost,
+            "duration": self.duration,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Operator":
+        """Create an Operator from a dictionary"""
+        return cls(
+            name=data["name"],
+            preconditions=set(data.get("preconditions", [])),
+            add_effects=set(data.get("add_effects", [])),
+            delete_effects=set(data.get("delete_effects", [])),
+            cost=data.get("cost", 1.0),
+            duration=data.get("duration", 1.0),
+            metadata=data.get("metadata", {}),
+        )
+
+    def __repr__(self) -> str:
+        """String representation for debugging"""
+        return f"Operator(name={self.name}, preconditions={len(self.preconditions)}, effects={len(self.add_effects) + len(self.delete_effects)})"
+
+
+class OperatorLibrary:
+    """
+    Manages a collection of operators for a planning domain.
+    Provides registration, lookup, and validation utilities.
+    """
+
+    def __init__(self):
+        self.operators: Dict[str, Operator] = {}
+
+    def register(self, operator: Operator) -> None:
+        """
+        Register an operator in the library.
+
+        Args:
+            operator: The operator to register
+        """
+        if operator.name in self.operators:
+            logger.warning(f"Overwriting existing operator: {operator.name}")
+
+        self.operators[operator.name] = operator
+        logger.debug(f"Registered operator: {operator.name}")
+
+    def get(self, name: str) -> Optional[Operator]:
+        """
+        Retrieve an operator by name.
+
+        Args:
+            name: The operator name
+
+        Returns:
+            The operator if found, None otherwise
+        """
+        return self.operators.get(name)
+
+    def get_all(self) -> Dict[str, Operator]:
+        """Get all registered operators"""
+        return self.operators
+
+    def get_applicable_operators(self, state: State) -> list[Operator]:
+        """
+        Find all operators that can be executed in the given state.
+
+        Args:
+            state: The current world state
+
+        Returns:
+            List of applicable operators
+        """
+        return [op for op in self.operators.values() if op.is_applicable(state)]
+
+    def to_natural_language(self) -> str:
+        """
+        Convert all operators to natural language descriptions.
+        Useful for LLM prompts.
+
+        Returns:
+            Multi-line string describing all operators
+        """
+        if not self.operators:
+            return "No operators defined."
+
+        descriptions = []
+        for operator in sorted(self.operators.values(), key=lambda op: op.name):
+            descriptions.append(operator.to_natural_language())
+
+        return "\n\n".join(descriptions)
+
+    def __len__(self) -> int:
+        """Return the number of registered operators"""
+        return len(self.operators)
+
+    def __contains__(self, name: str) -> bool:
+        """Check if an operator is registered"""
+        return name in self.operators

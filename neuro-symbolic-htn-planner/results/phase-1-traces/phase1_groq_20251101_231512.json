@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-01T23:15:12.061111",
+    "total_executions": 5
+  },
+  "executions": [
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 1: Incomplete Graph",
+      "start_time": 1762031710.5117657,
+      "end_time": 1762031711.0473654,
+      "llm_calls": [
+        {
+          "timestamp": 1762031711.0473568,
+          "agent": "SingleLLM",
+          "provider": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "You are solving a shortest path problem.\n\nCurrent State:\n- You are at node A\n- Goal: Reach node D, passing through node B\n- Known edges: A->B (cost 4), C->D (cost 5), A->C (cost 15)\n- Unknown edge: B->C (weight unknown)\n\nTask: Find the shortest path from A to D passing through B.\n\nThink step by step. What actions do you take? What is the challenge?",
+          "response": "",
+          "latency_ms": 535.5653762817383,
+          "tokens_used": 0,
+          "success": false,
+          "error": "[groq] Groq error: Error code: 403 - {'error': {'message': 'Access denied. Please check your network settings.'}}"
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 2: Constrained Hanoi",
+      "start_time": 1762031711.0473971,
+      "end_time": 1762031711.320578,
+      "llm_calls": [
+        {
+          "timestamp": 1762031711.3205712,
+          "agent": "SingleLLM",
+          "provider": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "Solve Tower of Hanoi: Move 3 disks from peg A to peg C.\n\nCONSTRAINT: Disk 3 (largest) CANNOT use peg B (it's fragile and will break).\n\nWhat sequence of moves do you make? Explain your strategy.",
+          "response": "",
+          "latency_ms": 273.1587886810303,
+          "tokens_used": 0,
+          "success": false,
+          "error": "[groq] Groq error: Error code: 403 - {'error': {'message': 'Access denied. Please check your network settings.'}}"
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 3: Probabilistic Graph",
+      "start_time": 1762031711.3206043,
+      "end_time": 1762031711.5459127,
+      "llm_calls": [
+        {
+          "timestamp": 1762031711.545908,
+          "agent": "SingleLLM",
+          "provider": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "Choose the best path to minimize expected travel time:\n\nPath A (Safe): 30 minutes guaranteed\nPath B (Risky): 50% chance of 10 minutes, 50% chance of 40 minutes\n\nWhich path should you choose? Show your calculation.",
+          "response": "",
+          "latency_ms": 225.28791427612305,
+          "tokens_used": 0,
+          "success": false,
+          "error": "[groq] Groq error: Error code: 403 - {'error': {'message': 'Access denied. Please check your network settings.'}}"
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 4: Hybrid Puzzle",
+      "start_time": 1762031711.545951,
+      "end_time": 1762031711.804589,
+      "llm_calls": [
+        {
+          "timestamp": 1762031711.8045847,
+          "agent": "SingleLLM",
+          "provider": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "Hybrid planning problem:\n\nSetup:\n- 2 disks on peg A, goal is to move them to peg C\n- BUT peg C is LOCKED\n- To unlock C, you must solve: Navigate graph N1->N2->N3 (each step costs 5)\n\nWhat is your strategy? What do you do first?",
+          "response": "",
+          "latency_ms": 258.6171627044678,
+          "tokens_used": 0,
+          "success": false,
+          "error": "[groq] Groq error: Error code: 403 - {'error': {'message': 'Access denied. Please check your network settings.'}}"
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 5: K-Peg Hanoi",
+      "start_time": 1762031711.8046157,
+      "end_time": 1762031712.0609608,
+      "llm_calls": [
+        {
+          "timestamp": 1762031712.0609562,
+          "agent": "SingleLLM",
+          "provider": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "prompt": "Tower of Hanoi variant:\n\n- 5 disks to move from peg A to peg D\n- You have 4 pegs available (not just 3!)\n- Standard 3-peg algorithm requires 31 moves\n- There exists a more efficient algorithm for 4+ pegs\n\nQuestion: Do you know of a better algorithm for this case? If so, what is it?",
+          "response": "",
+          "latency_ms": 256.32667541503906,
+          "tokens_used": 0,
+          "success": false,
+          "error": "[groq] Groq error: Error code: 403 - {'error': {'message': 'Access denied. Please check your network settings.'}}"
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    }
+  ]
+}

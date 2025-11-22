@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-01T23:01:31.078838",
+    "total_executions": 5
+  },
+  "executions": [
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 1: Incomplete Graph",
+      "start_time": 1762030838.741467,
+      "end_time": 1762030852.361823,
+      "llm_calls": [
+        {
+          "timestamp": 1762030852.36177,
+          "agent": "SingleLLM",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "prompt": "You are solving a shortest path problem.\n\nCurrent State:\n- You are at node A\n- Goal: Reach node D, passing through node B\n- Known edges: A\u2192B (cost 4), C\u2192D (cost 5), A\u2192C (cost 15)\n- Unknown edge: B\u2192C (weight unknown)\n\nTask: Find the shortest path from A to D passing through B.\n\nThink step by step. What actions do you take? What's the challenge?",
+          "response": "Okay, let's break this down step by step.\n\n**1. Understand the Goal and Constraint:**\n*   **Goal:** Find the shortest path from A to D.\n*   **Constraint:** The path *must* pass through node B.\n\n**2. Analyze the Required Path Structure:**\nBecause we *must* pass through B, the path will look like:\nA \u2192 ... (some path) ... \u2192 B \u2192 ... (some path) ... \u2192 D\n\n**3. Evaluate the Path Segment from A to B:**\n*   Known edge: A\u2192B (cost 4)\n*   Are there any other ways to get from A to B?\n    *   A\u2192C (cost 15). F",
+          "latency_ms": 13620.23639678955,
+          "tokens_used": 772,
+          "success": true,
+          "error": null
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": {
+        "timestamp": 1762030852.3618138,
+        "phase": "phase1",
+        "problem": "Problem 1: Incomplete Graph",
+        "failure_point": "knowledge_gap",
+        "root_cause": "Identified unknown edge but no tool to research it",
+        "missing_capability": "Modular tool-calling architecture",
+        "recovery_attempted": false
+      },
+      "success": false,
+      "quality_score": 20,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 2: Constrained Hanoi",
+      "start_time": 1762030852.3618302,
+      "end_time": 1762030863.494467,
+      "llm_calls": [
+        {
+          "timestamp": 1762030863.4944463,
+          "agent": "SingleLLM",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "prompt": "Solve Tower of Hanoi: Move 3 disks from peg A to peg C.\n\nCONSTRAINT: Disk 3 (largest) CANNOT use peg B (it's fragile and will break).\n\nWhat sequence of moves do you make? Explain your strategy.",
+          "response": "This is a classic Tower of Hanoi problem with a specific constraint. Let's break it down.\n\n**Understanding the Disks:**\n*   Let D1 be the smallest disk.\n*   Let D2 be the medium disk.\n*   Let D3 be the largest disk.\n\n**Understanding the Pegs:**\n*   Peg A: Source\n*   Peg B: Auxiliary (fragile for D3)\n*   Peg C: Destination\n\n**The Constraint:** Disk 3 (D3, the largest) CANNOT use Peg B. This means D3 can only move between Peg A and Peg C.\n\n---\n\n**Strategy:**\n\nThe core strategy for the Tower of Han",
+          "latency_ms": 11132.575511932373,
+          "tokens_used": 473,
+          "success": true,
+          "error": null
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": {
+        "timestamp": 1762030863.4944596,
+        "phase": "phase1",
+        "problem": "Problem 2: Constrained Hanoi",
+        "failure_point": "constraint_violation",
+        "root_cause": "Violated constraint: disk 3 on fragile peg B",
+        "missing_capability": "Constraint-aware planning",
+        "recovery_attempted": false
+      },
+      "success": false,
+      "quality_score": 0,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 3: Probabilistic Graph",
+      "start_time": 1762030863.494474,
+      "end_time": 1762030869.1643443,
+      "llm_calls": [
+        {
+          "timestamp": 1762030869.1643305,
+          "agent": "SingleLLM",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "prompt": "Choose the best path to minimize expected travel time:\n\nPath A (Safe): 30 minutes guaranteed\nPath B (Risky): 50% chance of 10 minutes, 50% chance of 40 minutes\n\nWhich path should you choose? Show your calculation.",
+          "response": "To minimize expected travel time, we need to calculate the expected travel time for each path.\n\n**Path A (Safe):**\n*   Travel time: 30 minutes\n*   Probability: 100% (guaranteed)\n*   **Expected Travel Time for Path A:** 30 minutes * 1.00 = **30 minutes**\n\n**Path B (Risky):**\n*   Outcome 1: 10 minutes with a 50% chance (0.50)\n*   Outcome 2: 40 minutes with a 50% chance (0.50)\n*   **Expected Travel Time for Path B:**\n    (10 minutes * 0.50) + (40 minutes * 0.50)\n    = 5 minutes + 20 minutes\n    = *",
+          "latency_ms": 5669.832944869995,
+          "tokens_used": 176,
+          "success": true,
+          "error": null
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": true,
+      "quality_score": 80,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 4: Hybrid Puzzle",
+      "start_time": 1762030869.1643503,
+      "end_time": 1762030878.0966458,
+      "llm_calls": [
+        {
+          "timestamp": 1762030878.0966237,
+          "agent": "SingleLLM",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "prompt": "Hybrid planning problem:\n\nSetup:\n- 2 disks on peg A, goal is to move them to peg C\n- BUT peg C is LOCKED\n- To unlock C, you must solve: Navigate graph N1\u2192N2\u2192N3 (each step costs 5)\n\nWhat's your strategy? What do you do first?",
+          "response": "My strategy would be to **first unlock peg C**.\n\nHere's the breakdown of why and the subsequent steps:\n\n1.  **Unlock Peg C (Graph Navigation):**\n    *   **Action:** Navigate the graph N1 \u2192 N2 \u2192 N3.\n    *   **Reasoning:** Peg C is the ultimate destination for both disks. You cannot move any disk onto peg C while it's locked. Attempting to move disks first would only allow you to move the small disk from A to B, but then you'd be stuck as the large disk on A cannot move to C (locked) or B (occupie",
+          "latency_ms": 8932.218074798584,
+          "tokens_used": 328,
+          "success": true,
+          "error": null
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": null,
+      "success": true,
+      "quality_score": 30,
+      "total_cost": 0
+    },
+    {
+      "phase_id": "phase1",
+      "phase_name": "Phase 1: Single LLM",
+      "problem_name": "Problem 5: K-Peg Hanoi",
+      "start_time": 1762030878.0966535,
+      "end_time": 1762030891.0787296,
+      "llm_calls": [
+        {
+          "timestamp": 1762030891.0787106,
+          "agent": "SingleLLM",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "prompt": "Tower of Hanoi variant:\n\n- 5 disks to move from peg A to peg D\n- You have 4 pegs available (not just 3!)\n- Standard 3-peg algorithm requires 31 moves\n- There exists a more efficient algorithm for 4+ pegs\n\nQuestion: Do you know of a better algorithm for this case? If so, what is it?",
+          "response": "",
+          "latency_ms": 12982.03706741333,
+          "tokens_used": 0,
+          "success": true,
+          "error": null
+        }
+      ],
+      "agent_messages": [],
+      "htn_decompositions": [],
+      "state_transitions": [],
+      "failure_analysis": {
+        "timestamp": 1762030891.0787222,
+        "phase": "phase1",
+        "problem": "Problem 5: K-Peg Hanoi",
+        "failure_point": "no_algorithm_discovery",
+        "root_cause": "Unaware of Frame-Stewart algorithm for 4+ pegs",
+        "missing_capability": "Strategic synthesis & research",
+        "recovery_attempted": false
+      },
+      "success": false,
+      "quality_score": 20,
+      "total_cost": 0
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+[
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Failed at unknown edge",
+    "time": 3.600120544433594e-05,
+    "meta": {
+      "cost": 4
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": true,
+    "score": 80,
+    "details": "Cost: 17 (used research)",
+    "time": 3.9577484130859375e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 1: Incomplete Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": true,
+    "score": 100,
+    "details": "Optimal cost: 17",
+    "time": 2.8133392333984375e-05,
+    "meta": {
+      "cost": 17
+    }
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Error: HanoiOperators.move_disk() missing 1 required positional argument: 'to_peg'",
+    "time": 0.00013303756713867188,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: HanoiOperators.move_disk() missing 1 required positional argument: 'to_peg'",
+    "time": 0.00011920928955078125,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 2: Constrained Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: HanoiOperators.move_disk() missing 1 required positional argument: 'to_peg'",
+    "time": 0.00010991096496582031,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'ProbabilisticGraphState' object has no attribute 'goal_reached'",
+    "time": 0.00038123130798339844,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'ProbabilisticGraphState' object has no attribute 'goal_reached'",
+    "time": 0.0002727508544921875,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 3: Probabilistic Graph",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'ProbabilisticGraphState' object has no attribute 'goal_reached'",
+    "time": 0.0003104209899902344,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Failed: tried locked peg",
+    "time": 2.47955322265625e-05,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'HybridPuzzleState' object has no attribute 'goal_reached'",
+    "time": 0.0004723072052001953,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 4: Hybrid Puzzle",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'HybridPuzzleState' object has no attribute 'goal_reached'",
+    "time": 0.0004277229309082031,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 1",
+    "phase_id": "phase1",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'KPegHanoiState' object has no attribute 'goal_reached'",
+    "time": 0.0011630058288574219,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 3",
+    "phase_id": "phase3",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'KPegHanoiState' object has no attribute 'goal_reached'",
+    "time": 0.0010044574737548828,
+    "meta": {}
+  },
+  {
+    "problem": "Problem 5: K-Peg Hanoi",
+    "phase": "Phase 4B",
+    "phase_id": "phase4b",
+    "success": false,
+    "score": 0,
+    "details": "Error: 'KPegHanoiState' object has no attribute 'goal_reached'",
+    "time": 0.0005576610565185547,
+    "meta": {}
+  }
+]

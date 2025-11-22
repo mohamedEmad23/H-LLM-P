@@ -1,15 +1,35 @@
 # ============================================
 # THESIS DOCUMENTS (Requested)
 # ============================================
-Implementation-Outline.md
-Thesis-Report.md
+#PROGRESS.md
+#Implementation-Outline.md
+#Thesis-Report.md
+#STAGE1_COMPLETE.md
+#STAGE2_COMPLETE.md
+#QUICK_REFERENCE.md
+
 
 # ============================================
 # DEVELOPMENT FILES (Requested)
 # ============================================
 requirements-dev.txt
 setup.py
-tests/
+# AGENT-DEVELOPMENT-KIT/  # Re-enabled - needed for repo
+#test_core_components.py
+#test_htn_planner.py
+#test_simple_htn.py
+Idea-Vault/
+# neuro-symbolic-htn-planner/benchmarks/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/docs/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/results/  # Re-enabled - needed for repo
+# neuro-symbolic-htn-planner/tests/  # Re-enabled - needed for repo
+B.Sc-Thesis-Construction/
+research-papers/
+HTN___Example/
+Journal-Construction/
+research-knowledge-base/
+conversion_errors.log
+Thesis-Resources/
 
 # ============================================
 # PYTHON
@@ -135,7 +155,28 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
+
+# ============================================
+# GENERATED & CACHE FILES (Pre-commit hooks)
+# ============================================
+# Security reports
+bandit-report.json
+
+# Domain cache
+neuro-symbolic-htn-planner/cache/domains/
+cache/domains/
+
+# Generated artifacts
+*.tmp
+*.bak
 dmypy.json
+
+# ruff
+.ruff-cache/
+neuro-symbolic-htn-planner/.ruff-cache/
+
+# bandit
+bandit-report.json
 
 # Pyre type checker
 .pyre/
@@ -247,7 +288,7 @@ temp/
 
 # Output files
 output/
-results/
+#results/
 experiments/
 logs/
 execution_logs/
