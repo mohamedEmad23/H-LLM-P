@@ -1,8 +1,9 @@
 """
-ExecutionAgent - HTN Plan Execution with Hybrid Validation
+ExecutionAgent - HTN Plan Execution with Hybrid Validation & PANDA Integration
 
 Executes plan steps using fast symbolic validation (rule-based)
-with LLM fallback for edge cases.
+with LLM fallback for edge cases. Enhanced with PANDA plan parsing
+for hierarchical task network execution.
 """
 
 import asyncio
@@ -13,6 +14,7 @@ from loguru import logger
 
 from .base_agent import BaseAgent
 from .validators.symbolic_validator import SymbolicValidator
+from ..integrations.panda_plan_parser import PANDAPlanParser, ExecutionPlan
 
 
 class ExecutionAgent(BaseAgent):
@@ -32,7 +34,7 @@ class ExecutionAgent(BaseAgent):
         self, name: str = "ExecutionAgent", llm_client=None, config: dict = None
     ):
         """
-        Initialize ExecutionAgent
+        Initialize ExecutionAgent with PANDA integration
 
         Args:
             name: Agent name
@@ -43,6 +45,9 @@ class ExecutionAgent(BaseAgent):
 
         # Symbolic validator (primary validation)
         self.validator = SymbolicValidator()
+        
+        # PANDA plan parser for hierarchical plans
+        self.panda_parser = PANDAPlanParser()
 
         # Agent-specific config
         self.use_llm_fallback = config.get("use_llm_fallback", True) if config else True
@@ -57,6 +62,8 @@ class ExecutionAgent(BaseAgent):
             "validation_failures": 0,
             "llm_fallback_used": 0,
             "avg_execution_time_ms": 0.0,
+            "panda_plans_parsed": 0,
+            "hierarchical_plans_executed": 0,
         }
 
     async def process(self, input_data: Dict) -> Dict:
@@ -360,3 +367,130 @@ Keep your response concise (one line).
             else 0.0,
             "validator_stats": self.validator.get_statistics(),
         }
+    
+    # ========== PANDA Integration Methods ==========
+    
+    async def execute_panda_plan(self, input_data: Dict) -> Dict:
+        """
+        Execute hierarchical plan from PANDA planner
+        
+        Args:
+            input_data: {
+                "plan_file": "/path/to/panda_plan.txt",  # OR
+                "plan_text": "root\n-> find_path(...)\n...",  # OR
+                "plan": ExecutionPlan object,
+                "initial_state": {...},
+                "domain": "graph_traversal"
+            }
+        
+        Returns:
+            {
+                "success": bool,
+                "execution_trace": [...],
+                "final_state": {...},
+                "hierarchical_plan": ExecutionPlan,
+                "primitive_actions": [...],
+                "execution_time_ms": float
+            }
+        """
+        start_time = datetime.now()
+        
+        # Parse PANDA plan
+        if "plan" in input_data and isinstance(input_data["plan"], ExecutionPlan):
+            # Already parsed
+            execution_plan = input_data["plan"]
+        elif "plan_file" in input_data:
+            # Parse from file
+            execution_plan = self.panda_parser.parse_file(input_data["plan_file"])
+            self.stats["panda_plans_parsed"] += 1
+        elif "plan_text" in input_data:
+            # Parse from text
+            execution_plan = self.panda_parser.parse_text(input_data["plan_text"])
+            self.stats["panda_plans_parsed"] += 1
+        else:
+            return {
+                "success": False,
+                "error": "No plan provided (need plan_file, plan_text, or plan object)",
+                "agent": self.name
+            }
+        
+        logger.info(
+            f"[PANDA] Executing hierarchical plan: {len(execution_plan.steps)} total steps, "
+            f"{len(execution_plan.primitive_actions)} primitive actions"
+        )
+        
+        # Extract primitive action sequence
+        primitive_actions = self.panda_parser.extract_action_sequence(execution_plan)
+        
+        # Execute primitive actions using existing execution logic
+        execution_result = await self.process({
+            "plan": primitive_actions,
+            "initial_state": input_data["initial_state"],
+            "domain": input_data.get("domain", "unknown")
+        })
+        
+        if execution_result["success"]:
+            self.stats["hierarchical_plans_executed"] += 1
+        
+        # Add hierarchical information
+        execution_result["hierarchical_plan"] = self.panda_parser.to_dict(execution_plan)
+        execution_result["primitive_actions"] = primitive_actions
+        execution_result["decomposition_tree"] = execution_plan.hierarchy
+        execution_result["processing_time_ms"] = (datetime.now() - start_time).total_seconds() * 1000
+        
+        logger.info(
+            f"[PANDA] Execution {'succeeded' if execution_result['success'] else 'failed'} "
+            f"in {execution_result['processing_time_ms']:.1f}ms"
+        )
+        
+        return execution_result
+    
+    async def execute_panda_plan_from_wrapper(self, panda_plan_result, initial_state: Dict, domain: str) -> Dict:
+        """
+        Execute plan from PANDAWrapper.plan() result
+        
+        Args:
+            panda_plan_result: PlannerResult object from PANDAWrapper
+            initial_state: Initial world state
+            domain: Domain name
+        
+        Returns:
+            Execution result dict
+        """
+        from ..integrations.panda_wrapper import PlannerResult
+        
+        if not panda_plan_result.success:
+            return {
+                "success": False,
+                "error": f"PANDA planning failed: {panda_plan_result.error}",
+                "agent": self.name
+            }
+        
+        # Convert PANDA actions to execution format
+        action_sequence = [
+            f"{action['name']}({', '.join(action['parameters'])})"
+            for action in panda_plan_result.actions
+        ]
+        
+        logger.info(
+            f"[PANDA] Executing plan: {panda_plan_result.plan_length} steps, "
+            f"{panda_plan_result.search_time_ms:.1f}ms search time, "
+            f"{panda_plan_result.nodes_expanded} nodes expanded"
+        )
+        
+        # Execute using standard execution
+        execution_result = await self.process({
+            "plan": action_sequence,
+            "initial_state": initial_state,
+            "domain": domain
+        })
+        
+        # Add PANDA statistics
+        execution_result["panda_stats"] = {
+            "search_time_ms": panda_plan_result.search_time_ms,
+            "nodes_expanded": panda_plan_result.nodes_expanded,
+            "plan_length": panda_plan_result.plan_length
+        }
+        
+        return execution_result
+

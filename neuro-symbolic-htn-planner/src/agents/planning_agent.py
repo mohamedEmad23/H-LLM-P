@@ -201,16 +201,31 @@ Generate {self.max_strategies} alternative strategies, evaluate them, and recomm
 
         return system_prompt, user_prompt
 
-    def _format_state(self, state: Dict) -> str:
-        """Format state dict for prompt"""
+    def _format_state(self, state) -> str:
+        """Format state for prompt - handles dict, State dict format, or string"""
         if not state:
             return "Not specified"
-
-        lines = []
-        for key, value in state.items():
-            lines.append(f"  {key}: {value}")
-
-        return "\n".join(lines) if lines else "Empty state"
+        
+        # If it's a string, return as-is
+        if isinstance(state, str):
+            return state
+        
+        # If it's a State.to_dict() format with predicates
+        if isinstance(state, dict) and "predicates" in state:
+            predicates = state["predicates"]
+            if not predicates:
+                return "Empty state"
+            return "\n".join(f"  {pred}" for pred in predicates)
+        
+        # If it's a regular dict
+        if isinstance(state, dict):
+            lines = []
+            for key, value in state.items():
+                lines.append(f"  {key}: {value}")
+            return "\n".join(lines) if lines else "Empty state"
+        
+        # Fallback: convert to string
+        return str(state)
 
     async def _generate_strategies(
         self, system_prompt: str, user_prompt: str, is_fallback: bool = False

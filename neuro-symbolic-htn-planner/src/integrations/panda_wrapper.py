@@ -6,8 +6,8 @@ Python wrapper for PANDA binaries (parser, grounder, engine)
 import subprocess
 import os
 from pathlib import Path
-from typing import Tuple, Optional
-from dataclasses import dataclass
+from typing import Tuple, Optional, List
+from dataclasses import dataclass, field
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,93 @@ class PlannerResult:
     plan_file: Optional[str]
     logs: str
     error: Optional[str] = None
+    
+    @property
+    def actions(self) -> List[dict]:
+        """Parse actions from plan file"""
+        if not self.success or not self.plan_file:
+            return []
+        
+        try:
+            with open(self.plan_file, 'r') as f:
+                lines = f.readlines()
+            
+            actions = []
+            in_plan = False
+            for line in lines:
+                line = line.strip()
+                if line == "==>":
+                    in_plan = True
+                    continue
+                elif line == "<==":
+                    break
+                elif in_plan and line and not line.startswith("root"):
+                    # Parse action lines like "1 traverse[A,C]"
+                    parts = line.split(maxsplit=1)
+                    if len(parts) == 2:
+                        action_str = parts[1]
+                        # Extract name and parameters
+                        if '[' in action_str:
+                            name = action_str.split('[')[0]
+                            params_str = action_str.split('[')[1].rstrip(']')
+                            params = [p.strip() for p in params_str.split(',')]
+                        else:
+                            name = action_str
+                            params = []
+                        
+                        actions.append({
+                            "name": name,
+                            "parameters": params
+                        })
+            
+            return actions
+        except Exception as e:
+            logger.warning(f"Failed to parse plan file {self.plan_file}: {e}")
+            return []
+    
+    @property
+    def plan_length(self) -> int:
+        """Number of actions in plan"""
+        return len(self.actions)
+    
+    @property
+    def search_time_ms(self) -> float:
+        """Extract search time from logs"""
+        try:
+            for line in self.logs.split('\n'):
+                if 'Search time' in line:
+                    # Extract "Search time 0 seconds"
+                    parts = line.split()
+                    if 'seconds' in parts:
+                        idx = parts.index('seconds')
+                        return float(parts[idx-1]) * 1000.0
+            return 0.0
+        except:
+            return 0.0
+    
+    @property
+    def nodes_expanded(self) -> int:
+        """Extract nodes expanded from logs"""
+        try:
+            for line in self.logs.split('\n'):
+                if 'Generated' in line and 'search nodes' in line:
+                    # Extract "Generated 5 search nodes"
+                    parts = line.split()
+                    idx = parts.index('Generated')
+                    return int(parts[idx+1])
+            return 0
+        except:
+            return 0
+
+
+@dataclass
+class ValidationResult:
+    """Result of HDDL validation"""
+    is_valid: bool
+    syntax_errors: List[str] = field(default_factory=list)
+    semantic_errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    validation_output: str = ""
     
 
 class PANDAWrapper:
@@ -54,7 +141,7 @@ class PANDAWrapper:
         
         # Binary paths
         self.parser_bin = self.panda_root / "pandaPIparser" / "pandaPIparser"
-        self.grounder_bin = self.panda_root / "pandaPIgrounder" / "build" / "pandaPIgrounder"
+        self.grounder_bin = self.panda_root / "pandaPIgrounder" / "pandaPIgrounder"
         self.engine_bin = self.panda_root / "pandaPIengine" / "build" / "pandaPIengine"
         
         # Validate binaries exist
@@ -358,3 +445,72 @@ class PANDAWrapper:
             
         except Exception as e:
             return False, f"Parse error: {str(e)}"
+    
+    def validate_hddl(
+        self,
+        domain_file: str,
+        problem_file: str
+    ) -> ValidationResult:
+        """
+        Validate HDDL domain and problem files using PANDA parser
+        
+        Args:
+            domain_file: Path to HDDL domain file
+            problem_file: Path to HDDL problem file
+        
+        Returns:
+            ValidationResult with validation status and any errors/warnings
+        """
+        try:
+            # Use parser to validate syntax
+            result = subprocess.run(
+                [
+                    str(self.parser_bin),
+                    domain_file,
+                    problem_file,
+                    "/dev/null"  # We don't need the output file for validation
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            output = result.stdout + "\n" + result.stderr
+            is_valid = result.returncode == 0
+            
+            # Parse errors from output
+            syntax_errors = []
+            semantic_errors = []
+            warnings = []
+            
+            for line in output.split('\n'):
+                line_lower = line.lower()
+                if 'error' in line_lower or 'fail' in line_lower:
+                    if 'syntax' in line_lower or 'parse' in line_lower:
+                        syntax_errors.append(line.strip())
+                    else:
+                        semantic_errors.append(line.strip())
+                elif 'warning' in line_lower:
+                    warnings.append(line.strip())
+            
+            return ValidationResult(
+                is_valid=is_valid,
+                syntax_errors=syntax_errors,
+                semantic_errors=semantic_errors,
+                warnings=warnings,
+                validation_output=output
+            )
+            
+        except subprocess.TimeoutExpired:
+            return ValidationResult(
+                is_valid=False,
+                syntax_errors=["Validation timeout - file may be too large or parser hung"],
+                validation_output="Timeout"
+            )
+        except Exception as e:
+            return ValidationResult(
+                is_valid=False,
+                syntax_errors=[f"Validation error: {str(e)}"],
+                validation_output=str(e)
+            )
+

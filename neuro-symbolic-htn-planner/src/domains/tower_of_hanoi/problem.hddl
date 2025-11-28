@@ -1,0 +1,54 @@
+(define (problem constrained-hanoi-p01)
+  (:domain constrained-hanoi)
+  
+  (:objects
+    disk1 disk2 disk3 - disk
+    pegA pegB pegC - peg
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task1 (move-tower disk3 pegA pegC pegB))
+      (task2 (mark-solved pegC))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  (:init
+    ;; Disk sizes (disk1 < disk2 < disk3)
+    (smaller disk1 disk2)
+    (smaller disk1 disk3)
+    (smaller disk2 disk3)
+    
+    ;; Largest disk
+    (largest disk3)
+    
+    ;; Initial configuration: All disks on peg A
+    (on disk1 pegA)
+    (on disk2 pegA)
+    (on disk3 pegA)
+    
+    ;; Clear disks
+    (clear disk1)
+    
+    ;; Clear pegs
+    (clear-peg pegB)
+    (clear-peg pegC)
+    
+    ;; CONSTRAINT: Peg B is fragile - cannot hold largest disk
+    (fragile pegB)
+    
+    ;; Goal peg
+    (goal-peg pegC)
+  )
+  
+  (:goal (and
+    (solved)
+    (on disk3 pegC)
+    (on disk2 pegC)
+    (on disk1 pegC)
+  ))
+)

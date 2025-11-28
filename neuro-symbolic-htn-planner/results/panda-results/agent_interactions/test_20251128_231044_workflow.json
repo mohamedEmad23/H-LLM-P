@@ -1,0 +1,18 @@
+{
+  "session_id": "test_20251128_231044",
+  "domain": "graph_traversal",
+  "problem": "incomplete-graph-p01",
+  "timestamp": "2025-11-28T23:10:44.258200",
+  "phases": {
+    "planning": {
+      "success": false,
+      "strategies": [],
+      "reasoning": "",
+      "processing_time_ms": 6230.579,
+      "llm_used": "Groq Llama 70B"
+    }
+  },
+  "success": false,
+  "error": "Planning phase failed",
+  "total_time_ms": 6230.826999999999
+}

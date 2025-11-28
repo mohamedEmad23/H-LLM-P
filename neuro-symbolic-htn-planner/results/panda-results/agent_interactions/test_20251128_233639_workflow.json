@@ -1,0 +1,78 @@
+{
+  "session_id": "test_20251128_233639",
+  "domain": "graph_traversal",
+  "problem": "incomplete-graph-p01",
+  "timestamp": "2025-11-28T23:36:39.507780",
+  "phases": {
+    "planning": {
+      "success": true,
+      "strategies": [
+        {
+          "name": "Query-Then-Plan",
+          "approach": "First, query the weight of edge B-C, then plan the path from A to D using the updated graph.",
+          "advantages": [
+            "Complete information for planning",
+            "Optimal path can be found"
+          ],
+          "disadvantages": [
+            "Additional query step may increase overall time",
+            "No immediate action can be taken"
+          ],
+          "estimated_complexity": "low",
+          "estimated_optimality": "optimal"
+        },
+        {
+          "name": "Plan-Without-Query",
+          "approach": "Plan the path from A to D without querying the weight of edge B-C, assuming it will not affect the overall path.",
+          "advantages": [
+            "Faster initial planning",
+            "Less dependence on query response"
+          ],
+          "disadvantages": [
+            "May not find the optimal path",
+            "Path may need to be revised after query response"
+          ],
+          "estimated_complexity": "low",
+          "estimated_optimality": "suboptimal"
+        },
+        {
+          "name": "Hybrid-Query-Plan",
+          "approach": "Start planning the path from A to D without querying the weight of edge B-C, but be prepared to revise the plan once the query response is received.",
+          "advantages": [
+            "Balances speed and optimality",
+            "Adapts to query response"
+          ],
+          "disadvantages": [
+            "More complex planning process",
+            "May still not find the optimal path"
+          ],
+          "estimated_complexity": "medium",
+          "estimated_optimality": "near_optimal"
+        }
+      ],
+      "reasoning": "Given the small size of the graph and the lack of constraints, querying the weight of edge B-C before planning is the most straightforward approach. It allows for an optimal path to be found without unnecessary complexity or potential revisions. While it may add a step, the overall process remains relatively simple and ensures the best outcome.",
+      "processing_time_ms": 1597.479,
+      "llm_used": "Groq Llama 70B"
+    },
+    "decomposition": {
+      "success": true,
+      "hddl_domain_file": "./src/domains/graph_traversal/domain.hddl",
+      "hddl_problem_file": "./src/domains/graph_traversal/problem.hddl",
+      "used_fallback": true,
+      "validation_warnings": [],
+      "method": "hand_coded_domain"
+    },
+    "panda_planning": {
+      "success": false,
+      "panda_plan": "PlannerResult(success=False, plan_file=None, logs='=== PARSING ===\\nParsing src/domains/graph_traversal/domain.hddl\\nParsing src/domains/graph_traversal/problem.hddl\\n\\nSTDERR: pandaPIparser is configured as follows\\n  Colors in output: true\\n  Mode: parsing mode\\n  Parameter splitting: true\\n  Conditional effects: exponential encoding\\n  Disjunctive preconditions as HTN: false\\n  Replace goal with action: false\\n  Output: pandaPI format\\nIgnoring initialisation of metric target \"total-cost\"\\n\\n\\n=== GROUNDING ===\\nGeneral Options\\n  Print timings: false\\n  Quiet mode: false\\nInference Options\\n  H2 mutexes: false\\n  FAM groups: false\\nTransformation Options\\n  Add zero-cost no-op to empty methods: true\\n  Remove duplicate actions: true\\n  Remove useless literals: true\\n  Expand abstract tasks with one method: true\\n  Remove empty method preconditions: true\\n  Two regularisation: false\\n  Compile negative SAS variables: false\\nRuntime Optimisations\\n  Hierarchy Typing: true\\n  Future Caching: false\\n  Static Precondition Checking: false\\nOutput Options\\n  Panda planner format: true\\n  HDDL: false\\n  SAS for Fast Downward (without hierarchy): false\\nOutput Formatting Options\\n  Output only SAS+ variables: false\\n  SAS+ delete mode: as input\\nConditional Effects expanded\\ndone.\\nStarting Hierarchy Typing\\nTotal 0.031ms\\nContains 0.002ms\\nRestrict 0.004ms\\nMPrep 0.004ms\\nFinished Hierarchy Typing\\n\\nSTDERR: Reading input from tmp/panda/test_20251128_233639_incomplete-graph-p01.parsed.\\nWriting output to tmp/panda/test_20251128_233639_incomplete-graph-p01.sas.\\nWriting output to standard output.\\nParsing done.\\nRunning PG.\\nProcess actions without preconditions\\nDone.\\nReturning from runGpg().\\nPG done. Postprocessing\\nPG postprocessing done.\\nCalculated [4] grounded tasks and [36] reachable facts.\\nRunning TDG.\\nProcess actions without preconditions\\nDone.\\nReturning from runGpg().\\nTDG done.\\nCalculated [6] grounded tasks and [2] grounded decomposition methods.\\nPerforming DFS.\\nDFS done.\\nAfter DFS: 5 tasks, 2 methods.\\nGrounded PG:\\nInput was [3, 5], output was [3, 34].\\nSimplifying instance.\\nRemoving useless facts/literals\\nGoal is unreachable ...\\n\\n\\n=== PLANNING ===\\nERROR: Planning timeout after 120 seconds', error='Planning timeout after 120 seconds')",
+      "plan_length": 0,
+      "search_time_ms": 0.0,
+      "nodes_expanded": 0,
+      "actions": [],
+      "error": "Planning timeout after 120 seconds"
+    }
+  },
+  "success": false,
+  "error": "PANDA planning failed",
+  "total_time_ms": 124208.23400000001
+}

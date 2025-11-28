@@ -1,0 +1,46 @@
+(define (problem incomplete-graph-p01)
+  (:domain incomplete-graph-traversal)
+  
+  (:objects
+    A B C D - node
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task1 (find-path A D))
+    )
+  )
+  
+  (:init
+    (at A)
+    (goal-node D)
+    
+    (connected A B) (connected B A)
+    (connected B C) (connected C B)
+    (connected C D) (connected D C)
+    (connected A C) (connected C A)
+    
+    (edge-weight-known A B)
+    (= (weight A B) 4)
+    (= (weight B A) 4)
+    
+    (edge-weight-known C D)
+    (= (weight C D) 5)
+    (= (weight D C) 5)
+    
+    (edge-weight-known A C)
+    (= (weight A C) 15)
+    (= (weight C A) 15)
+    
+    (= (weight B C) 8)
+    (= (weight C B) 8)
+    
+    (= (total-cost) 0)
+  )
+  
+  (:goal (and
+    (path-complete)
+    (at D)
+  ))
+)
