@@ -55,7 +55,7 @@ async def setup_agents():
     cohere_client = CohereClient(
         api_key=os.getenv("COHERE_API_KEY"),
         config=LLMConfig(
-            model_name="command-r-plus",
+            model_name="command-a-03-2025",  # Updated from deprecated command-r-plus
             temperature=0.3,
             max_tokens=2048
         )

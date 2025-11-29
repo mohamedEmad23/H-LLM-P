@@ -15,6 +15,7 @@ from ..execution_agent import ExecutionAgent
 from ..verification_agent import VerificationAgent
 from ..context_agent import ContextAgent
 from ...integrations.panda_wrapper import PANDAWrapper, PlannerResult
+from ...integrations.problem_cache import ProblemCache
 from ...core.state_manager import State
 
 
@@ -41,7 +42,8 @@ class PANDAWorkflow:
         verification_agent: VerificationAgent,
         context_agent: ContextAgent,
         panda_wrapper: PANDAWrapper,
-        results_dir: str = "./results/panda-results"
+        results_dir: str = "./results/panda-results",
+        enable_cache: bool = True
     ):
         """
         Initialize PANDA Workflow
@@ -54,6 +56,7 @@ class PANDAWorkflow:
             context_agent: Memory and context tracking (Gemini 2.0)
             panda_wrapper: PANDA-HTN framework interface
             results_dir: Directory for saving results
+            enable_cache: Enable problem caching for repeated queries
         """
         self.planning_agent = planning_agent
         self.decomposition_agent = decomposition_agent
@@ -71,11 +74,21 @@ class PANDAWorkflow:
         self.results_dir = Path(results_dir)
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
+        # Problem Cache for recognizing repeated problems
+        self.enable_cache = enable_cache
+        if enable_cache:
+            cache_path = str(self.results_dir / "problem_cache.json")
+            self.problem_cache = ProblemCache(cache_path=cache_path)
+        else:
+            self.problem_cache = None
+        
         # Workflow statistics
         self.stats = {
             "workflows_executed": 0,
             "successful_workflows": 0,
             "failed_workflows": 0,
+            "cache_hits": 0,
+            "cache_misses": 0,
             "avg_total_time_ms": 0.0,
             "avg_planning_time_ms": 0.0,
             "avg_panda_time_ms": 0.0,
@@ -117,6 +130,54 @@ class PANDAWorkflow:
         logger.info(f"[WORKFLOW] Session ID: {session_id}")
         logger.info("=" * 80)
         
+        # =========== CACHE CHECK ===========
+        # Check if we've solved this exact problem before
+        if self.enable_cache and self.problem_cache:
+            initial_state_dict = initial_state.to_dict() if hasattr(initial_state, 'to_dict') else {}
+            cached = self.problem_cache.check_cache(
+                domain=domain_name,
+                initial_state=initial_state_dict,
+                goal_description=goal_description
+            )
+            
+            if cached:
+                self.stats["cache_hits"] += 1
+                
+                # EXPLICIT CACHE HIT NOTIFICATION
+                print("\n" + "=" * 80)
+                print("★ ★ ★  CACHE HIT: PLAN ALREADY EXISTS FOR THIS PROBLEM  ★ ★ ★")
+                print("=" * 80)
+                print(f"  Problem: {problem_name}")
+                print(f"  Domain:  {domain_name}")
+                print(f"  Cached Signature: {cached.signature}")
+                print(f"  Original Solution Time: {cached.total_time_ms:.1f}ms")
+                print(f"  Cache Hit Count: {cached.hit_count}")
+                print(f"  Cached Actions: {len(cached.plan_actions)}")
+                for i, action in enumerate(cached.plan_actions, 1):
+                    print(f"    {i}. {action.get('name', '?')}({', '.join(action.get('parameters', []))})")
+                print("=" * 80)
+                print("  → Skipping LLM calls and PANDA planning (reusing cached solution)")
+                print("=" * 80 + "\n")
+                
+                logger.success(
+                    f"[WORKFLOW] ★ CACHE HIT - Reusing solution for '{problem_name}' "
+                    f"(saved ~{cached.total_time_ms:.0f}ms)"
+                )
+                
+                # Return cached result with updated session_id
+                cached_result = cached.solution.copy()
+                cached_result["session_id"] = session_id
+                cached_result["timestamp"] = workflow_start.isoformat()
+                cached_result["from_cache"] = True
+                cached_result["cache_signature"] = cached.signature
+                cached_result["original_time_ms"] = cached.total_time_ms
+                cached_result["total_time_ms"] = (datetime.now() - workflow_start).total_seconds() * 1000
+                
+                return cached_result
+            else:
+                self.stats["cache_misses"] += 1
+        # ===================================
+        
         workflow_result = {
             "session_id": session_id,
             "domain": domain_name,
@@ -124,7 +185,8 @@ class PANDAWorkflow:
             "timestamp": workflow_start.isoformat(),
             "phases": {},
             "success": False,
-            "error": None
+            "error": None,
+            "from_cache": False
         }
         
         try:
@@ -218,6 +280,25 @@ class PANDAWorkflow:
             if workflow_result["success"]:
                 self.stats["successful_workflows"] += 1
                 logger.info("[WORKFLOW] ✓ Workflow completed successfully")
+                
+                # =========== CACHE STORE ===========
+                # Store successful solution for future reuse
+                if self.enable_cache and self.problem_cache:
+                    initial_state_dict = initial_state.to_dict() if hasattr(initial_state, 'to_dict') else {}
+                    total_time_ms = (datetime.now() - workflow_start).total_seconds() * 1000
+                    
+                    self.problem_cache.store_solution(
+                        domain=domain_name,
+                        problem_name=problem_name,
+                        initial_state=initial_state_dict,
+                        goal_description=goal_description,
+                        solution=workflow_result,
+                        plan_actions=panda_result.get("actions", []),
+                        strategies=planning_result.get("strategies", []),
+                        total_time_ms=total_time_ms,
+                        panda_search_time_ms=panda_result.get("search_time_ms", 0.0)
+                    )
+                # ===================================
             else:
                 self.stats["failed_workflows"] += 1
                 logger.warning(f"[WORKFLOW] ✗ Workflow completed with errors: {workflow_result['error']}")
@@ -455,9 +536,19 @@ class PANDAWorkflow:
     
     def get_statistics(self) -> Dict:
         """Get workflow statistics"""
-        return {
+        stats = {
             **self.stats,
             "success_rate": (
                 self.stats["successful_workflows"] / self.stats["workflows_executed"]
             ) if self.stats["workflows_executed"] > 0 else 0.0
         }
+        
+        # Add cache statistics if enabled
+        if self.enable_cache and self.problem_cache:
+            cache_stats = self.problem_cache.get_statistics()
+            stats["cache"] = cache_stats
+            stats["cache_hit_rate"] = (
+                self.stats["cache_hits"] / (self.stats["cache_hits"] + self.stats["cache_misses"])
+            ) if (self.stats["cache_hits"] + self.stats["cache_misses"]) > 0 else 0.0
+        
+        return stats

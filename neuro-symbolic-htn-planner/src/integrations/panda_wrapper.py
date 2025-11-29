@@ -23,7 +23,7 @@ class PlannerResult:
     
     @property
     def actions(self) -> List[dict]:
-        """Parse actions from plan file"""
+        """Parse actions from plan file (filtering out PANDA internal operators)"""
         if not self.success or not self.plan_file:
             return []
         
@@ -45,6 +45,12 @@ class PlannerResult:
                     parts = line.split(maxsplit=1)
                     if len(parts) == 2:
                         action_str = parts[1]
+                        
+                        # FILTER OUT PANDA INTERNAL OPERATORS
+                        # Skip: __top, __noop, and decomposition lines (contain "->")
+                        if action_str.startswith("__") or "->" in action_str:
+                            continue
+                        
                         # Extract name and parameters
                         if '[' in action_str:
                             name = action_str.split('[')[0]

@@ -303,6 +303,18 @@ Generate {self.max_strategies} alternative strategies, evaluate them, and recomm
             if json_match:
                 response = json_match.group(1)
 
+            # Sanitize invalid escape sequences that LLMs sometimes generate
+            # Fix common invalid escapes: \s, \w, \d, \b (not at word boundary), etc.
+            # These are regex patterns LLMs sometimes include in JSON strings
+            def fix_invalid_escapes(text: str) -> str:
+                # Replace invalid escape sequences with their literal equivalents
+                # Match backslash followed by char that's NOT a valid JSON escape
+                # Valid JSON escapes: ", \, /, b, f, n, r, t, u
+                invalid_escape_pattern = r'\\([^"\\/bfnrtu])'
+                return re.sub(invalid_escape_pattern, r'\1', text)
+
+            response = fix_invalid_escapes(response)
+
             # Parse JSON
             data = json.loads(response)
 
