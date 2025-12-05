@@ -6,7 +6,7 @@ Complete neuro-symbolic HTN planning pipeline integrating all 5 agents with PAND
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from loguru import logger
 
 from ..planning_agent import PlanningAgent
@@ -16,6 +16,7 @@ from ..verification_agent import VerificationAgent
 from ..context_agent import ContextAgent
 from ...integrations.panda_wrapper import PANDAWrapper, PlannerResult
 from ...integrations.problem_cache import ProblemCache
+from ...memory.similarity_search import SimilaritySearch, SimilarProblem
 from ...core.state_manager import State
 
 
@@ -43,7 +44,9 @@ class PANDAWorkflow:
         context_agent: ContextAgent,
         panda_wrapper: PANDAWrapper,
         results_dir: str = "./results/panda-results",
-        enable_cache: bool = True
+        enable_cache: bool = True,
+        enable_similarity: bool = True,
+        similarity_threshold: float = 0.75
     ):
         """
         Initialize PANDA Workflow
@@ -57,6 +60,8 @@ class PANDAWorkflow:
             panda_wrapper: PANDA-HTN framework interface
             results_dir: Directory for saving results
             enable_cache: Enable problem caching for repeated queries
+            enable_similarity: Enable similarity-based strategy hints
+            similarity_threshold: Minimum similarity score for hints (0.0-1.0)
         """
         self.planning_agent = planning_agent
         self.decomposition_agent = decomposition_agent
@@ -82,6 +87,22 @@ class PANDAWorkflow:
         else:
             self.problem_cache = None
         
+        # Similarity Search for strategy hints on cache miss
+        self.enable_similarity = enable_similarity
+        if enable_similarity:
+            similarity_path = str(self.results_dir / "similarity_index")
+            try:
+                self.similarity_search = SimilaritySearch(
+                    index_path=similarity_path,
+                    similarity_threshold=similarity_threshold
+                )
+            except Exception as e:
+                logger.warning(f"Failed to initialize SimilaritySearch: {e}")
+                self.similarity_search = None
+                self.enable_similarity = False
+        else:
+            self.similarity_search = None
+        
         # Workflow statistics
         self.stats = {
             "workflows_executed": 0,
@@ -89,6 +110,8 @@ class PANDAWorkflow:
             "failed_workflows": 0,
             "cache_hits": 0,
             "cache_misses": 0,
+            "similarity_hits": 0,
+            "similarity_misses": 0,
             "avg_total_time_ms": 0.0,
             "avg_planning_time_ms": 0.0,
             "avg_panda_time_ms": 0.0,
@@ -178,6 +201,49 @@ class PANDAWorkflow:
                 self.stats["cache_misses"] += 1
         # ===================================
         
+        # =========== SIMILARITY SEARCH ===========
+        # Check for similar problems to get strategy hints
+        similar_problems: List[SimilarProblem] = []
+        strategy_hints: List[Dict] = []
+        
+        if self.enable_similarity and self.similarity_search:
+            try:
+                initial_state_dict = initial_state.to_dict() if hasattr(initial_state, 'to_dict') else {}
+                similar_problems = self.similarity_search.find_similar(
+                    domain=domain_name,
+                    goal=goal_description,
+                    init_state=initial_state_dict,
+                    top_k=3
+                )
+                
+                if similar_problems:
+                    self.stats["similarity_hits"] += 1
+                    # Extract strategies from top 2 similar problems
+                    for sp in similar_problems[:2]:
+                        strategy_hints.extend(sp.strategies)
+                    
+                    print("\n" + "-" * 60)
+                    print("◆ SIMILARITY MATCH: Found similar solved problems")
+                    print("-" * 60)
+                    for i, sp in enumerate(similar_problems, 1):
+                        print(f"  {i}. {sp.problem_id} (similarity: {sp.similarity_score:.3f})")
+                        print(f"     Domain: {sp.domain}, Plan length: {sp.plan_length}")
+                    print("-" * 60)
+                    print(f"  → Using {len(strategy_hints)} strategy hints for planning")
+                    print("-" * 60 + "\n")
+                    
+                    logger.info(
+                        f"[SIMILARITY] Found {len(similar_problems)} similar problems, "
+                        f"using {len(strategy_hints)} strategy hints"
+                    )
+                else:
+                    self.stats["similarity_misses"] += 1
+                    logger.debug("[SIMILARITY] No similar problems found above threshold")
+            except Exception as e:
+                logger.warning(f"[SIMILARITY] Error during similarity search: {e}")
+                self.stats["similarity_misses"] += 1
+        # =========================================
+        
         workflow_result = {
             "session_id": session_id,
             "domain": domain_name,
@@ -186,7 +252,9 @@ class PANDAWorkflow:
             "phases": {},
             "success": False,
             "error": None,
-            "from_cache": False
+            "from_cache": False,
+            "similarity_hints_used": len(strategy_hints) > 0,
+            "similar_problems_found": len(similar_problems)
         }
         
         try:
@@ -195,7 +263,8 @@ class PANDAWorkflow:
             planning_result = await self._phase1_planning(
                 domain_name=domain_name,
                 goal_description=goal_description,
-                initial_state=initial_state
+                initial_state=initial_state,
+                strategy_hints=strategy_hints
             )
             workflow_result["phases"]["planning"] = planning_result
             
@@ -299,6 +368,28 @@ class PANDAWorkflow:
                         panda_search_time_ms=panda_result.get("search_time_ms", 0.0)
                     )
                 # ===================================
+                
+                # =========== SIMILARITY INDEX STORE ===========
+                # Store in similarity index for future strategy hints
+                if self.enable_similarity and self.similarity_search:
+                    try:
+                        initial_state_dict = initial_state.to_dict() if hasattr(initial_state, 'to_dict') else {}
+                        self.similarity_search.add_solved_problem(
+                            problem_id=f"{domain_name}_{problem_name}",
+                            domain=domain_name,
+                            goal=goal_description,
+                            init_state=initial_state_dict,
+                            strategies=planning_result.get("strategies", []),
+                            plan_actions=panda_result.get("actions", [])
+                        )
+                        
+                        # Record success for any similar problems that provided hints
+                        if similar_problems:
+                            for sp in similar_problems[:2]:
+                                self.similarity_search.record_success(sp.problem_id)
+                    except Exception as e:
+                        logger.warning(f"[SIMILARITY] Failed to store in index: {e}")
+                # ==============================================
             else:
                 self.stats["failed_workflows"] += 1
                 logger.warning(f"[WORKFLOW] ✗ Workflow completed with errors: {workflow_result['error']}")
@@ -315,9 +406,17 @@ class PANDAWorkflow:
         self,
         domain_name: str,
         goal_description: str,
-        initial_state: State
+        initial_state: State,
+        strategy_hints: Optional[List[Dict]] = None
     ) -> Dict:
-        """Phase 1: Strategic Planning with PlanningAgent"""
+        """Phase 1: Strategic Planning with PlanningAgent
+        
+        Args:
+            domain_name: Domain name
+            goal_description: Goal description
+            initial_state: Initial world state
+            strategy_hints: Optional strategy hints from similar problems
+        """
         try:
             planning_input = {
                 "task": goal_description,  # PlanningAgent expects "task" not "goal"
@@ -327,6 +426,12 @@ class PANDAWorkflow:
                 "context": {"workflow": "panda_integration"}
             }
             
+            # Add strategy hints from similar problems if available
+            if strategy_hints:
+                planning_input["strategy_hints"] = strategy_hints
+                planning_input["context"]["has_similarity_hints"] = True
+                logger.info(f"[PHASE1] Using {len(strategy_hints)} strategy hints from similar problems")
+            
             result = await self.planning_agent.process(planning_input)
             
             return {
@@ -334,7 +439,8 @@ class PANDAWorkflow:
                 "strategies": result.get("strategies", []),
                 "reasoning": result.get("reasoning", ""),
                 "processing_time_ms": result.get("processing_time_ms", 0.0),
-                "llm_used": result.get("primary_llm", "Groq Llama 70B")
+                "llm_used": result.get("primary_llm", "Groq Llama 70B"),
+                "used_similarity_hints": bool(strategy_hints)
             }
         except Exception as e:
             logger.error(f"Phase 1 error: {e}")
