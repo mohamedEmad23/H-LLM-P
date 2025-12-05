@@ -1,0 +1,140 @@
+(define (domain incomplete-graph-traversal)
+  (:requirements :typing :hierarchy :negative-preconditions :fluents :action-costs)
+  
+  (:types
+    node - object
+    edge - object
+  )
+  
+  (:predicates
+    (at ?n - node)                    ; Current position
+    (connected ?from ?to - node)      ; Edge exists
+    (edge-weight-known ?from ?to - node)  ; Weight is known
+    (visited ?n - node)               ; Node has been visited
+    (goal-node ?n - node)             ; Target node
+    (path-complete)                   ; Goal achieved
+  )
+  
+  (:functions
+    (weight ?from ?to - node) - number  ; Edge weight (may be unknown)
+    (total-cost) - number               ; Accumulated path cost
+  )
+  
+  ;; Abstract task: Find shortest path with unknown edges
+  (:task find-path
+    :parameters (?start ?end - node))
+  
+  ;; Abstract task: Resolve unknown edge weight
+  (:task resolve-unknown-weight
+    :parameters (?from ?to - node))
+  
+  ;; Method: Direct path when edge weight is known (single hop)
+  (:method direct-path-known
+    :parameters (?start ?end - node)
+    :task (find-path ?start ?end)
+    :precondition (and
+      (connected ?start ?end)
+      (edge-weight-known ?start ?end)
+    )
+    :subtasks (and
+      (task1 (traverse ?start ?end))
+      (task2 (complete-path ?end))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Find path when edge weight is known (two hops)
+  (:method path-with-known-weights
+    :parameters (?start ?intermediate ?end - node)
+    :task (find-path ?start ?end)
+    :precondition (and
+      (connected ?start ?intermediate)
+      (connected ?intermediate ?end)
+      (edge-weight-known ?start ?intermediate)
+      (edge-weight-known ?intermediate ?end)
+    )
+    :subtasks (and
+      (task1 (traverse ?start ?intermediate))
+      (task2 (traverse ?intermediate ?end))
+      (task3 (complete-path ?end))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+    )
+  )
+  
+  ;; Method: Find path when edge weight is unknown - must resolve first
+  (:method path-with-unknown-weights
+    :parameters (?start ?intermediate ?end - node)
+    :task (find-path ?start ?end)
+    :precondition (and
+      (connected ?start ?intermediate)
+      (connected ?intermediate ?end)
+      (not (edge-weight-known ?intermediate ?end))
+    )
+    :subtasks (and
+      (task1 (resolve-unknown-weight ?intermediate ?end))
+      (task2 (traverse ?start ?intermediate))
+      (task3 (traverse ?intermediate ?end))
+      (task4 (complete-path ?end))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+      (task3 < task4)
+    )
+  )
+  
+  ;; Method: Resolve unknown weight by querying knowledge base
+  (:method query-knowledge-base
+    :parameters (?from ?to - node)
+    :task (resolve-unknown-weight ?from ?to)
+    :subtasks (and
+      (task1 (query-weight ?from ?to))
+    )
+  )
+  
+  ;; Primitive action: Query knowledge base for edge weight
+  ;; NOTE: PANDA doesn't support assign, so we mark weight as known
+  ;; The actual weight must be pre-initialized in problem :init
+  (:action query-weight
+    :parameters (?from ?to - node)
+    :precondition (and
+      (connected ?from ?to)
+      (not (edge-weight-known ?from ?to))
+    )
+    :effect (and
+      (edge-weight-known ?from ?to)
+    )
+  )
+  
+  ;; Primitive action: Traverse an edge
+  (:action traverse
+    :parameters (?from ?to - node)
+    :precondition (and
+      (at ?from)
+      (connected ?from ?to)
+      (edge-weight-known ?from ?to)
+    )
+    :effect (and
+      (at ?to)
+      (not (at ?from))
+      (increase (total-cost) (weight ?from ?to))
+    )
+  )
+  
+  ;; Primitive action: Mark path as complete
+  (:action complete-path
+    :parameters (?end - node)
+    :precondition (and
+      (at ?end)
+      (goal-node ?end)
+    )
+    :effect (and
+      (path-complete)
+    )
+  )
+)

@@ -3,6 +3,8 @@ ContextAgent - State Tracking & Context Management
 
 Maintains execution history, tracks agent interactions, and provides
 relevant context to other agents for improved decision-making.
+
+Enhanced with PANDA method library integration for HTN planning.
 """
 
 import asyncio
@@ -12,6 +14,7 @@ from loguru import logger
 from collections import deque
 
 from .base_agent import BaseAgent
+from ..integrations.panda_method_library import PANDAMethodLibrary
 
 
 class ContextAgent(BaseAgent):
@@ -55,6 +58,10 @@ class ContextAgent(BaseAgent):
         self.state_history: deque = deque(maxlen=self.max_history)
         self.agent_activities: Dict[str, List] = {}
 
+        # PANDA integration - Method library for HTN planning
+        method_library_path = config.get("method_library_path", "./results/panda-results/method_library.json") if config else "./results/panda-results/method_library.json"
+        self.panda_method_library = PANDAMethodLibrary(storage_path=method_library_path)
+
         # Statistics
         self.stats = {
             "contexts_retrieved": 0,
@@ -62,6 +69,8 @@ class ContextAgent(BaseAgent):
             "interactions_logged": 0,
             "llm_invocations": 0,
             "rule_based_retrievals": 0,
+            "panda_methods_stored": 0,
+            "panda_methods_retrieved": 0,
         }
 
     async def process(self, input_data: Dict) -> Dict:
@@ -107,6 +116,14 @@ class ContextAgent(BaseAgent):
             operation_result = await self._retrieve_context(data)
         elif operation == "get_history":
             operation_result = self._get_history(data)
+        elif operation == "store_method":
+            operation_result = self._store_panda_method(data)
+        elif operation == "retrieve_method":
+            operation_result = self._retrieve_panda_method(data)
+        elif operation == "update_method_success":
+            operation_result = self._update_method_success(data)
+        elif operation == "store_panda_trace":
+            operation_result = self._store_panda_trace(data)
         else:
             operation_result = {
                 "success": False,
@@ -503,4 +520,234 @@ Analyze this data and provide insights."""
             ),
             "history_size": len(self.interaction_history),
             "active_agents": len(self.agent_activities),
+            "panda_method_library_stats": self.panda_method_library.get_statistics(),
         }
+    
+    # ========== PANDA Integration Methods ==========
+    
+    def _store_panda_method(self, data: Dict) -> Dict:
+        """
+        Store successful HDDL method in PANDA method library
+        
+        Args:
+            data: {
+                "domain": "graph_traversal",
+                "task_name": "find_path",
+                "method_name": "known_weight_method",
+                "hddl_text": "(:method ...)",
+                "parameters": {...},
+                "preconditions": [...],
+                "subtasks": [...],
+                "ordering": [...]
+            }
+        """
+        try:
+            required_fields = ["domain", "task_name", "method_name", "hddl_text", 
+                             "parameters", "preconditions", "subtasks", "ordering"]
+            
+            for field in required_fields:
+                if field not in data:
+                    return {
+                        "success": False,
+                        "error": f"Missing required field: {field}"
+                    }
+            
+            # Store in PANDA method library
+            self.panda_method_library.store_method(
+                domain=data["domain"],
+                task_name=data["task_name"],
+                method_name=data["method_name"],
+                hddl_text=data["hddl_text"],
+                parameters=data["parameters"],
+                preconditions=data["preconditions"],
+                subtasks=data["subtasks"],
+                ordering=data["ordering"]
+            )
+            
+            self.stats["panda_methods_stored"] += 1
+            
+            logger.info(
+                f"Stored PANDA method: {data['method_name']} "
+                f"for task {data['task_name']} in domain {data['domain']}"
+            )
+            
+            return {
+                "success": True,
+                "result": "PANDA method stored successfully",
+                "method_name": data["method_name"]
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to store PANDA method: {e}")
+            return {
+                "success": False,
+                "error": f"Method storage failed: {str(e)}"
+            }
+    
+    def _retrieve_panda_method(self, data: Dict) -> Dict:
+        """
+        Retrieve proven HDDL method from library
+        
+        Args:
+            data: {
+                "domain": "graph_traversal",
+                "task_name": "find_path",
+                "context": {...}  # Optional context for matching
+            }
+        """
+        try:
+            if "domain" not in data or "task_name" not in data:
+                return {
+                    "success": False,
+                    "error": "Missing required fields: domain and task_name"
+                }
+            
+            domain = data["domain"]
+            task_name = data["task_name"]
+            context = data.get("context", None)
+            
+            # Retrieve from library
+            method = self.panda_method_library.retrieve_method(
+                domain=domain,
+                task_name=task_name,
+                context=context
+            )
+            
+            if method:
+                self.stats["panda_methods_retrieved"] += 1
+                
+                logger.info(
+                    f"Retrieved PANDA method: {method.method_name} "
+                    f"(success_rate={method.success_rate:.2f})"
+                )
+                
+                return {
+                    "success": True,
+                    "result": {
+                        "method_name": method.method_name,
+                        "hddl_text": method.hddl_text,
+                        "parameters": method.parameters,
+                        "preconditions": method.preconditions,
+                        "subtasks": method.subtasks,
+                        "ordering": method.ordering,
+                        "success_rate": method.success_rate,
+                        "success_count": method.success_count,
+                        "last_used": method.last_used
+                    },
+                    "method": "rule_based"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"No method found for task {task_name} in domain {domain}",
+                    "method": "rule_based"
+                }
+        
+        except Exception as e:
+            logger.error(f"Failed to retrieve PANDA method: {e}")
+            return {
+                "success": False,
+                "error": f"Method retrieval failed: {str(e)}"
+            }
+    
+    def _update_method_success(self, data: Dict) -> Dict:
+        """
+        Update success/failure statistics for a method
+        
+        Args:
+            data: {
+                "domain": "graph_traversal",
+                "task_name": "find_path",
+                "method_name": "known_weight_method",
+                "success": true/false
+            }
+        """
+        try:
+            required_fields = ["domain", "task_name", "method_name", "success"]
+            
+            for field in required_fields:
+                if field not in data:
+                    return {
+                        "success": False,
+                        "error": f"Missing required field: {field}"
+                    }
+            
+            self.panda_method_library.update_success(
+                domain=data["domain"],
+                task_name=data["task_name"],
+                method_name=data["method_name"],
+                success=data["success"]
+            )
+            
+            logger.info(
+                f"Updated method {data['method_name']} success: {data['success']}"
+            )
+            
+            return {
+                "success": True,
+                "result": "Method statistics updated"
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to update method success: {e}")
+            return {
+                "success": False,
+                "error": f"Update failed: {str(e)}"
+            }
+    
+    def _store_panda_trace(self, data: Dict) -> Dict:
+        """
+        Store PANDA execution trace for later analysis
+        
+        Args:
+            data: {
+                "session_id": "...",
+                "task_name": "...",
+                "domain": "...",
+                "plan": {...},
+                "execution_time_ms": 1234.5,
+                "result": "success/failure"
+            }
+        """
+        try:
+            timestamp = datetime.now().isoformat()
+            
+            trace = {
+                "timestamp": timestamp,
+                "session_id": data.get("session_id", "unknown"),
+                "task_name": data.get("task_name", "unknown"),
+                "domain": data.get("domain", "unknown"),
+                "plan_length": data.get("plan", {}).get("plan_length", 0),
+                "search_time_ms": data.get("plan", {}).get("search_time_ms", 0.0),
+                "execution_time_ms": data.get("execution_time_ms", 0.0),
+                "result": data.get("result", "unknown"),
+                "nodes_expanded": data.get("plan", {}).get("nodes_expanded", 0)
+            }
+            
+            # Add to state history
+            self.state_history.append({
+                "timestamp": timestamp,
+                "phase": "panda_planning",
+                "state_summary": f"PANDA planning: {trace['task_name']} - {trace['result']}",
+                "trace": trace
+            })
+            
+            self.stats["states_tracked"] += 1
+            
+            logger.info(
+                f"Stored PANDA trace: {trace['task_name']} - {trace['result']} "
+                f"(plan_length={trace['plan_length']}, time={trace['execution_time_ms']:.1f}ms)"
+            )
+            
+            return {
+                "success": True,
+                "result": "PANDA trace stored successfully"
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to store PANDA trace: {e}")
+            return {
+                "success": False,
+                "error": f"Trace storage failed: {str(e)}"
+            }
+

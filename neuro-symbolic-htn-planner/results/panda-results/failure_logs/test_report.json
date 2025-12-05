@@ -1,0 +1,235 @@
+{
+  "test_name": "incomplete-graph-p01",
+  "timestamp": "2025-11-29T00:26:26.040722",
+  "result": {
+    "session_id": "test_20251129_002623",
+    "domain": "graph_traversal",
+    "problem": "incomplete-graph-p01",
+    "timestamp": "2025-11-29T00:26:23.675766",
+    "phases": {
+      "planning": {
+        "success": true,
+        "strategies": [
+          {
+            "name": "Dijkstra's Strategy",
+            "approach": "Use Dijkstra's algorithm to find the shortest path from node A to node D, querying the weight of edge B-C when necessary.",
+            "advantages": [
+              "Guaranteed to find the shortest path if the weight of edge B-C is queried correctly",
+              "Well-established algorithm with efficient implementations"
+            ],
+            "disadvantages": [
+              "Requires querying the weight of edge B-C, which may have a significant cost",
+              "May not be suitable for very large graphs due to computational complexity"
+            ],
+            "estimated_complexity": "medium",
+            "estimated_optimality": "optimal"
+          },
+          {
+            "name": "Query-First Strategy",
+            "approach": "Query the weight of edge B-C before starting the path search, then use a standard graph traversal algorithm to find the shortest path from node A to node D.",
+            "advantages": [
+              "Avoids the need to query the weight of edge B-C during the path search",
+              "Can be more efficient than Dijkstra's algorithm if the weight of edge B-C is expensive to query"
+            ],
+            "disadvantages": [
+              "May not find the shortest path if the weight of edge B-C is not considered during the path search",
+              "Requires additional memory to store the queried weight"
+            ],
+            "estimated_complexity": "low",
+            "estimated_optimality": "suboptimal"
+          },
+          {
+            "name": "Heuristic Search Strategy",
+            "approach": "Use a heuristic search algorithm, such as A* search, to find the shortest path from node A to node D, estimating the weight of edge B-C if it is not known.",
+            "advantages": [
+              "Can find a good approximate solution even if the weight of edge B-C is not known",
+              "Can be more efficient than Dijkstra's algorithm for very large graphs"
+            ],
+            "disadvantages": [
+              "May not find the optimal solution if the heuristic is not accurate",
+              "Requires a good heuristic function to guide the search"
+            ],
+            "estimated_complexity": "medium",
+            "estimated_optimality": "near_optimal"
+          }
+        ],
+        "reasoning": "Dijkstra's algorithm is a well-established method for finding the shortest path in a weighted graph, and it is guaranteed to find the optimal solution if the weight of edge B-C is queried correctly. While it may have a higher computational complexity than other approaches, it is a reliable and efficient method for finding the shortest path in a graph with a relatively small number of nodes and edges.",
+        "processing_time_ms": 1875.298,
+        "llm_used": "Groq Llama 70B"
+      },
+      "decomposition": {
+        "success": true,
+        "hddl_domain_file": "./src/domains/graph_traversal/domain.hddl",
+        "hddl_problem_file": "./src/domains/graph_traversal/problem.hddl",
+        "used_fallback": true,
+        "validation_warnings": [],
+        "method": "hand_coded_domain"
+      },
+      "panda_planning": {
+        "success": true,
+        "panda_plan": "PlannerResult(success=True, plan_file='tmp/panda/test_20251129_002623_incomplete-graph-p01.solution', logs='=== PARSING ===\\nParsing src/domains/graph_traversal/domain.hddl\\nParsing src/domains/graph_traversal/problem.hddl\\n\\nSTDERR: pandaPIparser is configured as follows\\n  Colors in output: true\\n  Mode: parsing mode\\n  Parameter splitting: true\\n  Conditional effects: exponential encoding\\n  Disjunctive preconditions as HTN: false\\n  Replace goal with action: false\\n  Output: pandaPI format\\nIgnoring initialisation of metric target \"total-cost\"\\n\\n\\n=== GROUNDING ===\\nGeneral Options\\n  Print timings: false\\n  Quiet mode: false\\nInference Options\\n  H2 mutexes: false\\n  FAM groups: false\\nTransformation Options\\n  Add zero-cost no-op to empty methods: true\\n  Remove duplicate actions: true\\n  Remove useless literals: true\\n  Expand abstract tasks with one method: true\\n  Remove empty method preconditions: true\\n  Two regularisation: false\\n  Compile negative SAS variables: false\\nRuntime Optimisations\\n  Hierarchy Typing: true\\n  Future Caching: false\\n  Static Precondition Checking: false\\nOutput Options\\n  Panda planner format: true\\n  HDDL: false\\n  SAS for Fast Downward (without hierarchy): false\\nOutput Formatting Options\\n  Output only SAS+ variables: false\\n  SAS+ delete mode: as input\\nConditional Effects expanded\\ndone.\\nStarting Hierarchy Typing\\nTotal 0.028ms\\nContains 0.004ms\\nRestrict 0.003ms\\nMPrep 0.004ms\\nFinished Hierarchy Typing\\nStarting duplicate elimination.\\nData structure build.\\n0 duplicates found.\\nDuplicates replaced in methods.\\nFurther Mutex Groups: 0 strict 0 non strict\\nFinal Statistics: F 4 S 0 SC 0 SM 0 NSM 0 I 0 P 3 S 0 A 1 M 1\\n\\nSTDERR: Reading input from tmp/panda/test_20251129_002623_incomplete-graph-p01.parsed.\\nWriting output to tmp/panda/test_20251129_002623_incomplete-graph-p01.sas.\\nWriting output to standard output.\\nParsing done.\\nRunning PG.\\nProcess actions without preconditions\\nDone.\\nReturning from runGpg().\\nPG done. Postprocessing\\nPG postprocessing done.\\nCalculated [7] grounded tasks and [30] reachable facts.\\nRunning TDG.\\nProcess actions without preconditions\\nDone.\\nReturning from runGpg().\\nTDG done.\\nCalculated [10] grounded tasks and [3] grounded decomposition methods.\\nPerforming DFS.\\nDFS done.\\nAfter DFS: 8 tasks, 3 methods.\\nGrounded PG:\\nInput was [5, 8], output was [5, 29].\\nSimplifying instance.\\nRemoving useless facts/literals\\nRemoving method precondition actions whose precondition is empty\\nExpanding abstract tasks with only one method\\nWriting instance to output.\\nExiting.\\n\\n\\n=== PLANNING ===\\nRandom seed: 42\\nTime limit: 1800 seconds\\nReading input from tmp/panda/test_20251129_002623_incomplete-graph-p01.sas.\\n- State has 4 bits divided into 4 mutex groups.\\n- Domain contains 3 actions.\\n- Domain contains 4 tasks.\\n- Domain contains 1 methods.\\n- The initial state contains 1 set bits.\\n- The initial task is \"__top[]\".\\n- State-based goal contains 2 bits.\\n- Instance is totally-ordered: yes\\n- Instance has unique paths: yes\\n- Instance is parallel sequences: yes\\nCalculate SCCs...\\n- Number of SCCs: 4\\n- The problem is acyclic\\nSelected Planning Algorithm: progression searchParsing heuristics ...\\nNumber of specified heuristics: 1\\nGenerate 3\\n\\nRC Factory: CMA 1\\n- the option \"store cuts\" of the RC heuristic can only be used with the inner heuristic LM-Cut. It will be disabled.\\n- Calculating minimal implied distances and estimated costs (0 ms)\\nHeuristic #0 = hhRC2(add;distance;correct count)\\nSearch config:\\n - type: greedy\\n - weight: 1\\n - suboptimal: false\\nVisited List configured\\n- mode: total order\\n- hashs to use: state task task-sequence\\n- memory information: topological ordering\\n- Visited list allows deletion of search nodes: true\\nSearch Configuration\\n- Using JAIR 2020 progression algorithm\\n- Search is stopped after first solution is found.\\n- Greedy Search\\nSearch Results\\n- Search time 0 seconds\\n- Visited list time 1.4e-05 seconds\\n- Visited list inserts 2\\n- Visited list pruned 0\\n- Visited list contains 2\\n- Visited list hash collisions 0\\n- Visited list used hash buckets 2\\n- Generated 5 search nodes\\n  Calculated heuristic for 2 nodes\\n  One modifications 3\\n  Effectless actions 0\\n- including 3 one modification actions\\n- including 0 one modification methods\\n- and       0 progressions of effectless actions\\n- Generated -2147483648 nodes per second\\n- Final fringe contains 0 nodes\\n- Status: Solved\\n- Found solution of length 4\\n- Total costs of actions: 20\\n==>\\n1 traverse[A,C]\\n2 traverse[C,D]\\n3 complete-path[D]\\nroot 0\\n0 __top[] -> <<__top_method;find-path[A,D];path-with-known-weights;0;-1,-2>;path-with-known-weights_splitted_1[A,D];_splitting_method_path-with-known-weights_splitted_1;0;-1,-2,1> 1 2 3\\n<==\\n\\n\\n=== PLAN CONVERSION ===\\nI can\\'t open src/domains/graph_traversal/problem.hddl!\\n\\nSTDERR: pandaPIparser is configured as follows\\n  Colors in output: true\\n  Mode: convert pandaPI plan\\n', error=None)",
+        "plan_length": 4,
+        "search_time_ms": 0.0,
+        "nodes_expanded": 5,
+        "actions": [
+          {
+            "name": "traverse",
+            "parameters": [
+              "A",
+              "C"
+            ]
+          },
+          {
+            "name": "traverse",
+            "parameters": [
+              "C",
+              "D"
+            ]
+          },
+          {
+            "name": "complete-path",
+            "parameters": [
+              "D"
+            ]
+          },
+          {
+            "name": "__top",
+            "parameters": [
+              "] -> <<__top_method;find-path"
+            ]
+          }
+        ],
+        "error": null
+      },
+      "execution": {
+        "success": false,
+        "execution_trace": [],
+        "final_state": {
+          "predicates": [
+            "weight(C,D,5)",
+            "weight(A,C,15)",
+            "edge(B,C)",
+            "weight(A,B,4)",
+            "edge(A,B)",
+            "path-length(0)",
+            "edge(B,A)",
+            "edge(D,C)",
+            "edge(C,D)",
+            "goal-node(D)",
+            "edge(A,C)",
+            "edge(C,B)",
+            "edge(C,A)",
+            "at(A)"
+          ],
+          "metadata": {
+            "domain": "graph_traversal",
+            "problem": "incomplete-graph-p01",
+            "goal": "Find path from A to D"
+          }
+        },
+        "errors": [
+          {
+            "step": 1,
+            "operator": "traverse",
+            "params": [
+              "A",
+              "C"
+            ],
+            "error": "LLM validation failed: [cohere] Cohere error: headers: {'access-control-expose-headers': 'X-Debug-Trace-ID', 'cache-control': 'no-cache, no-store, no-transform, must-revalidate, private, max-age=0', 'content-encoding': 'gzip', 'content-type': 'application/json', 'expires': 'Thu, 01 Jan 1970 00:00:00 GMT', 'pragma': 'no-cache', 'vary': 'Origin,Accept-Encoding', 'x-accel-expires': '0', 'x-debug-trace-id': '7f1c211caa1962b9efda392453fbb6c9', 'x-endpoint-monthly-call-limit': '1000', 'x-trial-endpoint-call-limit': '20', 'x-trial-endpoint-call-remaining': '19', 'date': 'Fri, 28 Nov 2025 22:26:25 GMT', 'x-envoy-upstream-service-time': '20', 'server': 'envoy', 'via': '1.1 google', 'alt-svc': 'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000', 'transfer-encoding': 'chunked'}, status_code: 404, body: {'id': '84c7019e-520c-4de2-9618-77fe71c6c63a', 'message': \"model 'command-r-plus' was removed on September 15, 2025. See https://docs.cohere.com/docs/models#command for a list of models you can use instead.\"}",
+            "state_at_failure": {
+              "predicates": [
+                "weight(C,D,5)",
+                "weight(A,C,15)",
+                "edge(B,C)",
+                "weight(A,B,4)",
+                "edge(A,B)",
+                "path-length(0)",
+                "edge(B,A)",
+                "edge(D,C)",
+                "edge(C,D)",
+                "goal-node(D)",
+                "edge(A,C)",
+                "edge(C,B)",
+                "edge(C,A)",
+                "at(A)"
+              ],
+              "metadata": {
+                "domain": "graph_traversal",
+                "problem": "incomplete-graph-p01",
+                "goal": "Find path from A to D"
+              }
+            }
+          }
+        ],
+        "execution_time_ms": 477.86899999999997,
+        "steps_completed": 0,
+        "steps_total": 4,
+        "agent": "ExecutionAgent",
+        "panda_stats": {
+          "search_time_ms": 0.0,
+          "nodes_expanded": 5,
+          "plan_length": 4
+        }
+      },
+      "validation": {
+        "success": true,
+        "validation_layers": {
+          "syntax": {
+            "passed": true,
+            "score": 1.0,
+            "warnings": []
+          },
+          "planning": {
+            "passed": true,
+            "score": 1.0,
+            "plan_length": 4,
+            "search_time_ms": 0.0,
+            "nodes_expanded": 5
+          },
+          "execution": {
+            "passed": true,
+            "score": 1.0,
+            "action_count": 4,
+            "warnings": []
+          },
+          "efficiency": {
+            "passed": true,
+            "score": 0.9,
+            "metrics": {
+              "plan_length": 4,
+              "search_time_ms": 0.0,
+              "nodes_expanded": 5,
+              "optimal_length": 5,
+              "efficiency_ratio": 1.25
+            },
+            "suggestions": [
+              "Plan is shorter than expected optimal length - verify correctness"
+            ]
+          }
+        },
+        "overall_score": 97.5,
+        "issues": [],
+        "suggestions": [
+          "Plan is shorter than expected optimal length - verify correctness"
+        ]
+      },
+      "storage": {
+        "success": true,
+        "trace_stored": true
+      }
+    },
+    "success": true,
+    "error": "Execution failed",
+    "total_time_ms": 2363.455
+  },
+  "statistics": {
+    "workflows_executed": 1,
+    "successful_workflows": 1,
+    "failed_workflows": 0,
+    "avg_total_time_ms": 2363.455,
+    "avg_planning_time_ms": 0.0,
+    "avg_panda_time_ms": 0.0,
+    "avg_execution_time_ms": 0.0,
+    "success_rate": 1.0
+  }
+}

@@ -1,0 +1,140 @@
+[
+  {
+    "problem_id": "hanoi_4disk_test",
+    "domain": "hanoi",
+    "goal_description": "Move all disks from peg A to peg C",
+    "state_summary": "4 disks; pegs: A",
+    "strategies": [
+      {
+        "name": "recursive_subgoal",
+        "approach": "Break into smaller towers"
+      }
+    ],
+    "plan_actions": [
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "move",
+        "params": [
+          "d1",
+          "A",
+          "C"
+        ]
+      }
+    ],
+    "plan_length": 15,
+    "indexed_at": "2025-12-05T21:24:09.535287",
+    "retrieval_count": 0,
+    "success_count": 0
+  }
+]

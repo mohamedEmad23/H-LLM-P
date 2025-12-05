@@ -1,0 +1,134 @@
+(define (domain constrained-hanoi)
+  (:requirements :typing :hierarchy :negative-preconditions)
+  
+  (:types
+    disk - object
+    peg - object
+  )
+  
+  (:predicates
+    (on ?d - disk ?p - peg)           ; Disk is on peg
+    (clear ?d - disk)                 ; Nothing on top of disk
+    (clear-peg ?p - peg)              ; Peg is empty
+    (smaller ?d1 ?d2 - disk)          ; d1 is smaller than d2
+    (fragile ?p - peg)                ; Peg cannot hold largest disk
+    (largest ?d - disk)               ; Disk is the largest
+    (goal-peg ?p - peg)               ; Target peg
+    (solved)                          ; Puzzle solved
+  )
+  
+  ;; Abstract task: Move N-disk tower
+  (:task move-tower
+    :parameters (?n - disk ?from ?to ?aux - peg))
+  
+  ;; Method: Move 1-disk tower (base case)
+  (:method move-single-disk
+    :parameters (?d - disk ?from ?to ?aux - peg)
+    :task (move-tower ?d ?from ?to ?aux)
+    :precondition (and
+      (clear ?d)
+      (on ?d ?from)
+    )
+    :subtasks (and
+      (task1 (move-disk ?d ?from ?to))
+    )
+  )
+  
+  ;; Method: Move N-disk tower recursively (standard Hanoi)
+  ;; Only use if destination is NOT fragile OR disk is NOT largest
+  (:method move-multi-disk-standard
+    :parameters (?top ?bottom - disk ?from ?to ?aux - peg)
+    :task (move-tower ?bottom ?from ?to ?aux)
+    :precondition (and
+      (smaller ?top ?bottom)
+      (clear ?top)
+      (on ?top ?from)
+      (on ?bottom ?from)
+      ;; Safety: Can't use this method if moving largest disk to fragile peg
+      (not (and (largest ?bottom) (fragile ?aux)))
+    )
+    :subtasks (and
+      (task1 (move-tower ?top ?from ?aux ?to))
+      (task2 (move-disk ?bottom ?from ?to))
+      (task3 (move-tower ?top ?aux ?to ?from))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+    )
+  )
+  
+  ;; Method: Move N-disk tower with fragile constraint
+  ;; Use alternative peg when auxiliary is fragile and we're moving largest
+  (:method move-multi-disk-avoid-fragile
+    :parameters (?top ?bottom - disk ?from ?to ?fragile-aux - peg)
+    :task (move-tower ?bottom ?from ?to ?fragile-aux)
+    :precondition (and
+      (smaller ?top ?bottom)
+      (clear ?top)
+      (on ?top ?from)
+      (on ?bottom ?from)
+      (largest ?bottom)
+      (fragile ?fragile-aux)
+    )
+    :subtasks (and
+      ;; Move smaller disks to destination first
+      (task1 (move-tower ?top ?from ?to ?fragile-aux))
+      ;; Move largest disk directly (can't use fragile peg)
+      (task2 (move-disk ?bottom ?from ?fragile-aux))
+      ;; Move smaller disks from destination to auxiliary
+      (task3 (move-tower ?top ?to ?fragile-aux ?from))
+      ;; Move largest to destination
+      (task4 (move-disk ?bottom ?fragile-aux ?to))
+      ;; Move smaller disks to final position
+      (task5 (move-tower ?top ?fragile-aux ?to ?from))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+      (task3 < task4)
+      (task4 < task5)
+    )
+  )
+  
+  ;; Primitive action: Move a disk
+  (:action move-disk
+    :parameters (?d - disk ?from ?to - peg)
+    :precondition (and
+      (on ?d ?from)
+      (clear ?d)
+      ;; Destination must be clear OR have only larger disks
+      (or
+        (clear-peg ?to)
+        (exists (?d2 - disk)
+          (and (on ?d2 ?to) (clear ?d2) (smaller ?d ?d2))
+        )
+      )
+      ;; Can't put largest disk on fragile peg
+      (not (and (largest ?d) (fragile ?to)))
+    )
+    :effect (and
+      (on ?d ?to)
+      (not (on ?d ?from))
+      (when (clear-peg ?from)
+        (clear-peg ?from)
+      )
+      (not (clear-peg ?to))
+    )
+  )
+  
+  ;; Primitive action: Mark as solved
+  (:action mark-solved
+    :parameters (?goal - peg)
+    :precondition (and
+      (goal-peg ?goal)
+      ;; All disks are on goal peg (check by largest disk)
+      (exists (?d - disk)
+        (and (largest ?d) (on ?d ?goal))
+      )
+    )
+    :effect (and
+      (solved)
+    )
+  )
+)

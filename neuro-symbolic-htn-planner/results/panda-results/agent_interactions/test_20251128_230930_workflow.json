@@ -1,0 +1,15 @@
+{
+  "session_id": "test_20251128_230930",
+  "domain": "graph_traversal",
+  "problem": "incomplete-graph-p01",
+  "timestamp": "2025-11-28T23:09:30.899610",
+  "phases": {
+    "planning": {
+      "success": false,
+      "error": "'str' object has no attribute 'items'"
+    }
+  },
+  "success": false,
+  "error": "Planning phase failed",
+  "total_time_ms": 0.27999999999999997
+}
