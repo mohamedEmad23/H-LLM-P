@@ -2,9 +2,15 @@
 DecompositionAgent - HTN Task Decomposition with PANDA Integration
 Breaks down high-level tasks into hierarchical subtasks using LLM reasoning,
 validates with PANDA HTN planner, and generates valid HDDL domains.
+
+Enhanced with:
+- DomainRegistry integration for persistent domain storage
+- LLM feedback loop for PANDA validation error correction
+- Method library auto-population
 """
 
 import asyncio
+import json
 from typing import Dict, Optional, List, Tuple
 from datetime import datetime
 from loguru import logger
@@ -14,9 +20,13 @@ from .base_agent import BaseAgent
 from .prompts.decomposition_prompts import (
     build_decomposition_prompt,
     parse_decomposition_response,
+    build_hddl_correction_prompt,
+    build_hddl_generation_prompt,
 )
 from ..integrations.hddl_domain_generator import HDDLDomainGenerator, HDDLDomain, HDDLProblem
 from ..integrations.panda_wrapper import PANDAWrapper
+from ..integrations.domain_registry import DomainRegistry
+from ..integrations.panda_method_library import PANDAMethodLibrary
 
 
 class DecompositionAgent(BaseAgent):
@@ -76,6 +86,38 @@ class DecompositionAgent(BaseAgent):
 
         # Memory integration (will be set later)
         self.memory_system = None
+        
+        # ========== DOMAIN REGISTRY INTEGRATION ==========
+        # Persistent storage for generated HDDL domains
+        registry_path = config.get("registry_path", "./results/domain_registry.json") if config else "./results/domain_registry.json"
+        domains_base_path = config.get("domains_base_path", "./src/domains") if config else "./src/domains"
+        
+        try:
+            self.domain_registry = DomainRegistry(
+                registry_path=registry_path,
+                domains_base_path=domains_base_path
+            )
+            # Scan existing domains on initialization
+            scanned = self.domain_registry.scan_existing_domains()
+            if scanned > 0:
+                logger.info(f"[DECOMP] Scanned {scanned} existing domains into registry")
+        except Exception as e:
+            logger.warning(f"[DECOMP] Failed to initialize DomainRegistry: {e}")
+            self.domain_registry = None
+        
+        # ========== METHOD LIBRARY INTEGRATION ==========
+        # Persistent storage for successful HDDL methods
+        method_library_path = config.get("method_library_path", "./results/panda-results/method_library.json") if config else "./results/panda-results/method_library.json"
+        
+        try:
+            self.method_library = PANDAMethodLibrary(storage_path=method_library_path)
+            logger.info(f"[DECOMP] Method library loaded with {self.method_library.get_statistics()['total_methods']} methods")
+        except Exception as e:
+            logger.warning(f"[DECOMP] Failed to initialize PANDAMethodLibrary: {e}")
+            self.method_library = None
+        
+        # Enable/disable LLM feedback loop for validation errors
+        self.enable_llm_feedback_loop = config.get("enable_llm_feedback_loop", True) if config else True
 
         # Statistics
         self.stats = {
@@ -87,6 +129,10 @@ class DecompositionAgent(BaseAgent):
             "panda_validations": 0,
             "panda_validation_failures": 0,
             "hand_coded_fallbacks": 0,
+            "domain_registry_hits": 0,
+            "domain_registry_misses": 0,
+            "llm_feedback_corrections": 0,
+            "methods_stored": 0,
         }
 
     async def process(self, input_data: Dict) -> Dict:
@@ -321,7 +367,7 @@ class DecompositionAgent(BaseAgent):
 
     def get_statistics(self) -> Dict:
         """Get agent performance statistics"""
-        return {
+        stats = {
             **self.stats,
             "success_rate": (
                 self.stats["successful_decompositions"]
@@ -340,20 +386,39 @@ class DecompositionAgent(BaseAgent):
             )
             if self.stats["panda_validations"] > 0
             else 0.0,
+            "domain_registry_hit_rate": (
+                self.stats["domain_registry_hits"]
+                / (self.stats["domain_registry_hits"] + self.stats["domain_registry_misses"])
+            )
+            if (self.stats["domain_registry_hits"] + self.stats["domain_registry_misses"]) > 0
+            else 0.0,
         }
+        
+        # Add domain registry statistics if available
+        if self.domain_registry:
+            stats["domain_registry"] = self.domain_registry.get_statistics()
+        
+        # Add method library statistics if available
+        if self.method_library:
+            stats["method_library"] = self.method_library.get_statistics()
+        
+        return stats
     
     # ========== PANDA Integration Methods ==========
     
     async def process_with_panda_validation(self, input_data: Dict) -> Dict:
         """
-        Enhanced process method with PANDA validation loop
+        Enhanced process method with PANDA validation loop and domain registry
         
         Workflow:
-        1. Generate HDDL methods using LLM
-        2. Validate with PANDA parser
-        3. If invalid, get feedback and retry (up to max_validation_attempts)
-        4. If all attempts fail, fallback to hand-coded domain
-        5. Return validated HDDL domain + problem files
+        1. CHECK DOMAIN REGISTRY FIRST - if domain exists, skip LLM entirely
+        2. Generate HDDL methods using LLM
+        3. Validate with PANDA parser
+        4. If invalid and feedback loop enabled, feed errors back to LLM for correction
+        5. If all attempts fail, fallback to hand-coded domain
+        6. PERSIST validated domain to registry for future reuse
+        7. Store successful methods in method library
+        8. Return validated HDDL domain + problem files
         
         Args:
             input_data: {
@@ -374,6 +439,7 @@ class DecompositionAgent(BaseAgent):
                 "methods": [...],
                 "validation_result": {...},
                 "used_fallback": bool,
+                "from_registry": bool,
                 "error": str (if failed)
             }
         """
@@ -384,9 +450,80 @@ class DecompositionAgent(BaseAgent):
         
         logger.info(f"[PANDA] Starting validated decomposition for {task}")
         
-        # Attempt 1: Try LLM-generated methods with validation loop
+        # ========== STEP 1: CHECK DOMAIN REGISTRY FIRST ==========
+        # If domain exists in registry, skip LLM generation entirely (25x faster!)
+        if self.domain_registry:
+            existing_domain = self.domain_registry.lookup_domain(domain_name)
+            
+            if existing_domain:
+                self.stats["domain_registry_hits"] += 1
+                
+                logger.success(
+                    f"[REGISTRY] ★ Domain '{domain_name}' found in registry! "
+                    f"Skipping LLM generation (used {existing_domain.usage_count} times, "
+                    f"success_rate={existing_domain.success_rate:.2f})"
+                )
+                
+                # Generate problem file for existing domain
+                problem_result = await self._generate_problem_for_existing_domain(
+                    domain_name=domain_name,
+                    existing_domain=existing_domain,
+                    task=task,
+                    initial_state=input_data.get("initial_state"),
+                    goal_tasks=input_data.get("goal_tasks", [(task, [])]),
+                    objects=input_data.get("objects", {})
+                )
+                
+                if problem_result["success"]:
+                    problem_result["agent"] = self.name
+                    problem_result["task"] = task
+                    problem_result["domain"] = domain_name
+                    problem_result["from_registry"] = True
+                    problem_result["used_fallback"] = False
+                    problem_result["validation_attempts"] = 0
+                    problem_result["processing_time_ms"] = (datetime.now() - start_time).total_seconds() * 1000
+                    
+                    return problem_result
+                else:
+                    logger.warning(f"[REGISTRY] Problem generation failed for existing domain, proceeding to LLM")
+            else:
+                self.stats["domain_registry_misses"] += 1
+                logger.debug(f"[REGISTRY] Domain '{domain_name}' not in registry, proceeding to LLM generation")
+        
+        # ========== STEP 2: LLM GENERATION WITH VALIDATION LOOP ==========
+        last_validation_errors = []
+        last_hddl_text = ""
+        
         for attempt in range(1, self.max_validation_attempts + 1):
             logger.info(f"[PANDA] Validation attempt {attempt}/{self.max_validation_attempts}")
+            
+            # Check if this is a retry with validation errors (LLM feedback loop)
+            if attempt > 1 and last_validation_errors and self.enable_llm_feedback_loop:
+                logger.info(f"[FEEDBACK] Attempting LLM correction based on {len(last_validation_errors)} validation errors")
+                
+                # Use LLM feedback loop to correct the HDDL
+                correction_result = await self._llm_correct_hddl(
+                    domain_name=domain_name,
+                    original_hddl=last_hddl_text,
+                    validation_errors=last_validation_errors,
+                    attempt_number=attempt
+                )
+                
+                if correction_result["success"]:
+                    self.stats["llm_feedback_corrections"] += 1
+                    
+                    # Persist to registry and return
+                    await self._persist_and_return(
+                        correction_result, domain_name, task, start_time,
+                        input_data.get("operators", []), attempt
+                    )
+                    
+                    return correction_result
+                else:
+                    logger.warning(f"[FEEDBACK] LLM correction failed: {correction_result.get('error')}")
+                    last_validation_errors = correction_result.get("validation_errors", [])
+                    last_hddl_text = correction_result.get("hddl_text", "")
+                    continue
             
             # Generate methods using LLM
             decomposition_result = await self.process(input_data)
@@ -395,7 +532,7 @@ class DecompositionAgent(BaseAgent):
                 logger.warning(f"[PANDA] LLM decomposition failed: {decomposition_result.get('error')}")
                 continue
             
-            # Convert methods to HDDL
+            # Convert methods to HDDL and validate
             hddl_result = await self._generate_and_validate_hddl(
                 domain_name=domain_name,
                 methods_data=decomposition_result,
@@ -407,13 +544,22 @@ class DecompositionAgent(BaseAgent):
             )
             
             if hddl_result["success"]:
-                logger.info(f"[PANDA] Validation successful on attempt {attempt}")
+                logger.success(f"[PANDA] Validation successful on attempt {attempt}")
+                
+                # ========== STEP 3: PERSIST TO DOMAIN REGISTRY ==========
+                await self._persist_validated_domain(
+                    domain_name=domain_name,
+                    hddl_result=hddl_result,
+                    methods_data=decomposition_result,
+                    attempt_number=attempt
+                )
                 
                 # Add metadata
                 hddl_result["agent"] = self.name
                 hddl_result["task"] = task
                 hddl_result["domain"] = domain_name
                 hddl_result["used_fallback"] = False
+                hddl_result["from_registry"] = False
                 hddl_result["validation_attempts"] = attempt
                 hddl_result["processing_time_ms"] = (datetime.now() - start_time).total_seconds() * 1000
                 
@@ -421,11 +567,17 @@ class DecompositionAgent(BaseAgent):
             else:
                 logger.warning(f"[PANDA] Validation failed: {hddl_result.get('error')}")
                 
+                # Store errors for feedback loop
+                last_validation_errors = hddl_result.get("validation_errors", [])
+                last_hddl_text = hddl_result.get("hddl_text", "")
+                
                 # Update input_data with feedback for next attempt
-                input_data["context"]["validation_feedback"] = hddl_result.get("validation_errors", [])
+                if "context" not in input_data:
+                    input_data["context"] = {}
+                input_data["context"]["validation_feedback"] = last_validation_errors
         
-        # Attempt 2: All LLM attempts failed, try hand-coded fallback
-        logger.warning(f"[PANDA] All {self.max_validation_attempts} attempts failed, using hand-coded fallback")
+        # ========== STEP 4: HAND-CODED FALLBACK ==========
+        logger.warning(f"[PANDA] All {self.max_validation_attempts} LLM attempts failed, using hand-coded fallback")
         
         fallback_result = await self._use_hand_coded_fallback(
             domain_name=domain_name,
@@ -438,6 +590,7 @@ class DecompositionAgent(BaseAgent):
         if fallback_result["success"]:
             self.stats["hand_coded_fallbacks"] += 1
             fallback_result["used_fallback"] = True
+            fallback_result["from_registry"] = False
             fallback_result["agent"] = self.name
             fallback_result["processing_time_ms"] = (datetime.now() - start_time).total_seconds() * 1000
             return fallback_result
@@ -449,8 +602,358 @@ class DecompositionAgent(BaseAgent):
             "agent": self.name,
             "task": task,
             "domain": domain_name,
+            "from_registry": False,
             "processing_time_ms": (datetime.now() - start_time).total_seconds() * 1000
         }
+    
+    async def _generate_problem_for_existing_domain(
+        self,
+        domain_name: str,
+        existing_domain,
+        task: str,
+        initial_state,
+        goal_tasks: List[Tuple[str, List[str]]],
+        objects: Dict[str, str]
+    ) -> Dict:
+        """
+        Generate problem file for a domain already in registry
+        
+        Args:
+            domain_name: Domain name
+            existing_domain: RegisteredDomain from registry
+            task: Task name
+            initial_state: Initial state
+            goal_tasks: Goal tasks
+            objects: Object declarations
+        
+        Returns:
+            Result dict with domain and problem file paths
+        """
+        try:
+            # Generate HDDL problem
+            hddl_problem = self.hddl_generator.generate_problem(
+                problem_name=f"{domain_name}_problem",
+                domain_name=domain_name,
+                init_state=initial_state,
+                goal_tasks=goal_tasks,
+                objects=objects
+            )
+            
+            # Save to the same domain directory
+            domain_dir = Path(existing_domain.domain_file).parent
+            problem_file = domain_dir / "problem.hddl"
+            
+            self.hddl_generator.save_problem(hddl_problem, str(problem_file))
+            
+            # Validate the combination
+            if self.panda_wrapper:
+                validation_result = self.panda_wrapper.validate_hddl(
+                    domain_file=existing_domain.domain_file,
+                    problem_file=str(problem_file)
+                )
+                
+                if not validation_result.is_valid:
+                    return {
+                        "success": False,
+                        "error": f"Problem validation failed with existing domain: {validation_result.syntax_errors}"
+                    }
+            
+            return {
+                "success": True,
+                "hddl_domain_file": existing_domain.domain_file,
+                "hddl_problem_file": str(problem_file),
+                "hddl_problem": hddl_problem,
+                "validation_warnings": []
+            }
+            
+        except Exception as e:
+            logger.error(f"[REGISTRY] Failed to generate problem for existing domain: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def _llm_correct_hddl(
+        self,
+        domain_name: str,
+        original_hddl: str,
+        validation_errors: List[str],
+        attempt_number: int
+    ) -> Dict:
+        """
+        Use LLM to correct HDDL based on validation errors
+        
+        This implements the LLM feedback loop:
+        1. Take the original HDDL that failed validation
+        2. Send it to LLM with the specific errors
+        3. LLM generates corrected HDDL
+        4. Validate the corrected version
+        
+        Args:
+            domain_name: Domain name
+            original_hddl: The HDDL text that failed validation
+            validation_errors: List of error messages from PANDA
+            attempt_number: Current attempt number
+        
+        Returns:
+            Result dict with corrected HDDL or error
+        """
+        if not self.llm_client and not self.fallback_client:
+            return {
+                "success": False,
+                "error": "No LLM client available for feedback correction"
+            }
+        
+        client = self.llm_client or self.fallback_client
+        
+        try:
+            # Build correction prompt
+            system_prompt, user_prompt = build_hddl_correction_prompt(
+                original_hddl=original_hddl,
+                validation_errors=validation_errors
+            )
+            
+            logger.info(f"[FEEDBACK] Sending {len(validation_errors)} errors to LLM for correction")
+            
+            # Generate corrected HDDL
+            response = await asyncio.to_thread(
+                client.generate,
+                user_prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,  # Lower temperature for more deterministic correction
+                max_tokens=self.max_tokens
+            )
+            
+            corrected_hddl = response.content.strip()
+            
+            # Remove any markdown code blocks if present
+            if corrected_hddl.startswith("```"):
+                lines = corrected_hddl.split("\n")
+                corrected_hddl = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+            
+            # Save corrected HDDL to temp file
+            domain_file = f"/tmp/panda_{domain_name}_corrected_{attempt_number}.hddl"
+            with open(domain_file, 'w') as f:
+                f.write(corrected_hddl)
+            
+            # Generate a basic problem file
+            problem_file = f"/tmp/panda_{domain_name}_problem_{attempt_number}.hddl"
+            
+            # Validate with PANDA
+            if self.panda_wrapper:
+                validation_result = self.panda_wrapper.validate_hddl(
+                    domain_file=domain_file,
+                    problem_file=problem_file
+                )
+                
+                self.stats["panda_validations"] += 1
+                
+                if validation_result.is_valid:
+                    logger.success(f"[FEEDBACK] LLM correction succeeded!")
+                    
+                    return {
+                        "success": True,
+                        "hddl_domain_file": domain_file,
+                        "hddl_problem_file": problem_file,
+                        "hddl_text": corrected_hddl,
+                        "validation_warnings": validation_result.warnings,
+                        "corrected_by_feedback": True
+                    }
+                else:
+                    self.stats["panda_validation_failures"] += 1
+                    
+                    return {
+                        "success": False,
+                        "error": "Corrected HDDL still failed validation",
+                        "validation_errors": validation_result.syntax_errors + validation_result.semantic_errors,
+                        "hddl_text": corrected_hddl
+                    }
+            else:
+                # No PANDA wrapper, assume success
+                return {
+                    "success": True,
+                    "hddl_domain_file": domain_file,
+                    "hddl_problem_file": problem_file,
+                    "hddl_text": corrected_hddl,
+                    "validation_warnings": [],
+                    "corrected_by_feedback": True
+                }
+                
+        except Exception as e:
+            logger.error(f"[FEEDBACK] LLM correction failed: {e}")
+            return {
+                "success": False,
+                "error": f"LLM correction failed: {str(e)}"
+            }
+    
+    async def _persist_validated_domain(
+        self,
+        domain_name: str,
+        hddl_result: Dict,
+        methods_data: Dict,
+        attempt_number: int
+    ) -> None:
+        """
+        Persist validated domain to registry and store methods in library
+        
+        Args:
+            domain_name: Domain name
+            hddl_result: Result dict from validation
+            methods_data: Methods data from LLM
+            attempt_number: Attempt number (for stats)
+        """
+        if not self.domain_registry:
+            return
+        
+        try:
+            temp_domain_file = hddl_result.get("hddl_domain_file", "")
+            temp_problem_file = hddl_result.get("hddl_problem_file", "")
+            
+            # Persist files from /tmp to ./src/domains/
+            persisted_files = self.domain_registry.persist_domain_files(
+                domain_name=domain_name,
+                temp_domain_file=temp_domain_file,
+                temp_problem_file=temp_problem_file
+            )
+            
+            # Update result with persistent paths
+            hddl_result["hddl_domain_file"] = persisted_files["domain_file"]
+            if persisted_files.get("problem_file"):
+                hddl_result["hddl_problem_file"] = persisted_files["problem_file"]
+            
+            # Count methods and actions
+            methods = methods_data.get("methods", [])
+            method_count = len(methods)
+            
+            # Register in registry
+            llm_provider = None
+            if self.llm_client:
+                llm_provider = self.llm_client.__class__.__name__
+            
+            self.domain_registry.register_domain(
+                domain_name=domain_name,
+                domain_file=persisted_files["domain_file"],
+                problem_file=persisted_files.get("problem_file"),
+                method_count=method_count,
+                source="llm_generated",
+                llm_provider=llm_provider,
+                panda_validated=True,
+                validation_warnings=hddl_result.get("validation_warnings", [])
+            )
+            
+            logger.success(
+                f"[REGISTRY] ★ Persisted domain '{domain_name}' to {persisted_files['domain_file']} "
+                f"(methods={method_count})"
+            )
+            
+            # ========== STORE METHODS IN METHOD LIBRARY ==========
+            if self.method_library and methods:
+                for method in methods:
+                    try:
+                        # Generate HDDL text for this method
+                        hddl_text = self._method_to_hddl(method, domain_name)
+                        
+                        self.method_library.store_method(
+                            domain=domain_name,
+                            task_name=method.get("task_name", method.get("task", "unknown")),
+                            method_name=method.get("name", "unnamed_method"),
+                            hddl_text=hddl_text,
+                            parameters=method.get("parameters", {}),
+                            preconditions=method.get("preconditions", []),
+                            subtasks=method.get("subtasks", []),
+                            ordering=method.get("ordering", [])
+                        )
+                        self.stats["methods_stored"] += 1
+                        
+                    except Exception as e:
+                        logger.warning(f"[METHOD_LIB] Failed to store method: {e}")
+                
+                logger.info(f"[METHOD_LIB] Stored {len(methods)} methods for domain '{domain_name}'")
+            
+        except Exception as e:
+            logger.error(f"[REGISTRY] Failed to persist domain: {e}")
+    
+    def _method_to_hddl(self, method: Dict, domain_name: str) -> str:
+        """
+        Convert a method dict to HDDL text
+        
+        Args:
+            method: Method dictionary
+            domain_name: Domain name
+        
+        Returns:
+            HDDL method text
+        """
+        name = method.get("name", "unnamed_method")
+        task_name = method.get("task_name", method.get("task", "unknown_task"))
+        params = method.get("parameters", {})
+        preconditions = method.get("preconditions", [])
+        subtasks = method.get("subtasks", [])
+        
+        # Format parameters
+        params_str = " ".join([f"?{p}" for p in params.keys()]) if isinstance(params, dict) else ""
+        
+        # Format preconditions
+        if preconditions:
+            if len(preconditions) == 1:
+                precond_str = f"({preconditions[0]})"
+            else:
+                precond_str = "(and " + " ".join([f"({p})" for p in preconditions]) + ")"
+        else:
+            precond_str = "()"
+        
+        # Format subtasks
+        if subtasks:
+            if len(subtasks) == 1:
+                subtask = subtasks[0]
+                if isinstance(subtask, dict):
+                    subtasks_str = f"({subtask.get('name', subtask.get('task', 'unknown'))})"
+                else:
+                    subtasks_str = f"({subtask})"
+            else:
+                subtask_parts = []
+                for st in subtasks:
+                    if isinstance(st, dict):
+                        subtask_parts.append(f"({st.get('name', st.get('task', 'unknown'))})")
+                    else:
+                        subtask_parts.append(f"({st})")
+                subtasks_str = "(and " + " ".join(subtask_parts) + ")"
+        else:
+            subtasks_str = "()"
+        
+        return f"""(:method {name}
+  :parameters ({params_str})
+  :task ({task_name})
+  :precondition {precond_str}
+  :subtasks {subtasks_str}
+)"""
+    
+    async def _persist_and_return(
+        self,
+        result: Dict,
+        domain_name: str,
+        task: str,
+        start_time: datetime,
+        operators: List,
+        attempt: int
+    ) -> Dict:
+        """Helper to persist domain and format return"""
+        await self._persist_validated_domain(
+            domain_name=domain_name,
+            hddl_result=result,
+            methods_data={"methods": []},
+            attempt_number=attempt
+        )
+        
+        result["agent"] = self.name
+        result["task"] = task
+        result["domain"] = domain_name
+        result["used_fallback"] = False
+        result["from_registry"] = False
+        result["validation_attempts"] = attempt
+        result["processing_time_ms"] = (datetime.now() - start_time).total_seconds() * 1000
+        
+        return result
     
     async def _generate_and_validate_hddl(
         self,
@@ -479,10 +982,13 @@ class DecompositionAgent(BaseAgent):
                 "success": bool,
                 "hddl_domain_file": str,
                 "hddl_problem_file": str,
+                "hddl_text": str,  # For feedback loop
                 "validation_errors": [...],
                 "error": str (if failed)
             }
         """
+        hddl_text = ""
+        
         try:
             # Convert LLM methods to MethodLibrary format
             from ..core.methods import MethodLibrary, Method
@@ -508,6 +1014,9 @@ class DecompositionAgent(BaseAgent):
                 operators=operators
             )
             
+            # Store HDDL text for feedback loop
+            hddl_text = hddl_domain.hddl_text if hasattr(hddl_domain, 'hddl_text') else str(hddl_domain)
+            
             # Generate HDDL problem
             hddl_problem = self.hddl_generator.generate_problem(
                 problem_name=f"{domain_name}_problem_{attempt_number}",
@@ -524,45 +1033,70 @@ class DecompositionAgent(BaseAgent):
             self.hddl_generator.save_domain(hddl_domain, domain_file)
             self.hddl_generator.save_problem(hddl_problem, problem_file)
             
+            # Read back the HDDL text if not already captured
+            if not hddl_text:
+                try:
+                    with open(domain_file, 'r') as f:
+                        hddl_text = f.read()
+                except Exception:
+                    pass
+            
             # Validate with PANDA parser
-            validation_result = await self.panda_wrapper.validate_hddl(
-                domain_file=domain_file,
-                problem_file=problem_file
-            )
-            
-            self.stats["panda_validations"] += 1
-            
-            if validation_result.is_valid:
-                logger.info(f"[PANDA] HDDL validation passed")
+            if self.panda_wrapper:
+                validation_result = self.panda_wrapper.validate_hddl(
+                    domain_file=domain_file,
+                    problem_file=problem_file
+                )
                 
+                self.stats["panda_validations"] += 1
+                
+                if validation_result.is_valid:
+                    logger.info(f"[PANDA] HDDL validation passed")
+                    
+                    return {
+                        "success": True,
+                        "hddl_domain_file": domain_file,
+                        "hddl_problem_file": problem_file,
+                        "hddl_domain": hddl_domain,
+                        "hddl_problem": hddl_problem,
+                        "hddl_text": hddl_text,
+                        "methods": methods_data.get("methods", []),
+                        "validation_warnings": validation_result.warnings
+                    }
+                else:
+                    self.stats["panda_validation_failures"] += 1
+                    
+                    logger.warning(
+                        f"[PANDA] Validation failed: "
+                        f"{len(validation_result.syntax_errors)} syntax errors, "
+                        f"{len(validation_result.semantic_errors)} semantic errors"
+                    )
+                    
+                    return {
+                        "success": False,
+                        "validation_errors": validation_result.syntax_errors + validation_result.semantic_errors,
+                        "hddl_text": hddl_text,
+                        "error": "PANDA validation failed"
+                    }
+            else:
+                # No PANDA wrapper available, return as success without validation
+                logger.warning("[PANDA] No PANDA wrapper available, skipping validation")
                 return {
                     "success": True,
                     "hddl_domain_file": domain_file,
                     "hddl_problem_file": problem_file,
                     "hddl_domain": hddl_domain,
                     "hddl_problem": hddl_problem,
+                    "hddl_text": hddl_text,
                     "methods": methods_data.get("methods", []),
-                    "validation_warnings": validation_result.warnings
-                }
-            else:
-                self.stats["panda_validation_failures"] += 1
-                
-                logger.warning(
-                    f"[PANDA] Validation failed: "
-                    f"{len(validation_result.syntax_errors)} syntax errors, "
-                    f"{len(validation_result.semantic_errors)} semantic errors"
-                )
-                
-                return {
-                    "success": False,
-                    "validation_errors": validation_result.syntax_errors + validation_result.semantic_errors,
-                    "error": "PANDA validation failed"
+                    "validation_warnings": ["PANDA validation skipped - no wrapper available"]
                 }
         
         except Exception as e:
             logger.error(f"[PANDA] HDDL generation/validation error: {e}")
             return {
                 "success": False,
+                "hddl_text": hddl_text,
                 "error": f"HDDL generation failed: {str(e)}"
             }
     

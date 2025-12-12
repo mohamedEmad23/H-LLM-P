@@ -107,6 +107,227 @@ Errors to Avoid:
 {error_patterns}
 """
 
+# ========== HDDL CORRECTION PROMPTS (for LLM feedback loop) ==========
+
+HDDL_CORRECTION_SYSTEM_PROMPT = """You are an expert in HDDL (Hierarchical Domain Definition Language) syntax and semantics for HTN planning.
+
+Your task is to FIX HDDL domain files that failed validation by the PANDA HTN planner.
+
+HDDL Syntax Rules:
+1. Domain structure: (define (domain name) (:requirements ...) (:types ...) (:predicates ...) (:task ...) (:method ...) (:action ...))
+2. Task definitions: (:task task_name :parameters (?var1 - type1 ?var2 - type2))
+3. Method definitions: (:method method_name :parameters (...) :task (task_name ?params) :precondition (and ...) :subtasks (and ...))
+4. Action definitions: (:action action_name :parameters (...) :precondition (and ...) :effect (and ...))
+5. Predicates must be defined before use
+6. All variables must be declared in :parameters
+7. Parentheses must be balanced
+
+Common HDDL Errors:
+- Undefined predicates (predicate used but not declared in :predicates)
+- Type mismatches (variable type doesn't match predicate signature)
+- Unbalanced parentheses
+- Missing or extra keywords
+- Invalid subtask ordering
+
+Return ONLY the corrected HDDL domain file, nothing else."""
+
+HDDL_CORRECTION_USER_PROMPT = """Original HDDL Domain that failed validation:
+```hddl
+{original_hddl}
+```
+
+PANDA Validation Errors:
+{validation_errors}
+
+Please analyze these errors and provide a CORRECTED version of the HDDL domain that:
+1. Fixes ALL the validation errors listed above
+2. Maintains the same domain semantics and planning intent
+3. Uses proper HDDL syntax throughout
+4. Ensures all predicates are declared before use
+5. Ensures all variables are properly typed
+
+Return ONLY the corrected HDDL code (no explanations, no markdown code blocks)."""
+
+HDDL_GENERATION_SYSTEM_PROMPT = """You are an expert HDDL (Hierarchical Domain Definition Language) generator for HTN planning.
+
+Generate valid HDDL domain files that can be processed by the PANDA HTN planner.
+
+HDDL Structure:
+```
+(define (domain domain_name)
+  (:requirements :hierarchy :typing)
+  
+  (:types type1 type2 - object)
+  
+  (:predicates 
+    (predicate1 ?arg1 - type1)
+    (predicate2 ?arg1 - type1 ?arg2 - type2)
+  )
+  
+  (:task task_name :parameters (?var1 - type1 ?var2 - type2))
+  
+  (:method method_name
+    :parameters (?var1 - type1 ?var2 - type2)
+    :task (task_name ?var1 ?var2)
+    :precondition (and (predicate1 ?var1))
+    :subtasks (and
+      (subtask1 ?var1)
+      (subtask2 ?var2)
+    )
+  )
+  
+  (:action action_name
+    :parameters (?var1 - type1 ?var2 - type2)
+    :precondition (and (predicate1 ?var1))
+    :effect (and 
+      (not (predicate1 ?var1))
+      (predicate2 ?var1 ?var2)
+    )
+  )
+)
+```
+
+Rules:
+1. ALL predicates must be declared in :predicates before use
+2. ALL variables must have types declared in :parameters  
+3. Parentheses must be perfectly balanced
+4. Use (and ...) for multiple preconditions/effects/subtasks
+5. Tasks define the abstract goals, methods decompose them, actions are primitive
+
+Return ONLY valid HDDL code."""
+
+HDDL_GENERATION_USER_PROMPT = """Generate an HDDL domain for:
+
+Domain: {domain_name}
+Task: {task_description}
+
+Available Operators (convert to :action blocks):
+{operators}
+
+Methods to implement (convert to :method blocks):
+{methods_json}
+
+Objects and Types:
+{objects}
+
+Initial State Predicates (declare these in :predicates):
+{initial_predicates}
+
+Goal Tasks:
+{goal_tasks}
+
+{strategy_hints}
+
+Generate a complete, valid HDDL domain file that:
+1. Defines all necessary types
+2. Declares all predicates used
+3. Defines task schemas for each abstract task
+4. Implements methods that decompose tasks into subtasks
+5. Implements actions for primitive operations
+
+Return ONLY the HDDL code (no markdown, no explanations)."""
+
+
+def build_hddl_correction_prompt(original_hddl: str, validation_errors: list) -> tuple:
+    """
+    Build prompt for correcting invalid HDDL based on PANDA errors
+    
+    Args:
+        original_hddl: The HDDL text that failed validation
+        validation_errors: List of error messages from PANDA
+    
+    Returns:
+        Tuple of (system_prompt, user_prompt)
+    """
+    errors_str = "\n".join([f"- {error}" for error in validation_errors])
+    
+    user_prompt = HDDL_CORRECTION_USER_PROMPT.format(
+        original_hddl=original_hddl,
+        validation_errors=errors_str
+    )
+    
+    return HDDL_CORRECTION_SYSTEM_PROMPT, user_prompt
+
+
+def build_hddl_generation_prompt(
+    domain_name: str,
+    task_description: str,
+    operators: list,
+    methods_json: str,
+    objects: dict,
+    initial_predicates: list,
+    goal_tasks: list,
+    strategy_hints: list = None
+) -> tuple:
+    """
+    Build prompt for generating HDDL domain from scratch
+    
+    Args:
+        domain_name: Name of the domain
+        task_description: Description of the main task
+        operators: List of operator definitions
+        methods_json: JSON string of method definitions from LLM
+        objects: Dict of objects {name: type}
+        initial_predicates: List of initial state predicates
+        goal_tasks: List of goal task tuples
+        strategy_hints: Optional list of strategy hints
+    
+    Returns:
+        Tuple of (system_prompt, user_prompt)
+    """
+    # Format operators
+    operators_str = ""
+    for op in operators:
+        if hasattr(op, 'name'):
+            op_name = op.name
+            params = getattr(op, 'parameters', {})
+            precond = getattr(op, 'preconditions', [])
+            effects = getattr(op, 'effects', [])
+        elif isinstance(op, dict):
+            op_name = op.get('name', 'unknown')
+            params = op.get('parameters', {})
+            precond = op.get('preconditions', [])
+            effects = op.get('effects', [])
+        else:
+            continue
+            
+        operators_str += f"\n- {op_name}:\n"
+        operators_str += f"    Parameters: {params}\n"
+        operators_str += f"    Preconditions: {precond}\n"
+        operators_str += f"    Effects: {effects}\n"
+    
+    # Format objects
+    objects_str = "\n".join([f"- {name}: {obj_type}" for name, obj_type in objects.items()]) if objects else "No objects defined"
+    
+    # Format initial predicates
+    init_str = "\n".join([f"- {pred}" for pred in initial_predicates]) if initial_predicates else "No initial predicates"
+    
+    # Format goal tasks
+    goals_str = "\n".join([f"- {task[0]}({', '.join(task[1]) if len(task) > 1 else ''})" for task in goal_tasks]) if goal_tasks else "No goal tasks"
+    
+    # Format strategy hints
+    hints_str = ""
+    if strategy_hints:
+        hints_str = "\nStrategy Hints from Similar Problems:\n"
+        for hint in strategy_hints:
+            if isinstance(hint, dict):
+                hints_str += f"- {hint.get('name', 'unnamed')}: {hint.get('approach', hint.get('description', ''))}\n"
+            else:
+                hints_str += f"- {hint}\n"
+    
+    user_prompt = HDDL_GENERATION_USER_PROMPT.format(
+        domain_name=domain_name,
+        task_description=task_description,
+        operators=operators_str or "No operators defined",
+        methods_json=methods_json,
+        objects=objects_str,
+        initial_predicates=init_str,
+        goal_tasks=goals_str,
+        strategy_hints=hints_str
+    )
+    
+    return HDDL_GENERATION_SYSTEM_PROMPT, user_prompt
+
 
 def format_memory_hints(similar_plans=None, common_patterns=None, error_patterns=None):
     """Format memory hints section for the prompt"""
