@@ -1,0 +1,73 @@
+Random seed: 42
+Time limit: 1800 seconds
+Reading input from /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/panda-results/grounded/benchmark_hybrid_puzzle_p01.sas.
+- State has 7 bits divided into 7 mutex groups.
+- Domain contains 16 actions.
+- Domain contains 24 tasks.
+- Domain contains 20 methods.
+- The initial state contains 2 set bits.
+- The initial task is "__top[]".
+- State-based goal contains 0 bits.
+- Instance is totally-ordered: yes
+- Instance has unique paths: yes
+- Instance is parallel sequences: yes
+Calculate SCCs...
+- Number of SCCs: 24
+- The problem is acyclic
+Selected Planning Algorithm: progression searchParsing heuristics ...
+Number of specified heuristics: 1
+Generate 3
+
+RC Factory: CMA 1
+- the option "store cuts" of the RC heuristic can only be used with the inner heuristic LM-Cut. It will be disabled.
+- Calculating minimal implied distances and estimated costs (0 ms)
+Heuristic #0 = hhRC2(add;distance;correct count)
+Search config:
+ - type: greedy
+ - weight: 1
+ - suboptimal: false
+Visited List configured
+- mode: total order
+- hashs to use: state task task-sequence
+- memory information: topological ordering
+- Visited list allows deletion of search nodes: true
+Search Configuration
+- Using JAIR 2020 progression algorithm
+- Search is stopped after first solution is found.
+- Greedy Search
+Search Results
+- Search time 0 seconds
+- Visited list time 3.3e-05 seconds
+- Visited list inserts 5
+- Visited list pruned 0
+- Visited list contains 5
+- Visited list hash collisions 0
+- Visited list used hash buckets 5
+- Generated 29 search nodes
+  Calculated heuristic for 10 nodes
+  One modifications 9
+  Effectless actions 10
+- including 9 one modification actions
+- including 0 one modification methods
+- and       10 progressions of effectless actions
+- Generated -2147483648 nodes per second
+- Final fringe contains 3 nodes
+- Status: Solved
+- Found solution of length 13
+- Total costs of actions: 5
+==>
+3 __method_precondition_solve-by-unlock-then-move[peg-c,peg-a,disk1]
+4 __method_precondition_unlock-via-graph_base_base[peg-c]
+5 enter-graph[peg-c,n1]
+8 __method_precondition_graph-single-step[n1,n3]
+9 traverse-graph[n1,n3]
+10 complete-unlock[peg-c]
+17 __method_precondition_move-single[disk1,peg-a,peg-c]
+18 move-disk[disk1,peg-a,peg-c]
+19 mark-solved[peg-c]
+root 0
+16 solve-by-unlock-then-move_splitted_1[disk1,peg-a,peg-c] -> <_splitting_method_solve-by-unlock-then-move_splitted_1;move-tower[disk1,peg-a,peg-c,peg-a];move-single;0;-1,-2> 17 18
+7 solve-unlock-graph[peg-c,n1,n3] -> graph-single-step 8 9
+2 solve-hybrid-puzzle[peg-c] -> <<<solve-by-unlock-then-move;unlock-peg[peg-c];unlock-via-graph;1;0,-1,-2,-3,2,3>;unlock-via-graph_splitted_5[peg-c];_splitting_method_unlock-via-graph_splitted_5;2;0,1,-1,-2,3,4,5>;unlock-via-graph_splitted_3[peg-c,n1];_splitting_method_unlock-via-graph_splitted_3;3;0,1,2,-1,4,5,6> 3 4 5 7 10 16 19
+0 __top[] -> __top_method 2
+<==

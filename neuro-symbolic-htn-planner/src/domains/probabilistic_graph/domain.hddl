@@ -1,0 +1,133 @@
+(define (domain probabilistic-graph)
+  (:requirements :typing :hierarchy :negative-preconditions)
+  
+  (:types
+    node - object
+  )
+  
+  (:predicates
+    (at ?n - node)                      ; Current position
+    (connected ?from ?to - node)        ; Edge exists
+    (path-chosen)                       ; A path has been selected
+    (chosen-safe)                       ; Chose safe path
+    (chosen-risky)                      ; Chose risky path
+    (expected-value-calculated)         ; EV analysis done
+    (goal-node ?n - node)               ; Target destination
+    (goal-reached)                      ; Arrived at goal
+  )
+  
+  ;; Abstract task: Solve probabilistic graph traversal
+  (:task solve-probabilistic-graph
+    :parameters (?start ?end - node))
+  
+  ;; Abstract task: Analyze and decide on path
+  (:task analyze-and-choose-path
+    :parameters (?start - node))
+  
+  ;; Method: Strategic approach - calculate EV first, then choose optimal
+  (:method strategic-approach
+    :parameters (?start ?end - node)
+    :task (solve-probabilistic-graph ?start ?end)
+    :precondition (and
+      (at ?start)
+      (not (path-chosen))
+    )
+    :subtasks (and
+      (task1 (calculate-expected-values ?start))
+      (task2 (analyze-and-choose-path ?start))
+      (task3 (traverse-to-goal ?end))
+      (task4 (verify-goal ?end))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+      (task3 < task4)
+    )
+  )
+  
+  ;; Method: Choose safe path after EV calculation
+  (:method choose-safe-path-strategic
+    :parameters (?start - node)
+    :task (analyze-and-choose-path ?start)
+    :precondition (and
+      (expected-value-calculated)
+      (not (path-chosen))
+    )
+    :subtasks (and
+      (task1 (select-safe-path))
+    )
+  )
+  
+  ;; Method: Choose risky path after EV calculation (when optimal)
+  (:method choose-risky-path-strategic
+    :parameters (?start - node)
+    :task (analyze-and-choose-path ?start)
+    :precondition (and
+      (expected-value-calculated)
+      (not (path-chosen))
+    )
+    :subtasks (and
+      (task1 (select-risky-path))
+    )
+  )
+  
+  ;; Primitive action: Calculate expected values for all paths
+  (:action calculate-expected-values
+    :parameters (?from - node)
+    :precondition (and
+      (at ?from)
+      (not (expected-value-calculated))
+    )
+    :effect (and
+      (expected-value-calculated)
+    )
+  )
+  
+  ;; Primitive action: Select safe path
+  (:action select-safe-path
+    :parameters ()
+    :precondition (and
+      (not (path-chosen))
+    )
+    :effect (and
+      (path-chosen)
+      (chosen-safe)
+    )
+  )
+  
+  ;; Primitive action: Select risky path
+  (:action select-risky-path
+    :parameters ()
+    :precondition (and
+      (not (path-chosen))
+    )
+    :effect (and
+      (path-chosen)
+      (chosen-risky)
+    )
+  )
+  
+  ;; Primitive action: Traverse to goal (using chosen path)
+  (:action traverse-to-goal
+    :parameters (?to - node)
+    :precondition (and
+      (path-chosen)
+      (goal-node ?to)
+    )
+    :effect (and
+      (at ?to)
+    )
+  )
+  
+  ;; Primitive action: Verify goal reached
+  (:action verify-goal
+    :parameters (?end - node)
+    :precondition (and
+      (at ?end)
+      (goal-node ?end)
+    )
+    :effect (and
+      (goal-reached)
+    )
+  )
+)

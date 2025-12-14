@@ -89,7 +89,8 @@ class DecompositionAgent(BaseAgent):
         
         # ========== DOMAIN REGISTRY INTEGRATION ==========
         # Persistent storage for generated HDDL domains
-        registry_path = config.get("registry_path", "./results/domain_registry.json") if config else "./results/domain_registry.json"
+        # Use consolidated path under results/panda-results/
+        registry_path = config.get("registry_path", "./results/panda-results/domain_registry.json") if config else "./results/panda-results/domain_registry.json"
         domains_base_path = config.get("domains_base_path", "./src/domains") if config else "./src/domains"
         
         try:
@@ -731,13 +732,15 @@ class DecompositionAgent(BaseAgent):
                 lines = corrected_hddl.split("\n")
                 corrected_hddl = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
             
-            # Save corrected HDDL to temp file
-            domain_file = f"/tmp/panda_{domain_name}_corrected_{attempt_number}.hddl"
+            # Save corrected HDDL to organized temp directory
+            temp_dir = Path("./results/panda-results/panda-temp")
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            domain_file = str(temp_dir / f"panda_{domain_name}_corrected_{attempt_number}.hddl")
             with open(domain_file, 'w') as f:
                 f.write(corrected_hddl)
             
             # Generate a basic problem file
-            problem_file = f"/tmp/panda_{domain_name}_problem_{attempt_number}.hddl"
+            problem_file = str(temp_dir / f"panda_{domain_name}_problem_{attempt_number}.hddl")
             
             # Validate with PANDA
             if self.panda_wrapper:
@@ -845,6 +848,9 @@ class DecompositionAgent(BaseAgent):
                 f"[REGISTRY] ★ Persisted domain '{domain_name}' to {persisted_files['domain_file']} "
                 f"(methods={method_count})"
             )
+            
+            # Mark as persisted in the result
+            hddl_result["persisted"] = True
             
             # ========== STORE METHODS IN METHOD LIBRARY ==========
             if self.method_library and methods:
@@ -1026,9 +1032,11 @@ class DecompositionAgent(BaseAgent):
                 objects=objects
             )
             
-            # Save to temporary files
-            domain_file = f"/tmp/panda_{domain_name}_{attempt_number}.hddl"
-            problem_file = f"/tmp/panda_{domain_name}_problem_{attempt_number}.hddl"
+            # Save to organized temp directory (under results for persistence)
+            temp_dir = Path("./results/panda-results/panda-temp")
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            domain_file = str(temp_dir / f"panda_{domain_name}_{attempt_number}.hddl")
+            problem_file = str(temp_dir / f"panda_{domain_name}_problem_{attempt_number}.hddl")
             
             self.hddl_generator.save_domain(hddl_domain, domain_file)
             self.hddl_generator.save_problem(hddl_problem, problem_file)
@@ -1061,7 +1069,8 @@ class DecompositionAgent(BaseAgent):
                         "hddl_problem": hddl_problem,
                         "hddl_text": hddl_text,
                         "methods": methods_data.get("methods", []),
-                        "validation_warnings": validation_result.warnings
+                        "validation_warnings": validation_result.warnings,
+                        "persisted": False  # Will be set to True after _persist_validated_domain
                     }
                 else:
                     self.stats["panda_validation_failures"] += 1
@@ -1148,7 +1157,9 @@ class DecompositionAgent(BaseAgent):
                 objects=objects
             )
             
-            problem_file = f"/tmp/panda_{domain_name}_fallback_problem.hddl"
+            temp_dir = Path("./results/panda-results/panda-temp")
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            problem_file = str(temp_dir / f"panda_{domain_name}_fallback_problem.hddl")
             self.hddl_generator.save_problem(hddl_problem, problem_file)
             
             # Validate the combination

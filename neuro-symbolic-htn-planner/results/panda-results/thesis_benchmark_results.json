@@ -1,0 +1,155 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-14T18:54:24.138830",
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "problems_tested": 2,
+    "real_llm_calls": true,
+    "simulated": false
+  },
+  "problem_results": [
+    {
+      "problem_id": "graph_traversal",
+      "problem_name": "Graph Path Finding",
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "graph_traversal",
+        "success": true,
+        "plan_actions": [
+          "traverse(A, B)",
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "plan_length": 4,
+        "is_optimal": false,
+        "total_time_ms": 1105.240225999296,
+        "llm_time_ms": 535.4877259997011,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 314,
+        "reasoning": "The plan traverses from node A to node D through the available edges in the graph, then marks the path as complete when the goal node is reached.",
+        "error": null,
+        "had_json_error": false,
+        "had_invalid_actions": false,
+        "action_validation_errors": []
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "graph_traversal",
+        "success": true,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "plan_length": 3,
+        "is_optimal": true,
+        "total_time_ms": 43.99969699989015,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 28.073703000700334,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "reasoning": "PANDA validated plan (5 nodes explored)",
+        "error": null,
+        "had_json_error": false,
+        "had_invalid_actions": false,
+        "action_validation_errors": []
+      },
+      "used_cache": true,
+      "winner": "neuro_symbolic"
+    },
+    {
+      "problem_id": "probabilistic_graph",
+      "problem_name": "Probabilistic Decision Making",
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "probabilistic_graph",
+        "success": true,
+        "plan_actions": [
+          "calculate_expected_values(start)",
+          "select_safe_path()",
+          "traverse_to_goal(end)",
+          "verify_goal(end)"
+        ],
+        "plan_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 631.9552710001517,
+        "llm_time_ms": 583.4932379993916,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 440,
+        "reasoning": "To reach the end node with minimum expected travel time, we first calculate the expected values of the paths. Given the safe path has a certain time of 30 and the risky path has an expected time of 10 + (30 * 0.5) = 25, we choose the safe path to ensure certainty. Then, we traverse to the goal and verify that we have reached it.",
+        "error": null,
+        "had_json_error": false,
+        "had_invalid_actions": false,
+        "action_validation_errors": []
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "probabilistic_graph",
+        "success": true,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "plan_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 21.078631999444042,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 19.35549399968295,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "reasoning": "PANDA validated plan (14 nodes explored)",
+        "error": null,
+        "had_json_error": false,
+        "had_invalid_actions": false,
+        "action_validation_errors": []
+      },
+      "used_cache": false,
+      "winner": "tie"
+    }
+  ],
+  "summary": {
+    "knowledge_engineering": {
+      "domains_from_cache": 1,
+      "llm_calls_saved": 1,
+      "total_tokens_saved": 754
+    },
+    "plan_quality": {
+      "llm_only": {
+        "success_rate": 100.0,
+        "optimality_rate": 50.0,
+        "optimal_plans": 1,
+        "suboptimal_plans": 1,
+        "failed_plans": 0
+      },
+      "neuro_symbolic": {
+        "success_rate": 100.0,
+        "optimality_rate": 100.0,
+        "optimal_plans": 2,
+        "suboptimal_plans": 0,
+        "failed_plans": 0
+      }
+    },
+    "hallucinations": {
+      "llm_only": {
+        "json_parse_failures": 0,
+        "hallucination_rate": 0.0
+      },
+      "neuro_symbolic": {
+        "json_parse_failures": 0,
+        "hallucination_rate": 0.0
+      }
+    },
+    "performance": {
+      "llm_only_total_time_ms": 1737.1954969994476,
+      "neuro_symbolic_total_time_ms": 65.07832899933419,
+      "speedup_factor": 26.693916757100826,
+      "llm_only_tokens": 754,
+      "neuro_symbolic_tokens": 0
+    }
+  }
+}

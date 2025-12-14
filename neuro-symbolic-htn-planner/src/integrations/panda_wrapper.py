@@ -131,7 +131,8 @@ class PANDAWrapper:
         self, 
         panda_root: str,
         timeout: int = 120,
-        work_dir: str = "/tmp/panda"
+        work_dir: str = None,
+        results_dir: str = "./results/panda-results"
     ):
         """
         Initialize PANDA wrapper
@@ -139,11 +140,18 @@ class PANDAWrapper:
         Args:
             panda_root: Path to PANDA-HTN directory
             timeout: Maximum seconds for planning (default 120)
-            work_dir: Working directory for intermediate files
+            work_dir: Working directory for intermediate files (default: results_dir/panda-temp)
+            results_dir: Base directory for all PANDA outputs
         """
         self.panda_root = Path(panda_root)
         self.timeout = timeout
-        self.work_dir = Path(work_dir)
+        self.results_dir = Path(results_dir)
+        
+        # Use consolidated work directory under results
+        if work_dir is None:
+            self.work_dir = self.results_dir / "panda-temp"
+        else:
+            self.work_dir = Path(work_dir)
         
         # Binary paths
         self.parser_bin = self.panda_root / "pandaPIparser" / "pandaPIparser"
@@ -153,10 +161,17 @@ class PANDAWrapper:
         # Validate binaries exist
         self._validate_binaries()
         
-        # Create work directory
+        # Create output directories
+        self.results_dir.mkdir(parents=True, exist_ok=True)
         self.work_dir.mkdir(parents=True, exist_ok=True)
         
+        # Create subdirectories for organized output
+        (self.results_dir / "solutions").mkdir(parents=True, exist_ok=True)
+        (self.results_dir / "parsed").mkdir(parents=True, exist_ok=True)
+        (self.results_dir / "grounded").mkdir(parents=True, exist_ok=True)
+        
         logger.info(f"PANDA wrapper initialized with root: {panda_root}")
+        logger.info(f"PANDA outputs will be saved to: {self.results_dir}")
     
     def _validate_binaries(self):
         """Ensure all PANDA binaries exist and are executable"""
@@ -218,10 +233,11 @@ class PANDAWrapper:
         if output_name is None:
             output_name = problem_path.stem
         
-        parsed_file = self.work_dir / f"{output_name}.parsed"
-        sas_file = self.work_dir / f"{output_name}.sas"
-        plan_file = self.work_dir / f"{output_name}.solution"
-        hddl_plan_file = self.work_dir / f"{output_name}.plan"
+        # Use organized subdirectories for different file types
+        parsed_file = self.results_dir / "parsed" / f"{output_name}.parsed"
+        sas_file = self.results_dir / "grounded" / f"{output_name}.sas"
+        plan_file = self.results_dir / "solutions" / f"{output_name}.solution"
+        hddl_plan_file = self.results_dir / "solutions" / f"{output_name}.plan"
         
         logs = []
         

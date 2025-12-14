@@ -1,0 +1,263 @@
+(define (domain hybrid-hanoi-graph)
+  (:requirements :typing :hierarchy :negative-preconditions)
+  
+  (:types
+    disk - object
+    peg - object
+    graph-node - object
+  )
+  
+  (:predicates
+    ; Hanoi state
+    (on-peg ?d - disk ?p - peg)           ; Disk is on peg
+    (clear ?d - disk)                      ; Nothing on top of disk
+    (clear-peg ?p - peg)                   ; Peg is empty
+    (smaller ?d1 ?d2 - disk)               ; d1 is smaller than d2
+    
+    ; Peg lock state
+    (peg-locked ?p - peg)                  ; Peg is locked (cannot use)
+    (peg-unlocked ?p - peg)                ; Peg is unlocked
+    
+    ; Unlock graph state
+    (unlock-graph-for ?p - peg)            ; This graph unlocks peg p
+    (at-graph-node ?n - graph-node)        ; Current position in graph
+    (graph-edge ?from ?to - graph-node)    ; Edge in unlock graph
+    (graph-goal ?n - graph-node)           ; Goal node in graph
+    (graph-start ?n - graph-node)          ; Start node in graph
+    (solving-unlock ?p - peg)              ; Currently solving unlock for peg
+    (unlock-solved ?p - peg)               ; Unlock graph solved
+    
+    ; Goals
+    (goal-peg ?p - peg)                    ; Target peg for all disks
+    (puzzle-solved)                        ; Full puzzle solved
+  )
+  
+  (:functions
+    (graph-edge-cost ?from ?to - graph-node) - number
+    (unlock-path-cost ?p - peg) - number
+  )
+  
+  ;; ==========================================================
+  ;; ABSTRACT TASKS
+  ;; ==========================================================
+  
+  ;; Main task: Solve hybrid puzzle
+  (:task solve-hybrid-puzzle
+    :parameters (?target - peg))
+  
+  ;; Task: Unlock a locked peg
+  (:task unlock-peg
+    :parameters (?p - peg))
+  
+  ;; Task: Move tower (standard Hanoi)
+  (:task move-tower
+    :parameters (?d - disk ?from ?to ?aux - peg))
+  
+  ;; Task: Solve unlock graph (graph traversal)
+  (:task solve-unlock-graph
+    :parameters (?p - peg ?start ?goal - graph-node))
+  
+  ;; ==========================================================
+  ;; METHODS
+  ;; ==========================================================
+  
+  ;; Method: Solve puzzle by unlocking then moving
+  (:method solve-by-unlock-then-move
+    :parameters (?target - peg ?from ?aux - peg ?d - disk)
+    :task (solve-hybrid-puzzle ?target)
+    :precondition (and
+      (peg-locked ?target)
+      (on-peg ?d ?from)
+    )
+    :subtasks (and
+      (task1 (unlock-peg ?target))
+      (task2 (move-tower ?d ?from ?target ?aux))
+      (task3 (mark-solved ?target))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+    )
+  )
+  
+  ;; Method: Solve puzzle when target already unlocked
+  (:method solve-direct-move
+    :parameters (?target - peg ?from ?aux - peg ?d - disk)
+    :task (solve-hybrid-puzzle ?target)
+    :precondition (and
+      (peg-unlocked ?target)
+      (on-peg ?d ?from)
+    )
+    :subtasks (and
+      (task1 (move-tower ?d ?from ?target ?aux))
+      (task2 (mark-solved ?target))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Unlock peg by solving its graph
+  (:method unlock-via-graph
+    :parameters (?p - peg ?start ?goal - graph-node)
+    :task (unlock-peg ?p)
+    :precondition (and
+      (peg-locked ?p)
+      (unlock-graph-for ?p)
+      (graph-start ?start)
+      (graph-goal ?goal)
+    )
+    :subtasks (and
+      (task1 (enter-graph ?p ?start))
+      (task2 (solve-unlock-graph ?p ?start ?goal))
+      (task3 (complete-unlock ?p))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+    )
+  )
+  
+  ;; Method: Solve graph by traversing to goal (single step)
+  (:method graph-single-step
+    :parameters (?p - peg ?current ?goal - graph-node)
+    :task (solve-unlock-graph ?p ?current ?goal)
+    :precondition (and
+      (at-graph-node ?current)
+      (graph-edge ?current ?goal)
+    )
+    :subtasks (and
+      (task1 (traverse-graph ?current ?goal))
+    )
+  )
+  
+  ;; Method: Solve graph via intermediate node
+  (:method graph-two-step
+    :parameters (?p - peg ?start ?mid ?goal - graph-node)
+    :task (solve-unlock-graph ?p ?start ?goal)
+    :precondition (and
+      (at-graph-node ?start)
+      (graph-edge ?start ?mid)
+      (graph-edge ?mid ?goal)
+    )
+    :subtasks (and
+      (task1 (traverse-graph ?start ?mid))
+      (task2 (traverse-graph ?mid ?goal))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Move single disk (base case for Hanoi)
+  (:method move-single
+    :parameters (?d - disk ?from ?to ?aux - peg)
+    :task (move-tower ?d ?from ?to ?aux)
+    :precondition (and
+      (clear ?d)
+      (on-peg ?d ?from)
+      (peg-unlocked ?from)
+      (peg-unlocked ?to)
+    )
+    :subtasks (and
+      (task1 (move-disk ?d ?from ?to))
+    )
+  )
+  
+  ;; Method: Move multi-disk tower (recursive Hanoi)
+  (:method move-multi
+    :parameters (?top ?bottom - disk ?from ?to ?aux - peg)
+    :task (move-tower ?bottom ?from ?to ?aux)
+    :precondition (and
+      (smaller ?top ?bottom)
+      (clear ?top)
+      (on-peg ?top ?from)
+      (on-peg ?bottom ?from)
+      (peg-unlocked ?from)
+      (peg-unlocked ?to)
+      (peg-unlocked ?aux)
+    )
+    :subtasks (and
+      (task1 (move-tower ?top ?from ?aux ?to))
+      (task2 (move-disk ?bottom ?from ?to))
+      (task3 (move-tower ?top ?aux ?to ?from))
+    )
+    :ordering (and
+      (task1 < task2)
+      (task2 < task3)
+    )
+  )
+  
+  ;; ==========================================================
+  ;; PRIMITIVE ACTIONS
+  ;; ==========================================================
+  
+  ;; Enter unlock graph mode
+  (:action enter-graph
+    :parameters (?p - peg ?start - graph-node)
+    :precondition (and
+      (peg-locked ?p)
+      (graph-start ?start)
+    )
+    :effect (and
+      (at-graph-node ?start)
+      (solving-unlock ?p)
+    )
+  )
+  
+  ;; Traverse graph edge
+  (:action traverse-graph
+    :parameters (?from ?to - graph-node)
+    :precondition (and
+      (at-graph-node ?from)
+      (graph-edge ?from ?to)
+    )
+    :effect (and
+      (at-graph-node ?to)
+      (not (at-graph-node ?from))
+    )
+  )
+  
+  ;; Complete unlock after reaching goal
+  (:action complete-unlock
+    :parameters (?p - peg)
+    :precondition (and
+      (solving-unlock ?p)
+      (peg-locked ?p)
+    )
+    :effect (and
+      (peg-unlocked ?p)
+      (not (peg-locked ?p))
+      (not (solving-unlock ?p))
+      (unlock-solved ?p)
+    )
+  )
+  
+  ;; Move disk between pegs
+  (:action move-disk
+    :parameters (?d - disk ?from ?to - peg)
+    :precondition (and
+      (on-peg ?d ?from)
+      (clear ?d)
+      (peg-unlocked ?from)
+      (peg-unlocked ?to)
+    )
+    :effect (and
+      (on-peg ?d ?to)
+      (not (on-peg ?d ?from))
+    )
+  )
+  
+  ;; Mark puzzle as solved
+  (:action mark-solved
+    :parameters (?target - peg)
+    :precondition (and
+      (goal-peg ?target)
+      (peg-unlocked ?target)
+    )
+    :effect (and
+      (puzzle-solved)
+    )
+  )
+)
+

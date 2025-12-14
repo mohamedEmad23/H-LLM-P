@@ -1,0 +1,58 @@
+{
+  "domains": {
+    "tower_of_hanoi": {
+      "domain_name": "tower_of_hanoi",
+      "domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/tower_of_hanoi/domain.hddl",
+      "problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/tower_of_hanoi/problem.hddl",
+      "generated_at": "2025-12-14T18:00:38.109586",
+      "generation_time_ms": 0.0,
+      "method_count": 0,
+      "action_count": 0,
+      "predicate_count": 0,
+      "source": "hand_coded",
+      "llm_provider": null,
+      "llm_model": null,
+      "validation_status": "valid",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "panda_validated": false,
+      "usage_count": 6,
+      "last_used": "2025-12-14T18:49:58.151104",
+      "success_count": 1,
+      "failure_count": 0,
+      "version": 1,
+      "previous_version_hash": null
+    },
+    "graph_traversal": {
+      "domain_name": "graph_traversal",
+      "domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/domain.hddl",
+      "problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/problem.hddl",
+      "generated_at": "2025-12-14T18:00:38.111531",
+      "generation_time_ms": 0.0,
+      "method_count": 0,
+      "action_count": 0,
+      "predicate_count": 0,
+      "source": "hand_coded",
+      "llm_provider": null,
+      "llm_model": null,
+      "validation_status": "valid",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "panda_validated": false,
+      "usage_count": 11,
+      "last_used": "2025-12-14T18:54:25.258739",
+      "success_count": 1,
+      "failure_count": 0,
+      "version": 1,
+      "previous_version_hash": null
+    }
+  },
+  "stats": {
+    "lookups": 17,
+    "lookup_hits": 9,
+    "lookup_misses": 0,
+    "registrations": 2,
+    "updates": 0
+  },
+  "last_updated": "2025-12-14T18:54:25.258863"
+}

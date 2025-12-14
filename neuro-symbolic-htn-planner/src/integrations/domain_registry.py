@@ -130,10 +130,7 @@ class DomainRegistry:
         # In-memory registry: domain_name -> RegisteredDomain
         self.registry: Dict[str, RegisteredDomain] = {}
         
-        # Load existing registry
-        self._load()
-        
-        # Statistics
+        # Statistics (initialize BEFORE _load so it can be updated from saved data)
         self.stats = {
             "lookups": 0,
             "lookup_hits": 0,
@@ -141,6 +138,9 @@ class DomainRegistry:
             "registrations": 0,
             "updates": 0
         }
+        
+        # Load existing registry (will update self.stats if present in saved data)
+        self._load()
         
         logger.info(
             f"DomainRegistry initialized with {len(self.registry)} domains "

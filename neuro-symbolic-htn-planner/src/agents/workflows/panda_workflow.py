@@ -332,6 +332,21 @@ class PANDAWorkflow:
                 workflow_result["error"] = "HDDL generation/validation failed"
                 return await self._finalize_workflow(workflow_result, workflow_start)
             
+            # ========== LOG PERSISTENCE STATUS ==========
+            if decomposition_result.get("persisted"):
+                logger.success(
+                    f"[WORKFLOW] ★ Domain persisted to "
+                    f"{decomposition_result.get('hddl_domain_file')}"
+                )
+                workflow_result["domain_persisted"] = True
+            if decomposition_result.get("from_registry"):
+                logger.success(
+                    f"[WORKFLOW] ★ Domain loaded from registry "
+                    f"(skipped LLM generation)"
+                )
+                workflow_result["domain_from_registry"] = True
+            # ============================================
+            
             # Phase 3: PANDA HTN Planning
             logger.info("[WORKFLOW] Phase 3: PANDA HTN Planning")
             panda_result = await self._phase3_panda_planning(

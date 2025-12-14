@@ -1,0 +1,115 @@
+{
+  "timestamp": "2025-12-14T18:00:38.108082",
+  "config": {
+    "results_dir": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/panda-results",
+    "domains_dir": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains",
+    "panda_available": true
+  },
+  "benchmarks": {
+    "domain_registry": {
+      "benchmark": "domain_registry_lookup",
+      "iterations": 5,
+      "lookup_times_ms": [
+        0.33460200029367115,
+        0.9866609998425702,
+        0.43830399999933434,
+        0.4059570001118118,
+        0.3750280002350337,
+        4.008643999895867,
+        0.8071299998846371,
+        1.1211840001124074,
+        0.7921530000203347,
+        0.5081770000288088
+      ],
+      "cache_hits": 10,
+      "cache_misses": 0,
+      "avg_lookup_time_ms": 0.9777840000424476,
+      "min_lookup_time_ms": 0.33460200029367115,
+      "max_lookup_time_ms": 4.008643999895867,
+      "hit_rate": 1.0
+    },
+    "problem_cache": {
+      "benchmark": "problem_cache_lookup",
+      "iterations": 5,
+      "lookup_times_ms": [
+        0.1163280003311229,
+        0.06928699986019637,
+        0.05735199965783977,
+        0.04860800027017831,
+        0.04712999998446321,
+        1.827230999879248,
+        1.3596129997495154,
+        2.300170000125945,
+        1.595350999650691,
+        1.543420999951195
+      ],
+      "cache_hits": 5,
+      "cache_misses": 5,
+      "estimated_time_saved_ms": 25000.0,
+      "avg_lookup_time_ms": 0.8964490999460395,
+      "hit_rate": 0.5
+    },
+    "speedup_comparison": {
+      "benchmark": "speedup_comparison",
+      "first_run": {
+        "total_ms": 5000,
+        "llm_call_ms": 3500,
+        "panda_ms": 1000,
+        "cache_lookup_ms": 0
+      },
+      "cached_run": {
+        "total_ms": 0.5,
+        "llm_call_ms": 0,
+        "panda_ms": 0,
+        "cache_lookup_ms": 0.5
+      },
+      "speedup_factor": 10000.0
+    },
+    "panda_planning": {
+      "benchmark": "panda_planning",
+      "iterations": 3,
+      "planning_times_ms": [
+        80.89583099990705,
+        28.731348999826878,
+        25.101903000177117
+      ],
+      "plan_lengths": [
+        3,
+        3,
+        3
+      ],
+      "nodes_expanded": [
+        5,
+        5,
+        5
+      ],
+      "avg_planning_time_ms": 44.90969433330368
+    }
+  },
+  "registry_stats": {
+    "total_domains": 2,
+    "llm_generated": 0,
+    "hand_coded": 2,
+    "total_usage": 10,
+    "total_successes": 2,
+    "total_failures": 0,
+    "overall_success_rate": 1.0,
+    "lookup_hit_rate": 1.0,
+    "most_used_domain": "tower_of_hanoi",
+    "lookups": 10,
+    "lookup_hits": 10,
+    "lookup_misses": 0,
+    "registrations": 2,
+    "updates": 0
+  },
+  "cache_stats": {
+    "total_cached_problems": 2,
+    "total_cache_hits": 6,
+    "domains": [
+      "graph_traversal"
+    ],
+    "most_accessed": "benchmark_test",
+    "most_accessed_hits": 5,
+    "avg_time_saved_ms": 5390.859333333333
+  }
+}
