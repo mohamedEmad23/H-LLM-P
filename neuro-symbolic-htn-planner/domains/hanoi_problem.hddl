@@ -1,0 +1,29 @@
+(define (problem hanoi-problem)
+  (:domain hanoi)
+  
+  (:objects
+    disk1 disk2 disk3 - disk
+    peg-A peg-B peg-C - peg
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task (move-tower disk3 peg-A peg-C peg-B))
+    )
+  )
+  
+  (:init
+    (on disk3 peg-A)
+    (on disk2 peg-A)
+    (on disk1 peg-A)
+    (clear peg-B)
+    (clear peg-C)
+  )
+  
+  (:goal (and
+    (on disk3 peg-C)
+    (on disk2 peg-C)
+    (on disk1 peg-C)
+  ))
+)

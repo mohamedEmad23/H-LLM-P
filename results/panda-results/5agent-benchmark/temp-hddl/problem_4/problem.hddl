@@ -1,0 +1,35 @@
+(define (problem resource_scheduling_problem)
+ (:domain resource_scheduling)
+ 
+ (:objects
+ task-A task-B task-C task-D - task
+ resource-cpu resource-memory resource-gpu - resource
+ )
+ 
+ (:htn
+ :parameters ()
+ :subtasks (and
+ (task0 (schedule-task task-A))
+ (task1 (schedule-task task-B))
+ (task2 (schedule-task task-C))
+ (task3 (schedule-task task-D))
+ )
+ )
+ 
+ (:init
+ (task-defined task-A)
+ (task-defined task-B)
+ (task-defined task-C)
+ (task-defined task-D)
+ (resource-defined resource-cpu)
+ (resource-defined resource-memory)
+ (resource-defined resource-gpu)
+ )
+ 
+ (:goal (and
+ (task-completed task-A)
+ (task-completed task-B)
+ (task-completed task-C)
+ (task-completed task-D)
+ ))
+)

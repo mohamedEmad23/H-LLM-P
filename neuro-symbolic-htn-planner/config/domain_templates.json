@@ -1,0 +1,33 @@
+{
+  "templates": {
+    "graph_traversal": {
+      "domain_path": "src/domains/graph_traversal/domain.hddl",
+      "problem_path": "src/domains/graph_traversal/problem.hddl",
+      "keywords": ["graph", "traversal", "path", "node", "edge", "weight", "knowledge gap", "query"],
+      "problem_patterns": ["find path", "navigate", "shortest path", "weighted graph", "incomplete information"],
+      "description": "Graph traversal with knowledge gaps requiring edge weight queries"
+    },
+    "tower_of_hanoi": {
+      "domain_path": "src/domains/tower_of_hanoi/domain.hddl",
+      "problem_path": "src/domains/tower_of_hanoi/problem.hddl",
+      "keywords": ["hanoi", "tower", "disk", "peg", "move", "stack", "recursive", "constraint"],
+      "problem_patterns": ["move disks", "tower", "hanoi", "stacking", "peg constraints"],
+      "description": "Tower of Hanoi with constraints and recursive decomposition"
+    },
+    "probabilistic_graph": {
+      "domain_path": "src/domains/probabilistic_graph/domain.hddl",
+      "problem_path": "src/domains/probabilistic_graph/problem.hddl",
+      "keywords": ["probabilistic", "uncertainty", "success rate", "risk", "choice", "stochastic"],
+      "problem_patterns": ["uncertain", "probability", "risky path", "success rate", "decision under uncertainty"],
+      "description": "Probabilistic planning with uncertain action outcomes"
+    },
+    "resource_scheduling": {
+      "domain_path": "src/domains/resource_scheduling/domain.hddl",
+      "problem_path": "src/domains/resource_scheduling/problem.hddl",
+      "keywords": ["schedule", "resource", "task", "dependency", "allocation", "constraint", "priority"],
+      "problem_patterns": ["schedule tasks", "allocate resources", "task dependencies", "resource constraints", "priority"],
+      "description": "Multi-resource task scheduling with dependencies and constraints"
+    }
+  },
+  "fallback_template": "graph_traversal"
+}

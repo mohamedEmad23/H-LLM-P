@@ -1,0 +1,35 @@
+(define (problem navigation-problem)
+ (:domain probabilistic_planning)
+ 
+ (:objects
+ Start A B End - node
+ safe-path risky-path - path
+ )
+ 
+ (:htn
+ :parameters ()
+ :subtasks (and
+ (task0 (navigate Start End))
+ )
+ )
+ 
+ (:init
+ (current-node Start)
+ (edge-known Start A)
+ (edge-known A End)
+ (edge-known Start B)
+ (edge-known B End)
+ (safe-route safe-path)
+ (risky-route risky-path)
+ (base-time-known safe-path)
+ (penalty-known safe-path)
+ (penalty-probability-known safe-path)
+ (base-time-known risky-path)
+ (penalty-known risky-path)
+ (penalty-probability-known risky-path)
+ )
+ 
+ (:goal (and
+ (current-node End)
+ ))
+)

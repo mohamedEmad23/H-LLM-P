@@ -1,0 +1,22 @@
+(define (problem simple_delivery-p01)
+  (:domain simple_delivery)
+  
+  (:objects
+    robot - robot
+    package - package
+    location-a location-b - location
+  )
+  
+  (:init
+    (at robot location-a)
+    (at package location-a)
+    (connected location-a location-b)
+    (connected location-b location-a)
+  )
+  
+  (:htn
+    :ordered-tasks (and
+      (deliver-package)
+    )
+  )
+)

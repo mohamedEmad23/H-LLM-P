@@ -1,0 +1,24 @@
+(define (problem scheduling-problem)
+  (:domain scheduling)
+  
+  (:objects
+    task-A task-B task-C task-D - task
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (sched (schedule-all))
+    )
+  )
+  
+  (:init
+  )
+  
+  (:goal (and
+    (task-completed task-A)
+    (task-completed task-B)
+    (task-completed task-C)
+    (task-completed task-D)
+  ))
+)

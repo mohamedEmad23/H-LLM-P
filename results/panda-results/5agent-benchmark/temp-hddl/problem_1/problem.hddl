@@ -1,0 +1,31 @@
+(define (problem graph_traversal_problem)
+ (:domain graph_traversal)
+ 
+ (:objects
+ A B C D - node
+ )
+ 
+ (:htn
+ :parameters ()
+ :subtasks (and
+ (task0 (find-shortest-path A D B))
+ )
+ )
+ 
+ (:init
+ (current-node A)
+ (edge-exists A B)
+ (edge-exists B C)
+ (edge-exists C D)
+ (edge-exists A C)
+ (weight-known A B)
+ (weight-known C D)
+ (weight-known A C)
+ (not (weight-known B C))
+ )
+ 
+ (:goal (and
+ (current-node D)
+ (path-passes-through B)
+ ))
+)

@@ -1,2 +1,40 @@
-==>
-root
+(define (problem probabilistic-graph-p01)
+  (:domain probabilistic-graph)
+  
+  (:objects
+    Start A B End - node
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task1 (solve-probabilistic-graph Start End))
+    )
+  )
+  
+  (:init
+    ;; Starting position
+    (at Start)
+    
+    ;; Goal destination
+    (goal-node End)
+    
+    ;; Graph structure (safe and risky paths)
+    ;; Safe path: Start -> A -> End
+    (connected Start A)
+    (connected A End)
+    
+    ;; Risky path: Start -> B -> End
+    (connected Start B)
+    (connected B End)
+    
+    ;; No path chosen yet
+    ;; (path-chosen) - not set initially
+    ;; (expected-value-calculated) - not set initially
+  )
+  
+  (:goal (and
+    (goal-reached)
+    (at End)
+  ))
+)

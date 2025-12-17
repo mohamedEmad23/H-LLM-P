@@ -1,0 +1,91 @@
+(define (domain simple_delivery)
+  (:requirements :typing :hierarchy)
+  
+  (:types
+    location package robot - object
+  )
+  
+  (:predicates
+    (at ?obj - object ?loc - location)
+    (holding ?pkg - package)
+    (connected ?loc1 - location ?loc2 - location)
+  )
+  
+  (:task deliver-package
+    :parameters ()
+    :method (method-deliver-package)
+  )
+  
+  (:method method-deliver-package
+    :parameters ()
+    :task (deliver-package)
+    :precondition ()
+    :subtasks (and
+      (move-to-b)
+      (pick-package)
+      (move-to-b)
+      (put-package)
+    )
+    :ordering ((move-to-b pick-package) (pick-package move-to-b) (move-to-b put-package))
+  )
+  
+  (:task move-to-b
+    :parameters ()
+    :method (method-move-to-b)
+  )
+  
+  (:method method-move-to-b
+    :parameters ()
+    :task (move-to-b)
+    :precondition (at robot location-a)
+    :subtasks (and
+      (move-robot location-a location-b)
+    )
+  )
+  
+  (:task pick-package
+    :parameters ()
+    :method (method-pick-package)
+  )
+  
+  (:method method-pick-package
+    :parameters ()
+    :task (pick-package)
+    :precondition (and (at robot location-a) (at package location-a) (not (holding package)))
+    :subtasks (and
+      (pick package)
+    )
+  )
+  
+  (:task put-package
+    :parameters ()
+    :method (method-put-package)
+  )
+  
+  (:method method-put-package
+    :parameters ()
+    :task (put-package)
+    :precondition (and (at robot location-b) (holding package))
+    :subtasks (and
+      (put package)
+    )
+  )
+  
+  (:action move-robot
+    :parameters (?from - location ?to - location)
+    :precondition (and (at robot ?from) (connected ?from ?to))
+    :effect (and (at robot ?to) (not (at robot ?from)))
+  )
+  
+  (:action pick
+    :parameters (?pkg - package)
+    :precondition (and (at robot location-a) (at ?pkg location-a) (not (holding ?pkg)))
+    :effect (holding ?pkg)
+  )
+  
+  (:action put
+    :parameters (?pkg - package)
+    :precondition (and (at robot location-b) (holding ?pkg))
+    :effect (and (at ?pkg location-b) (not (holding ?pkg)))
+  )
+)

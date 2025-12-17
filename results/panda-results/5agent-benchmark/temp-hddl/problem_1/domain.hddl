@@ -1,0 +1,67 @@
+(define (domain graph_traversal)
+ (:requirements :typing :hierarchy)
+ 
+ (:types
+ node edge - object
+ )
+ 
+ (:predicates (current-node ?n - node)
+ (edge-exists ?from - node ?to - node)
+ (weight-known ?from - node ?to - node)
+ (weight-defined ?from - node ?to - node)
+ (path-passes-through ?n - node)
+ (visited ?n - node)
+ (research-done ?from - node ?to - node)
+ )
+ 
+ (:task find-shortest-path :parameters (?start - node ?end - node ?pass-through - node)
+ )
+ 
+ (:method find-shortest-path-with-research :parameters (?start - node ?end - node ?pass-through - node ?from - node ?to - node)
+ :task (find-shortest-path ?start ?end ?pass-through)
+ :precondition (and
+ (current-node ?start)
+ (edge-exists ?from ?to)
+ (not (weight-known ?from ?to))
+ )
+ :subtasks (and
+ (t1 (research ?from ?to))
+ (t2 (find-shortest-path ?start ?end ?pass-through))
+ )
+ :ordering (t1 < t2)
+ )
+ 
+ (:method find-shortest-path-without-research :parameters (?start - node ?end - node ?pass-through - node)
+ :task (find-shortest-path ?start ?end ?pass-through)
+ :precondition (and
+ (current-node ?start)
+ (edge-exists ?start ?end)
+ (weight-known ?start ?end)
+ )
+ :subtasks ()
+ )
+ 
+ (:action research :parameters (?from - node ?to - node)
+ :precondition (and
+ (edge-exists ?from ?to)
+ (not (weight-known ?from ?to))
+ )
+ :effect (and
+ (weight-known ?from ?to)
+ (research-done ?from ?to)
+ )
+ )
+ 
+ (:action move :parameters (?from - node ?to - node)
+ :precondition (and
+ (current-node ?from)
+ (edge-exists ?from ?to)
+ (weight-known ?from ?to)
+ )
+ :effect (and
+ (current-node ?to)
+ (not (current-node ?from))
+ (visited ?from)
+ )
+ )
+)

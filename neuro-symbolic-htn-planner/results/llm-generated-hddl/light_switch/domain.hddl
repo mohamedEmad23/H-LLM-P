@@ -1,0 +1,76 @@
+(define (domain light_switch)
+  (:requirements :typing :hierarchy)
+  
+  (:types 
+    light - object
+  )
+  
+  (:predicates
+    (on ?light - light)
+    (off ?light - light)
+  )
+  
+  (:task control-lights
+    :parameters ()
+  )
+  
+  (:method method-control-lights
+    :parameters ()
+    :task (control-lights)
+    :precondition ()
+    :subtasks (and
+      (turn-on-light1)
+      (turn-on-light2)
+    )
+  )
+  
+  (:task turn-on-light1
+    :parameters ()
+  )
+  
+  (:method method-turn-on-light1
+    :parameters ()
+    :task (turn-on-light1)
+    :precondition (off light1)
+    :subtasks (and
+      (turn-on-light1-action)
+    )
+  )
+  
+  (:task turn-on-light2
+    :parameters ()
+  )
+  
+  (:method method-turn-on-light2
+    :parameters ()
+    :task (turn-on-light2)
+    :precondition (off light2)
+    :subtasks (and
+      (turn-on-light2-action)
+    )
+  )
+  
+  (:action turn-on-light1-action
+    :parameters ()
+    :precondition (off light1)
+    :effect (on light1)
+  )
+  
+  (:action turn-on-light2-action
+    :parameters ()
+    :precondition (off light2)
+    :effect (on light2)
+  )
+  
+  (:action turn-off-light1-action
+    :parameters ()
+    :precondition (on light1)
+    :effect (off light1)
+  )
+  
+  (:action turn-off-light2-action
+    :parameters ()
+    :precondition (on light2)
+    :effect (off light2)
+  )
+)

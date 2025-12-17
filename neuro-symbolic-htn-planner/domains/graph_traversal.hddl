@@ -1,0 +1,79 @@
+(define (domain graph_traversal)
+  (:requirements :typing :hierarchy)
+  
+  (:types node - object)
+  
+  (:predicates
+    (current-node ?n - node)
+    (edge-exists ?from ?to - node)
+    (weight-known ?from ?to - node)
+    (visited ?n - node)
+  )
+  
+  (:task find-path :parameters (?start ?goal - node))
+  
+  (:method direct-path
+    :parameters (?start ?goal - node)
+    :task (find-path ?start ?goal)
+    :precondition (and
+      (edge-exists ?start ?goal)
+      (weight-known ?start ?goal)
+    )
+    :subtasks (and
+      (move ?start ?goal)
+    )
+  )
+  
+  (:method via-intermediate
+    :parameters (?start ?via ?goal - node)
+    :task (find-path ?start ?goal)
+    :precondition (and
+      (edge-exists ?start ?via)
+      (weight-known ?start ?via)
+      (edge-exists ?via ?goal)
+      (weight-known ?via ?goal)
+    )
+    :subtasks (and
+      (t1 (move ?start ?via))
+      (t2 (move ?via ?goal))
+    )
+    :ordering (and (t1 < t2))
+  )
+  
+  (:method with-research
+    :parameters (?start ?next ?goal - node)
+    :task (find-path ?start ?goal)
+    :precondition (and
+      (edge-exists ?start ?next)
+      (not (weight-known ?start ?next))
+    )
+    :subtasks (and
+      (t1 (research ?start ?next))
+      (t2 (find-path ?start ?goal))
+    )
+    :ordering (and (t1 < t2))
+  )
+  
+  (:action research
+    :parameters (?from ?to - node)
+    :precondition (and
+      (edge-exists ?from ?to)
+      (not (weight-known ?from ?to))
+    )
+    :effect (weight-known ?from ?to)
+  )
+  
+  (:action move
+    :parameters (?from ?to - node)
+    :precondition (and
+      (current-node ?from)
+      (edge-exists ?from ?to)
+      (weight-known ?from ?to)
+    )
+    :effect (and
+      (current-node ?to)
+      (not (current-node ?from))
+      (visited ?from)
+    )
+  )
+)

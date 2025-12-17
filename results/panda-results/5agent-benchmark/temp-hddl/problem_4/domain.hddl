@@ -1,0 +1,74 @@
+(define (domain resource_scheduling)
+ (:requirements :typing :hierarchy)
+ 
+ (:types
+ task resource - object
+ )
+ 
+ (:predicates (task-defined ?t - task)
+ (resource-defined ?r - resource)
+ (cpu-allocated ?t - task ?r - resource)
+ (memory-allocated ?t - task ?r - resource)
+ (gpu-allocated ?t - task ?r - resource)
+ (task-started ?t - task)
+ (task-completed ?t - task)
+ (dependency-met ?t1 - task ?t2 - task)
+ (high-priority ?t - task)
+ (medium-priority ?t - task)
+ (low-priority ?t - task)
+ (deadline-met ?t - task)
+ (resource-available ?r - resource)
+ )
+ 
+ (:task schedule-task :parameters (?t - task)
+ )
+ 
+ (:task allocate-resources :parameters (?t - task)
+ )
+ 
+ (:method schedule-by-priority :parameters (?t - task)
+ :task (schedule-task ?t)
+ :precondition (task-defined ?t)
+ :subtasks (and
+ (t1 (allocate-resources ?t))
+ (t2 (start-task ?t))
+ )
+ :ordering (t1 < t2)
+ )
+ 
+ (:method allocate-resources-method :parameters (?t - task)
+ :task (allocate-resources ?t)
+ :precondition (task-defined ?t)
+ :subtasks (and
+ (t1 (allocate-cpu ?t))
+ (t2 (allocate-memory ?t))
+ (t3 (allocate-gpu ?t))
+ )
+ :ordering (and (t1 < t2) (t2 < t3))
+ )
+ 
+ (:action allocate-cpu :parameters (?t - task)
+ :precondition (task-defined ?t)
+ :effect (cpu-allocated ?t resource-cpu)
+ )
+ 
+ (:action allocate-memory :parameters (?t - task)
+ :precondition (task-defined ?t)
+ :effect (memory-allocated ?t resource-memory)
+ )
+ 
+ (:action allocate-gpu :parameters (?t - task)
+ :precondition (task-defined ?t)
+ :effect (gpu-allocated ?t resource-gpu)
+ )
+ 
+ (:action start-task :parameters (?t - task)
+ :precondition (and (cpu-allocated ?t resource-cpu) (memory-allocated ?t resource-memory) (gpu-allocated ?t resource-gpu))
+ :effect (task-started ?t)
+ )
+ 
+ (:action complete-task :parameters (?t - task)
+ :precondition (task-started ?t)
+ :effect (task-completed ?t)
+ )
+)

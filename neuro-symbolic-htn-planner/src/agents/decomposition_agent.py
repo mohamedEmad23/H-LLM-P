@@ -27,6 +27,7 @@ from ..integrations.hddl_domain_generator import HDDLDomainGenerator, HDDLDomain
 from ..integrations.panda_wrapper import PANDAWrapper
 from ..integrations.domain_registry import DomainRegistry
 from ..integrations.panda_method_library import PANDAMethodLibrary
+import re
 
 
 class DecompositionAgent(BaseAgent):
@@ -80,6 +81,10 @@ class DecompositionAgent(BaseAgent):
         
         # Hand-coded fallback domains
         self.fallback_domains_path = Path(config.get("fallback_domains_path", "./src/domains") if config else "./src/domains")
+        
+        # Domain template selector configuration
+        templates_path = config.get("templates_path", "./config/domain_templates.json") if config else "./config/domain_templates.json"
+        self._load_domain_templates(templates_path)
         
         # Validation attempts before fallback
         self.max_validation_attempts = config.get("max_validation_attempts", 3) if config else 3
@@ -1183,7 +1188,125 @@ class DecompositionAgent(BaseAgent):
         
         except Exception as e:
             logger.error(f"[PANDA] Hand-coded fallback failed: {e}")
+            return {"success": False, "error": str(e)}
+
+    # ========== DOMAIN TEMPLATE SELECTION ==========
+    
+    def _load_domain_templates(self, templates_path: str):
+        """Load domain templates configuration"""
+        try:
+            templates_file = Path(templates_path)
+            if templates_file.exists():
+                with open(templates_file, 'r') as f:
+                    self.domain_templates = json.load(f)
+                logger.info(f"[TEMPLATE] Loaded {len(self.domain_templates.get('templates', {}))} domain templates")
+            else:
+                logger.warning(f"[TEMPLATE] Template file not found: {templates_path}, using empty templates")
+                self.domain_templates = {"templates": {}, "fallback_template": "graph_traversal"}
+        except Exception as e:
+            logger.error(f"[TEMPLATE] Failed to load templates: {e}")
+            self.domain_templates = {"templates": {}, "fallback_template": "graph_traversal"}
+    
+    def select_domain_template(self, problem_description: str, domain_hint: str = None) -> Dict:
+        """
+        Analyze problem and select best matching domain template.
+        
+        Args:
+            problem_description: Natural language problem description
+            domain_hint: Optional domain name hint (e.g., "graph_traversal")
+            
+        Returns:
+            {
+                "success": bool,
+                "template_name": str,
+                "domain_path": str,
+                "problem_path": str,
+                "confidence": float,
+                "reasoning": str
+            }
+        """
+        templates = self.domain_templates.get("templates", {})
+        
+        if not templates:
             return {
                 "success": False,
-                "error": f"Fallback failed: {str(e)}"
+                "error": "No domain templates available"
             }
+        
+        # If domain hint matches template exactly, use it
+        if domain_hint and domain_hint in templates:
+            template = templates[domain_hint]
+            logger.info(f"[TEMPLATE] Using exact domain match: {domain_hint}")
+            return {
+                "success": True,
+                "template_name": domain_hint,
+                "domain_path": template["domain_path"],
+                "problem_path": template["problem_path"],
+                "confidence": 1.0,
+                "reasoning": f"Exact domain match: {domain_hint}"
+            }
+        
+        # Score each template based on keyword matching
+        problem_lower = problem_description.lower()
+        scores = {}
+        
+        for template_name, template_data in templates.items():
+            score = 0.0
+            matched_keywords = []
+            
+            # Check keywords
+            for keyword in template_data.get("keywords", []):
+                if keyword.lower() in problem_lower:
+                    score += 1.0
+                    matched_keywords.append(keyword)
+            
+            # Check problem patterns
+            for pattern in template_data.get("problem_patterns", []):
+                if pattern.lower() in problem_lower:
+                    score += 2.0  # Patterns weigh more
+                    matched_keywords.append(f"pattern:{pattern}")
+            
+            scores[template_name] = {
+                "score": score,
+                "matched": matched_keywords
+            }
+        
+        # Select best match
+        if not scores or all(s["score"] == 0 for s in scores.values()):
+            # No matches, use fallback
+            fallback = self.domain_templates.get("fallback_template", "graph_traversal")
+            if fallback in templates:
+                logger.warning(f"[TEMPLATE] No keyword matches, using fallback: {fallback}")
+                template = templates[fallback]
+                return {
+                    "success": True,
+                    "template_name": fallback,
+                    "domain_path": template["domain_path"],
+                    "problem_path": template["problem_path"],
+                    "confidence": 0.3,
+                    "reasoning": "No keyword matches, using fallback template"
+                }
+        
+        # Get best match
+        best_match = max(scores.items(), key=lambda x: x[1]["score"])
+        template_name = best_match[0]
+        match_data = best_match[1]
+        template = templates[template_name]
+        
+        confidence = min(match_data["score"] / 3.0, 1.0)  # Normalize to 0-1
+        
+        logger.success(f"[TEMPLATE] Selected '{template_name}' (score={match_data['score']:.1f}, confidence={confidence:.2f})")
+        logger.debug(f"[TEMPLATE] Matched keywords: {match_data['matched']}")
+        
+        return {
+            "success": True,
+            "template_name": template_name,
+            "domain_path": template["domain_path"],
+            "problem_path": template["problem_path"],
+            "confidence": confidence,
+            "reasoning": f"Matched {len(match_data['matched'])} keywords/patterns: {', '.join(match_data['matched'][:3])}"
+        }
+        return {
+                "success": False,
+                "error": f"Fallback failed: {str(e)}"
+        }

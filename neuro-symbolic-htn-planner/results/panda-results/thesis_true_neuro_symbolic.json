@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-15T15:17:29.076604",
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "total_problems": 3,
+    "max_validation_attempts": 3,
+    "output_directory": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl",
+    "real_llm_calls": true,
+    "hand_coded_domains": false
+  },
+  "problem_results": [
+    {
+      "problem_id": "simple_delivery",
+      "problem_name": "Simple Package Delivery",
+      "hddl_generation": {
+        "success": false,
+        "domain_file": "",
+        "problem_file": "",
+        "validation_attempts": 3,
+        "validation_errors": [
+          "\u001b[31mParse error\u001b[0m in file /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/simple_delivery/domain.hddl in line \u001b[1m28\u001b[0m",
+          "\u001b[31mParse error\u001b[0m in file /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/simple_delivery/domain.hddl in line \u001b[1m28\u001b[0m",
+          "\u001b[31mParse error\u001b[0m in file /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/simple_delivery/domain.hddl in line \u001b[1m16\u001b[0m"
+        ],
+        "llm_calls": 6,
+        "llm_tokens": 6640,
+        "generation_time_ms": 4990.826300999288,
+        "error": "Validation failed after 3 attempts"
+      },
+      "planning": {
+        "success": false,
+        "error": "HDDL generation failed"
+      },
+      "overall_success": false
+    },
+    {
+      "problem_id": "light_switch",
+      "problem_name": "Light Switch Control",
+      "hddl_generation": {
+        "success": true,
+        "domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/light_switch/domain.hddl",
+        "problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/light_switch/problem.hddl",
+        "validation_attempts": 1,
+        "validation_errors": [],
+        "llm_calls": 2,
+        "llm_tokens": 1633,
+        "generation_time_ms": 1305.7802280000033,
+        "error": null
+      },
+      "planning": {
+        "success": true,
+        "plan_actions": [
+          "turn-on-light1-action()",
+          "turn-on-light2-action()"
+        ],
+        "plan_length": 2,
+        "expected_length": 2,
+        "is_optimal": true,
+        "planning_time_ms": 28.04943000046478,
+        "nodes_expanded": 4,
+        "error": null
+      },
+      "overall_success": true
+    },
+    {
+      "problem_id": "block_stacking",
+      "problem_name": "Simple Block Stacking",
+      "hddl_generation": {
+        "success": false,
+        "domain_file": "",
+        "problem_file": "",
+        "validation_attempts": 3,
+        "validation_errors": [
+          "\u001b[31mParse error\u001b[0m in file /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/block_stacking/domain.hddl in line \u001b[1m29\u001b[0m",
+          "\u001b[31mParse error\u001b[0m in file /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/llm-generated-hddl/block_stacking/domain.hddl in line \u001b[1m18\u001b[0m"
+        ],
+        "llm_calls": 6,
+        "llm_tokens": 9607,
+        "generation_time_ms": 21491.41106299976,
+        "error": "Validation failed after 3 attempts"
+      },
+      "planning": {
+        "success": false,
+        "error": "HDDL generation failed"
+      },
+      "overall_success": false
+    }
+  ],
+  "summary": {
+    "total_problems": 3,
+    "hddl_generation_success": 1,
+    "planning_success": 1,
+    "total_llm_calls": 14,
+    "total_tokens": 17880,
+    "total_validation_attempts": 7
+  }
+}

@@ -1,0 +1,57 @@
+(define (problem resource-scheduling-p01)
+  (:domain resource-scheduling)
+  
+  (:objects
+    taskA taskB taskC taskD - task
+    cpu memory gpu - resource
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task1 (schedule-all))
+    )
+  )
+  
+  (:init
+    ;; Initial task readiness
+    (task-ready taskA)    ; No dependencies
+    (task-ready taskC)    ; No dependencies
+    ;; taskB depends on taskA (not ready initially)
+    ;; taskD depends on taskB (not ready initially)
+    
+    ;; Dependencies
+    (depends-on taskB taskA)
+    (depends-on taskD taskB)
+    
+    ;; Priorities
+    (high-priority taskA)
+    (high-priority taskC)
+    ;; taskB and taskD are normal priority
+    
+    ;; Resource usage
+    (uses-resource taskA cpu)
+    (uses-resource taskA memory)
+    (uses-resource taskB cpu)
+    (uses-resource taskB memory)
+    (uses-resource taskB gpu)
+    (uses-resource taskC cpu)
+    (uses-resource taskC memory)
+    (uses-resource taskC gpu)
+    (uses-resource taskD cpu)
+    (uses-resource taskD memory)
+    
+    ;; Resources initially available
+    (resource-available cpu)
+    (resource-available memory)
+    (resource-available gpu)
+  )
+  
+  (:goal (and
+    (all-complete)
+    (task-completed taskA)
+    (task-completed taskB)
+    (task-completed taskC)
+    (task-completed taskD)
+  ))
+)

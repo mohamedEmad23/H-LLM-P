@@ -2,11 +2,12 @@
   "b8ff47e5a6038ba2": {
     "signature": "b8ff47e5a6038ba2",
     "domain": "graph_traversal",
-    "problem_name": "graph_traversal",
+    "problem_name": "graph_1",
     "initial_state_hash": "15fe7a0a",
     "goal_hash": "9185818b",
     "solution": {
-      "success": true
+      "success": true,
+      "plan_length": 3
     },
     "plan_actions": [
       {
@@ -31,20 +32,21 @@
       }
     ],
     "strategies": [],
-    "created_at": "2025-12-14T18:54:25.289450",
-    "hit_count": 0,
-    "last_accessed": null,
-    "total_time_ms": 43.99969699989015,
+    "created_at": "2025-12-15T15:07:16.663640",
+    "hit_count": 1,
+    "last_accessed": "2025-12-15T15:07:17.185294",
+    "total_time_ms": 106.35646199989424,
     "panda_search_time_ms": 0.0
   },
   "17c4463b79395d3c": {
     "signature": "17c4463b79395d3c",
     "domain": "probabilistic_graph",
-    "problem_name": "probabilistic_graph",
+    "problem_name": "prob_1",
     "initial_state_hash": "09fe649a",
     "goal_hash": "babb20c0",
     "solution": {
-      "success": true
+      "success": true,
+      "plan_length": 4
     },
     "plan_actions": [
       {
@@ -73,10 +75,49 @@
       }
     ],
     "strategies": [],
-    "created_at": "2025-12-14T18:54:25.943957",
-    "hit_count": 0,
-    "last_accessed": null,
-    "total_time_ms": 21.078631999444042,
+    "created_at": "2025-12-15T15:07:17.904555",
+    "hit_count": 1,
+    "last_accessed": "2025-12-15T15:07:18.709664",
+    "total_time_ms": 25.030345000232046,
+    "panda_search_time_ms": 0.0
+  },
+  "0715b80eac572c4f": {
+    "signature": "0715b80eac572c4f",
+    "domain": "graph_traversal",
+    "problem_name": "graph_3",
+    "initial_state_hash": "0ac8f82d",
+    "goal_hash": "21760e94",
+    "solution": {
+      "success": true,
+      "plan_length": 3
+    },
+    "plan_actions": [
+      {
+        "name": "traverse",
+        "parameters": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "traverse",
+        "parameters": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "name": "complete-path",
+        "parameters": [
+          "D"
+        ]
+      }
+    ],
+    "strategies": [],
+    "created_at": "2025-12-15T15:07:19.263891",
+    "hit_count": 1,
+    "last_accessed": "2025-12-15T15:07:19.839163",
+    "total_time_ms": 30.127628000627737,
     "panda_search_time_ms": 0.0
   }
 }

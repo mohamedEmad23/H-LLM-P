@@ -1,0 +1,386 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-15T15:07:15.222283",
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "total_problems": 6,
+    "similar_pairs": 3,
+    "real_llm_calls": true,
+    "simulated": false
+  },
+  "workflow_demonstration": [
+    {
+      "problem_id": "graph_1",
+      "pair": "A",
+      "is_repeat": false,
+      "expected_cache_hit": false,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Graph Path Finding - Simple",
+        "problem_id": "graph_1",
+        "success": true,
+        "plan_actions": [
+          "traverse(A, B)",
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 3,
+        "is_optimal": false,
+        "total_time_ms": 1334.695436000402,
+        "llm_time_ms": 637.3142080001344,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 281,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "The plan traverses from node A to node D through the available edges and then completes the path at node D",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Graph Path Finding - Simple",
+        "problem_id": "graph_1",
+        "success": true,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 3,
+        "is_optimal": true,
+        "total_time_ms": 106.35646199989424,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 85.85191099973599,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": false,
+        "cache_signature": "b8ff47e5a6038ba2",
+        "reasoning": "PANDA validated (5 nodes), cached",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    },
+    {
+      "problem_id": "graph_2",
+      "pair": "A'",
+      "is_repeat": true,
+      "expected_cache_hit": true,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Graph Path Finding - Variant",
+        "problem_id": "graph_2",
+        "success": true,
+        "plan_actions": [
+          "traverse(A, B)",
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 3,
+        "is_optimal": false,
+        "total_time_ms": 519.6227079995879,
+        "llm_time_ms": 457.27200100009213,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 279,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "The plan traverses from A to D through the available edges and then completes the path at node D",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Graph Path Finding - Variant",
+        "problem_id": "graph_2",
+        "success": true,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 3,
+        "is_optimal": true,
+        "total_time_ms": 2.22486700022273,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 0.0,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": true,
+        "cache_signature": "b8ff47e5a6038ba2",
+        "reasoning": "Retrieved from cache (hit #1)",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    },
+    {
+      "problem_id": "prob_1",
+      "pair": "B",
+      "is_repeat": false,
+      "expected_cache_hit": false,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Probabilistic Decision - Route Choice",
+        "problem_id": "prob_1",
+        "success": true,
+        "plan_actions": [
+          "calculate_expected_values(start)",
+          "select_safe_path()",
+          "traverse_to_goal(end)",
+          "verify_goal(end)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 692.2130909997577,
+        "llm_time_ms": 634.5582740004829,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 371,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "The plan starts by calculating expected values for the start node, then selects the safe path to minimize expected travel time, traverses to the goal node, and finally verifies that the goal has been reached.",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Probabilistic Decision - Route Choice",
+        "problem_id": "prob_1",
+        "success": true,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 25.030345000232046,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 22.58317299947521,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": false,
+        "cache_signature": "17c4463b79395d3c",
+        "reasoning": "PANDA validated (14 nodes), cached",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    },
+    {
+      "problem_id": "prob_2",
+      "pair": "B'",
+      "is_repeat": true,
+      "expected_cache_hit": true,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Probabilistic Decision - Same Structure",
+        "problem_id": "prob_2",
+        "success": true,
+        "plan_actions": [
+          "calculate_expected_values(start)",
+          "select_risky_path()",
+          "traverse_to_goal(end)",
+          "verify_goal(end)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 801.7793089993575,
+        "llm_time_ms": 745.6642850002027,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 437,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "To minimize expected travel time, we first calculate the expected values of each path. Given the 'risky' path has a base time of 10 and a penalty of 30 with a probability of 0.5, its expected time is 10 + (30 * 0.5) = 25, which is less than the 'safe' path's time of 30. Thus, we select the 'risky' path, traverse to the goal, and then verify that we have reached the goal.",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Probabilistic Decision - Same Structure",
+        "problem_id": "prob_2",
+        "success": true,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "plan_length": 4,
+        "optimal_length": 4,
+        "is_optimal": true,
+        "total_time_ms": 4.791548999492079,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 0.0,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": true,
+        "cache_signature": "17c4463b79395d3c",
+        "reasoning": "Retrieved from cache (hit #1)",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    },
+    {
+      "problem_id": "graph_3",
+      "pair": "C",
+      "is_repeat": false,
+      "expected_cache_hit": false,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Graph Traversal - Extended",
+        "problem_id": "graph_3",
+        "success": true,
+        "plan_actions": [
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 2,
+        "is_optimal": false,
+        "total_time_ms": 521.0971870001231,
+        "llm_time_ms": 438.74550000055024,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 277,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "The plan starts at node B, traverses to node C, then to node D, and finally completes the path at node D.",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Graph Traversal - Extended",
+        "problem_id": "graph_3",
+        "success": true,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 2,
+        "is_optimal": false,
+        "total_time_ms": 30.127628000627737,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 28.775396999662917,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": false,
+        "cache_signature": "0715b80eac572c4f",
+        "reasoning": "PANDA validated (5 nodes), cached",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    },
+    {
+      "problem_id": "graph_4",
+      "pair": "C'",
+      "is_repeat": true,
+      "expected_cache_hit": true,
+      "llm_only": {
+        "workflow_type": "llm_only",
+        "problem_name": "Graph Traversal - Extended Repeat",
+        "problem_id": "graph_4",
+        "success": true,
+        "plan_actions": [
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 2,
+        "is_optimal": false,
+        "total_time_ms": 571.396661000108,
+        "llm_time_ms": 504.93813899993256,
+        "planning_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 278,
+        "from_cache": false,
+        "cache_signature": "",
+        "reasoning": "The plan starts at node B, traverses to node C, then to node D, and finally completes the path at node D",
+        "error": null
+      },
+      "neuro_symbolic": {
+        "workflow_type": "neuro_symbolic",
+        "problem_name": "Graph Traversal - Extended Repeat",
+        "problem_id": "graph_4",
+        "success": true,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "plan_length": 3,
+        "optimal_length": 2,
+        "is_optimal": false,
+        "total_time_ms": 1.876162999906228,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 0.0,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "from_cache": true,
+        "cache_signature": "0715b80eac572c4f",
+        "reasoning": "Retrieved from cache (hit #1)",
+        "error": null
+      },
+      "cache_hit_as_expected": true
+    }
+  ],
+  "kpi_results": {
+    "llm_only": {
+      "success_rate": 100.0,
+      "mtts_ms": 740.1340653332227,
+      "pos": 81.81818181818183,
+      "lru_tokens_per_problem": 320.5,
+      "total_tokens": 1923,
+      "total_llm_calls": 6
+    },
+    "neuro_symbolic": {
+      "success_rate": 100.0,
+      "mtts_ms": 28.40116900006251,
+      "pos": 90.0,
+      "lru_tokens_per_problem": 0.0,
+      "total_tokens": 0,
+      "total_llm_calls": 0,
+      "cache_hits": 3,
+      "cache_misses": 3,
+      "cache_hit_rate": 50.0
+    },
+    "comparison": {
+      "speedup_factor": 26.059985958028477,
+      "tokens_saved": 1923,
+      "tokens_saved_percent": 100.0
+    }
+  },
+  "problem_pairs": [
+    {
+      "original": "graph_1",
+      "repeat": "graph_2",
+      "cache_hit": true,
+      "tokens_saved": 279,
+      "time_saved_ms": 517.3978409993651
+    },
+    {
+      "original": "prob_1",
+      "repeat": "prob_2",
+      "cache_hit": true,
+      "tokens_saved": 437,
+      "time_saved_ms": 796.9877599998654
+    },
+    {
+      "original": "graph_3",
+      "repeat": "graph_4",
+      "cache_hit": true,
+      "tokens_saved": 278,
+      "time_saved_ms": 569.5204980002018
+    }
+  ]
+}

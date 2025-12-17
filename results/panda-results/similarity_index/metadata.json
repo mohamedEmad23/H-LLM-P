@@ -1,0 +1,79 @@
+[
+  {
+    "problem_id": "graph_traversal_incomplete-graph-p01",
+    "domain": "graph_traversal",
+    "goal_description": "\n    Find a path from node A to node D in a weighted graph.\n    The weight of edge B-C is unknown and must be queried.\n    Once the complete path is found, mark it as complete.\n    ",
+    "state_summary": "14 predicates; types: at, edge, goal-node, weight",
+    "strategies": [
+      {
+        "name": "Dijkstra's Strategy",
+        "approach": "Use Dijkstra's algorithm to find the shortest path from node A to node D, querying the weight of edge B-C when necessary",
+        "advantages": [
+          "Optimal solution",
+          "Well-established algorithm",
+          "Easy to implement"
+        ],
+        "disadvantages": [
+          "May require multiple queries to find the shortest path",
+          "Can be computationally expensive for large graphs"
+        ],
+        "estimated_complexity": "medium",
+        "estimated_optimality": "optimal"
+      },
+      {
+        "name": "Query-First Strategy",
+        "approach": "Query the weight of edge B-C first, then use a shortest path algorithm to find the path from node A to node D",
+        "advantages": [
+          "Only requires a single query",
+          "Can be faster than Dijkstra's algorithm for small graphs"
+        ],
+        "disadvantages": [
+          "May not find the optimal solution if the query result is not useful",
+          "Requires additional processing to handle the query result"
+        ],
+        "estimated_complexity": "low",
+        "estimated_optimality": "suboptimal"
+      },
+      {
+        "name": "Heuristic Search Strategy",
+        "approach": "Use a heuristic search algorithm, such as A* or Greedy Best-First Search, to find a path from node A to node D, guiding the search towards the goal node D",
+        "advantages": [
+          "Can find a good solution quickly",
+          "Can handle large graphs efficiently"
+        ],
+        "disadvantages": [
+          "May not find the optimal solution",
+          "Requires a good heuristic function to guide the search"
+        ],
+        "estimated_complexity": "high",
+        "estimated_optimality": "near_optimal"
+      }
+    ],
+    "plan_actions": [
+      {
+        "name": "traverse",
+        "parameters": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "traverse",
+        "parameters": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "name": "complete-path",
+        "parameters": [
+          "D"
+        ]
+      }
+    ],
+    "plan_length": 3,
+    "indexed_at": "2025-12-17T16:15:49.510859",
+    "retrieval_count": 0,
+    "success_count": 0
+  }
+]

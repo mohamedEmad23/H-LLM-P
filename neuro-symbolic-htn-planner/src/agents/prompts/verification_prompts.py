@@ -227,7 +227,7 @@ def calculate_quality_metrics(
     }
 
     # Calculate optimality ratio if optimal known
-    if optimal_steps and optimal_steps > 0:
+    if optimal_steps and optimal_steps > 0 and actual_steps > 0:
         optimality_ratio = optimal_steps / actual_steps
         metrics["optimality_ratio"] = min(1.0, optimality_ratio)
         metrics["optimality_percentage"] = min(100, optimality_ratio * 100)

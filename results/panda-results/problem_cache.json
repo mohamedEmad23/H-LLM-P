@@ -42,5 +42,529 @@
     "last_accessed": "2025-12-14T17:58:43.261398",
     "total_time_ms": 5000.0,
     "panda_search_time_ms": 0.0
+  },
+  "7002264db7480bb4": {
+    "signature": "7002264db7480bb4",
+    "domain": "graph_traversal",
+    "problem_name": "incomplete-graph-p01",
+    "initial_state_hash": "d15b269f",
+    "goal_hash": "e19f5726",
+    "solution": {
+      "session_id": "test_20251217_161546",
+      "domain": "graph_traversal",
+      "problem": "incomplete-graph-p01",
+      "timestamp": "2025-12-17T16:15:46.613357",
+      "phases": {
+        "planning": {
+          "success": true,
+          "strategies": [
+            {
+              "name": "Dijkstra's Strategy",
+              "approach": "Use Dijkstra's algorithm to find the shortest path from node A to node D, querying the weight of edge B-C when necessary",
+              "advantages": [
+                "Optimal solution",
+                "Well-established algorithm",
+                "Easy to implement"
+              ],
+              "disadvantages": [
+                "May require multiple queries to find the shortest path",
+                "Can be computationally expensive for large graphs"
+              ],
+              "estimated_complexity": "medium",
+              "estimated_optimality": "optimal"
+            },
+            {
+              "name": "Query-First Strategy",
+              "approach": "Query the weight of edge B-C first, then use a shortest path algorithm to find the path from node A to node D",
+              "advantages": [
+                "Only requires a single query",
+                "Can be faster than Dijkstra's algorithm for small graphs"
+              ],
+              "disadvantages": [
+                "May not find the optimal solution if the query result is not useful",
+                "Requires additional processing to handle the query result"
+              ],
+              "estimated_complexity": "low",
+              "estimated_optimality": "suboptimal"
+            },
+            {
+              "name": "Heuristic Search Strategy",
+              "approach": "Use a heuristic search algorithm, such as A* or Greedy Best-First Search, to find a path from node A to node D, guiding the search towards the goal node D",
+              "advantages": [
+                "Can find a good solution quickly",
+                "Can handle large graphs efficiently"
+              ],
+              "disadvantages": [
+                "May not find the optimal solution",
+                "Requires a good heuristic function to guide the search"
+              ],
+              "estimated_complexity": "high",
+              "estimated_optimality": "near_optimal"
+            }
+          ],
+          "reasoning": "Dijkstra's algorithm is a well-established and optimal solution for finding the shortest path in a weighted graph. Although it may require multiple queries to find the shortest path, it is guaranteed to find the optimal solution. The other strategies may be faster or more efficient, but they may not find the optimal solution, which is the primary goal of this planning problem.",
+          "processing_time_ms": 1881.385,
+          "llm_used": "Groq Llama 70B",
+          "used_similarity_hints": false
+        },
+        "decomposition": {
+          "success": true,
+          "hddl_domain_file": "/home/mohammed-emad/VS-CODE/B.Sc_Thesis/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/domain.hddl",
+          "hddl_problem_file": "/home/mohammed-emad/VS-CODE/B.Sc_Thesis/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/problem.hddl",
+          "used_fallback": true,
+          "validation_warnings": [],
+          "method": "hand_coded_domain"
+        },
+        "panda_planning": {
+          "success": true,
+          "panda_plan": {
+            "success": true,
+            "plan_file": "results/panda-results/solutions/test_20251217_161546_incomplete-graph-p01.solution",
+            "logs": "=== PARSING ===\nParsing /home/mohammed-emad/VS-CODE/B.Sc_Thesis/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/domain.hddl\nParsing /home/mohammed-emad/VS-CODE/B.Sc_Thesis/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/problem.hddl\n\nSTDERR: pandaPIparser is configured as follows\n  Colors in output: true\n  Mode: parsing mode\n  Parameter splitting: true\n  Conditional effects: exponential encoding\n  Disjunctive preconditions as HTN: false\n  Replace goal with action: false\n  Output: pandaPI format\nIgnoring initialisation of metric target \"total-cost\"\n\n\n=== GROUNDING ===\nGeneral Options\n  Print timings: false\n  Quiet mode: false\nInference Options\n  H2 mutexes: false\n  FAM groups: false\nTransformation Options\n  Add zero-cost no-op to empty methods: true\n  Remove duplicate actions: true\n  Remove useless literals: true\n  Expand abstract tasks with one method: true\n  Remove empty method preconditions: true\n  Two regularisation: false\n  Compile negative SAS variables: false\nRuntime Optimisations\n  Hierarchy Typing: true\n  Future Caching: false\n  Static Precondition Checking: false\nOutput Options\n  Panda planner format: true\n  HDDL: false\n  SAS for Fast Downward (without hierarchy): false\nOutput Formatting Options\n  Output only SAS+ variables: false\n  SAS+ delete mode: as input\nConditional Effects expanded\ndone.\nStarting Hierarchy Typing\nTotal 0.027ms\nContains 0.004ms\nRestrict 0.002ms\nMPrep 0.003ms\nFinished Hierarchy Typing\nStarting duplicate elimination.\nData structure build.\n0 duplicates found.\nDuplicates replaced in methods.\nFurther Mutex Groups: 0 strict 0 non strict\nFinal Statistics: F 4 S 0 SC 0 SM 0 NSM 0 I 0 P 3 S 0 A 1 M 1\n\nSTDERR: Reading input from results/panda-results/parsed/test_20251217_161546_incomplete-graph-p01.parsed.\nWriting output to results/panda-results/grounded/test_20251217_161546_incomplete-graph-p01.sas.\nWriting output to standard output.\nParsing done.\nRunning PG.\nProcess actions without preconditions\nDone.\nReturning from runGpg().\nPG done. Postprocessing\nPG postprocessing done.\nCalculated [7] grounded tasks and [30] reachable facts.\nRunning TDG.\nProcess actions without preconditions\nDone.\nReturning from runGpg().\nTDG done.\nCalculated [10] grounded tasks and [3] grounded decomposition methods.\nPerforming DFS.\nDFS done.\nAfter DFS: 8 tasks, 3 methods.\nGrounded PG:\nInput was [5, 8], output was [5, 29].\nSimplifying instance.\nRemoving useless facts/literals\nRemoving method precondition actions whose precondition is empty\nExpanding abstract tasks with only one method\nWriting instance to output.\nExiting.\n\n\n=== PLANNING ===\nRandom seed: 42\nTime limit: 1800 seconds\nReading input from results/panda-results/grounded/test_20251217_161546_incomplete-graph-p01.sas.\n- State has 4 bits divided into 4 mutex groups.\n- Domain contains 3 actions.\n- Domain contains 4 tasks.\n- Domain contains 1 methods.\n- The initial state contains 1 set bits.\n- The initial task is \"__top[]\".\n- State-based goal contains 2 bits.\n- Instance is totally-ordered: yes\n- Instance has unique paths: yes\n- Instance is parallel sequences: yes\nCalculate SCCs...\n- Number of SCCs: 4\n- The problem is acyclic\nSelected Planning Algorithm: progression searchParsing heuristics ...\nNumber of specified heuristics: 1\nGenerate 3\n\nRC Factory: CMA 1\n- the option \"store cuts\" of the RC heuristic can only be used with the inner heuristic LM-Cut. It will be disabled.\n- Calculating minimal implied distances and estimated costs (0 ms)\nHeuristic #0 = hhRC2(add;distance;correct count)\nSearch config:\n - type: greedy\n - weight: 1\n - suboptimal: false\nVisited List configured\n- mode: total order\n- hashs to use: state task task-sequence\n- memory information: topological ordering\n- Visited list allows deletion of search nodes: true\nSearch Configuration\n- Using JAIR 2020 progression algorithm\n- Search is stopped after first solution is found.\n- Greedy Search\nSearch Results\n- Search time 0 seconds\n- Visited list time 9e-06 seconds\n- Visited list inserts 2\n- Visited list pruned 0\n- Visited list contains 2\n- Visited list hash collisions 0\n- Visited list used hash buckets 2\n- Generated 5 search nodes\n  Calculated heuristic for 2 nodes\n  One modifications 3\n  Effectless actions 0\n- including 3 one modification actions\n- including 0 one modification methods\n- and       0 progressions of effectless actions\n- Generated -2147483648 nodes per second\n- Final fringe contains 0 nodes\n- Status: Solved\n- Found solution of length 4\n- Total costs of actions: 20\n==>\n1 traverse[A,C]\n2 traverse[C,D]\n3 complete-path[D]\nroot 0\n0 __top[] -> <<__top_method;find-path[A,D];path-with-known-weights;0;-1,-2>;path-with-known-weights_splitted_1[A,D];_splitting_method_path-with-known-weights_splitted_1;0;-1,-2,1> 1 2 3\n<==\n\n\n=== PLAN CONVERSION ===\nI can't open /home/mohammed-emad/VS-CODE/B.Sc_Thesis/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/problem.hddl!\n\nSTDERR: pandaPIparser is configured as follows\n  Colors in output: true\n  Mode: convert pandaPI plan\n",
+            "error": null
+          },
+          "plan_length": 3,
+          "search_time_ms": 0.0,
+          "nodes_expanded": 5,
+          "actions": [
+            {
+              "name": "traverse",
+              "parameters": [
+                "A",
+                "C"
+              ]
+            },
+            {
+              "name": "traverse",
+              "parameters": [
+                "C",
+                "D"
+              ]
+            },
+            {
+              "name": "complete-path",
+              "parameters": [
+                "D"
+              ]
+            }
+          ],
+          "error": null
+        },
+        "execution": {
+          "success": true,
+          "execution_trace": [
+            {
+              "step": 1,
+              "operator": "traverse",
+              "params": [
+                "A",
+                "C"
+              ],
+              "state_before": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                }
+              },
+              "state_after": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                },
+                "current_node": "C",
+                "visited": [
+                  "A"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ]
+                ]
+              },
+              "validation_result": "Valid traversal",
+              "status": "success"
+            },
+            {
+              "step": 2,
+              "operator": "traverse",
+              "params": [
+                "C",
+                "D"
+              ],
+              "state_before": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                },
+                "current_node": "C",
+                "visited": [
+                  "A"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ]
+                ]
+              },
+              "state_after": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                },
+                "current_node": "D",
+                "visited": [
+                  "A",
+                  "C"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ]
+              },
+              "validation_result": "Valid traversal",
+              "status": "success"
+            },
+            {
+              "step": 3,
+              "operator": "complete-path",
+              "params": [
+                "D"
+              ],
+              "state_before": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                },
+                "current_node": "D",
+                "visited": [
+                  "A",
+                  "C"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ]
+              },
+              "state_after": {
+                "predicates": [
+                  "edge(B,A)",
+                  "edge(C,A)",
+                  "at(A)",
+                  "edge(D,C)",
+                  "edge(C,D)",
+                  "weight(C,D,5)",
+                  "edge(C,B)",
+                  "goal-node(D)",
+                  "edge(A,B)",
+                  "edge(B,C)",
+                  "edge(A,C)",
+                  "path-length(0)",
+                  "weight(A,B,4)",
+                  "weight(A,C,15)"
+                ],
+                "metadata": {
+                  "domain": "graph_traversal",
+                  "problem": "incomplete-graph-p01",
+                  "goal": "Find path from A to D"
+                },
+                "current_node": "D",
+                "visited": [
+                  "A",
+                  "C",
+                  "D"
+                ],
+                "path": [
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ],
+                "path_complete": true,
+                "goal_reached": "D"
+              },
+              "validation_result": "Valid path completion",
+              "status": "success"
+            }
+          ],
+          "final_state": {
+            "predicates": [
+              "edge(B,A)",
+              "edge(C,A)",
+              "at(A)",
+              "edge(D,C)",
+              "edge(C,D)",
+              "weight(C,D,5)",
+              "edge(C,B)",
+              "goal-node(D)",
+              "edge(A,B)",
+              "edge(B,C)",
+              "edge(A,C)",
+              "path-length(0)",
+              "weight(A,B,4)",
+              "weight(A,C,15)"
+            ],
+            "metadata": {
+              "domain": "graph_traversal",
+              "problem": "incomplete-graph-p01",
+              "goal": "Find path from A to D"
+            },
+            "current_node": "D",
+            "visited": [
+              "A",
+              "C",
+              "D"
+            ],
+            "path": [
+              [
+                "A",
+                "C"
+              ],
+              [
+                "C",
+                "D"
+              ]
+            ],
+            "path_complete": true,
+            "goal_reached": "D"
+          },
+          "errors": [],
+          "execution_time_ms": 0.182,
+          "steps_completed": 3,
+          "steps_total": 3,
+          "agent": "ExecutionAgent",
+          "panda_stats": {
+            "search_time_ms": 0.0,
+            "nodes_expanded": 5,
+            "plan_length": 3
+          }
+        },
+        "validation": {
+          "success": true,
+          "validation_layers": {
+            "syntax": {
+              "passed": true,
+              "score": 1.0,
+              "warnings": []
+            },
+            "planning": {
+              "passed": true,
+              "score": 1.0,
+              "plan_length": 3,
+              "search_time_ms": 0.0,
+              "nodes_expanded": 5
+            },
+            "execution": {
+              "passed": true,
+              "score": 1.0,
+              "action_count": 3,
+              "warnings": []
+            },
+            "efficiency": {
+              "passed": true,
+              "score": 0.9,
+              "metrics": {
+                "plan_length": 3,
+                "search_time_ms": 0.0,
+                "nodes_expanded": 5,
+                "optimal_length": 5,
+                "efficiency_ratio": 1.6666666666666667
+              },
+              "suggestions": [
+                "Plan is shorter than expected optimal length - verify correctness"
+              ]
+            }
+          },
+          "overall_score": 97.5,
+          "issues": [],
+          "suggestions": [
+            "Plan is shorter than expected optimal length - verify correctness"
+          ]
+        },
+        "storage": {
+          "success": true,
+          "trace_stored": true
+        }
+      },
+      "success": true,
+      "error": null,
+      "from_cache": false,
+      "similarity_hints_used": false,
+      "similar_problems_found": 0
+    },
+    "plan_actions": [
+      {
+        "name": "traverse",
+        "parameters": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "name": "traverse",
+        "parameters": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "name": "complete-path",
+        "parameters": [
+          "D"
+        ]
+      }
+    ],
+    "strategies": [
+      {
+        "name": "Dijkstra's Strategy",
+        "approach": "Use Dijkstra's algorithm to find the shortest path from node A to node D, querying the weight of edge B-C when necessary",
+        "advantages": [
+          "Optimal solution",
+          "Well-established algorithm",
+          "Easy to implement"
+        ],
+        "disadvantages": [
+          "May require multiple queries to find the shortest path",
+          "Can be computationally expensive for large graphs"
+        ],
+        "estimated_complexity": "medium",
+        "estimated_optimality": "optimal"
+      },
+      {
+        "name": "Query-First Strategy",
+        "approach": "Query the weight of edge B-C first, then use a shortest path algorithm to find the path from node A to node D",
+        "advantages": [
+          "Only requires a single query",
+          "Can be faster than Dijkstra's algorithm for small graphs"
+        ],
+        "disadvantages": [
+          "May not find the optimal solution if the query result is not useful",
+          "Requires additional processing to handle the query result"
+        ],
+        "estimated_complexity": "low",
+        "estimated_optimality": "suboptimal"
+      },
+      {
+        "name": "Heuristic Search Strategy",
+        "approach": "Use a heuristic search algorithm, such as A* or Greedy Best-First Search, to find a path from node A to node D, guiding the search towards the goal node D",
+        "advantages": [
+          "Can find a good solution quickly",
+          "Can handle large graphs efficiently"
+        ],
+        "disadvantages": [
+          "May not find the optimal solution",
+          "Requires a good heuristic function to guide the search"
+        ],
+        "estimated_complexity": "high",
+        "estimated_optimality": "near_optimal"
+      }
+    ],
+    "created_at": "2025-12-17T16:15:48.528515",
+    "hit_count": 0,
+    "last_accessed": null,
+    "total_time_ms": 1915.103,
+    "panda_search_time_ms": 0.0
   }
 }

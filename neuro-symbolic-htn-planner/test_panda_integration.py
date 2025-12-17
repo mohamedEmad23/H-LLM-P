@@ -127,8 +127,13 @@ async def setup_panda_wrapper():
     """Initialize PANDA wrapper with C++ binaries"""
     logger.info("[SETUP] Initializing PANDA wrapper...")
     
-    # Path to PANDA-HTN binaries (adjust if needed)
-    panda_root = "../PANDA-HTN"
+    # Path to PANDA-HTN binaries - resolve relative to this script
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    panda_root = os.path.join(os.path.dirname(script_dir), "PANDA-HTN")
+    
+    logger.info(f"[SETUP] PANDA root: {panda_root}")
+    logger.info(f"[SETUP] Parser binary path: {os.path.join(panda_root, 'pandaPIparser/pandaPIparser')}")
     
     panda_wrapper = PANDAWrapper(
         panda_root=panda_root,
@@ -209,10 +214,12 @@ async def run_single_test():
     )
     
     # Test configuration
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     domain_name = "graph_traversal"
     problem_name = "incomplete-graph-p01"
-    domain_file = "./src/domains/graph_traversal/domain.hddl"
-    problem_file = "./src/domains/graph_traversal/problem.hddl"
+    domain_file = os.path.join(script_dir, "src/domains/graph_traversal/domain.hddl")
+    problem_file = os.path.join(script_dir, "src/domains/graph_traversal/problem.hddl")
     
     # Verify files exist
     if not Path(domain_file).exists():
