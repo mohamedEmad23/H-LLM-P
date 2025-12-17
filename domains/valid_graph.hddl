@@ -1,0 +1,25 @@
+(define (domain graph-trav)
+  (:requirements :typing :hierarchy)
+  
+  (:types node - object)
+  
+  (:predicates
+    (at ?n - node)
+    (visited ?n - node)
+  )
+  
+  (:task visit :parameters (?n - node))
+  
+  (:method reach
+    :parameters (?from ?to - node)
+    :task (visit ?to)
+    :precondition (and (at ?from))
+    :subtasks (and)
+  )
+  
+  (:action move
+    :parameters (?from ?to - node)
+    :precondition (at ?from)
+    :effect (and (at ?to) (not (at ?from)) (visited ?to))
+  )
+)

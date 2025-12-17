@@ -1,0 +1,74 @@
+(define (domain probabilistic_planning)
+ (:requirements :typing :hierarchy)
+ 
+ (:types
+ node - object
+ path - object
+ )
+ 
+ (:predicates (current-node ?n - node)
+ (time-elapsed ?t - node)
+ (edge-known ?from - node ?to - node)
+ (safe-route ?p - path)
+ (risky-route ?p - path)
+ (base-time-known ?p - path)
+ (penalty-known ?p - path)
+ (penalty-probability-known ?p - path)
+ (expected-total-known ?p - path)
+ (path-chosen ?p - path)
+ (goal-reached ?n - node)
+ )
+ 
+ (:task navigate :parameters (?start - node ?end - node)
+ )
+ 
+ (:method choose-safe-route :parameters (?start - node ?end - node)
+ :task (navigate ?start ?end)
+ :precondition (and
+ (current-node ?start)
+ (edge-known ?start ?end)
+ )
+ :subtasks (and
+ (t1 (move ?start ?end))
+ )
+ )
+ 
+ (:method choose-risky-route :parameters (?start - node ?end - node)
+ :task (navigate ?start ?end)
+ :precondition (and
+ (current-node ?start)
+ (edge-known ?start ?end)
+ )
+ :subtasks (and
+ (t1 (move ?start ?end))
+ )
+ )
+ 
+ (:action move :parameters (?from - node ?to - node)
+ :precondition (and
+ (current-node ?from)
+ (edge-known ?from ?to)
+ )
+ :effect (and
+ (current-node ?to)
+ (not (current-node ?from))
+ )
+ )
+ 
+ (:action calculate-expected-time :parameters (?p - path)
+ :precondition (and
+ (base-time-known ?p)
+ (penalty-known ?p)
+ (penalty-probability-known ?p)
+ )
+ :effect (expected-total-known ?p)
+ )
+ 
+ (:action choose-path :parameters (?p - path)
+ :precondition (and
+ (safe-route ?p)
+ (risky-route ?p)
+ )
+ :effect (path-chosen ?p)
+ )
+)

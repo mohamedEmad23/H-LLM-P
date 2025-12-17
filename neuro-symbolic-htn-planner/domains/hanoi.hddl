@@ -1,0 +1,40 @@
+(define (domain hanoi)
+  (:requirements :typing :hierarchy)
+  
+  (:types disk peg - object)
+  
+  (:predicates
+    (on ?d - disk ?p - peg)
+    (clear ?p - peg)
+  )
+  
+  (:task move-tower :parameters (?n - disk ?src ?dst ?aux - peg))
+  
+  (:method base
+    :parameters (?d - disk ?p1 ?p2 - peg)
+    :task (move-tower ?d ?p1 ?p2 ?aux)
+    :subtasks (and
+      (move-disk ?d ?p1 ?p2)
+    )
+  )
+  
+  (:method recursive
+    :parameters (?n ?m ?src ?dst ?aux - disk)
+    :task (move-tower ?n ?src ?dst ?aux)
+    :subtasks (and
+      (t1 (move-tower ?m ?src ?aux ?dst))
+      (t2 (move-disk ?n ?src ?dst))
+      (t3 (move-tower ?m ?aux ?dst ?src))
+    )
+    :ordering (and (t1 < t2) (t2 < t3))
+  )
+  
+  (:action move-disk
+    :parameters (?d - disk ?from ?to - peg)
+    :precondition (on ?d ?from)
+    :effect (and
+      (on ?d ?to)
+      (not (on ?d ?from))
+    )
+  )
+)

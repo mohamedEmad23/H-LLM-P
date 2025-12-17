@@ -1,0 +1,274 @@
+#number_constants_number_sorts
+2 3
+#constants
+light1
+light2
+#end_constants
+#sorts_each_with_number_of_members_and_members
+light 2 0 1
+sort_for_light1 1 0
+sort_for_light2 1 1
+#end_sorts
+#number_of_predicates
+2
+#predicates_each_with_number_of_arguments_and_argument_sorts
++on 1 0
++off 1 0
+#end_predicates
+#begin_predicate_mutexes
+0
+#end_predicate_mutexes
+#number_of_functions
+0
+#function_declarations_with_number_of_arguments_and_argument_sorts
+#number_primitive_tasks_and_number_abstract_tasks
+6 4
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-on-light1-action 0 1
+#sorts_of_variables
+1 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 1
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+1 0
+#add_each_predicate_and_argument_variables
+1
+0 0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-on-light2-action 0 1
+#sorts_of_variables
+2 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 1
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+1 0
+#add_each_predicate_and_argument_variables
+1
+0 0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-off-light1-action 0 1
+#sorts_of_variables
+1 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 1
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+0 0
+#add_each_predicate_and_argument_variables
+1
+1 0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-off-light2-action 0 1
+#sorts_of_variables
+2 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 1
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+0 0
+#add_each_predicate_and_argument_variables
+1
+1 0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+__method_precondition_method-turn-on-light1 0 1
+#sorts_of_variables
+1 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 0
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+1 0
+#add_each_predicate_and_argument_variables
+0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+__method_precondition_method-turn-on-light2 0 1
+#sorts_of_variables
+2 
+#end_variables
+#number_of_cost_statements
+1
+#begin_cost_statements
+const 0
+#end_cost_statements
+#preconditions_each_predicate_and_argument_variables
+1
+1 0
+#add_each_predicate_and_argument_variables
+0
+#conditional_add_each_with_conditions_and_effect
+0
+#del_each_predicate_and_argument_variables
+0
+#conditional_del_each_with_conditions_and_effect
+0
+#variable_constraints_first_number_then_individual_constraints
+0
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+control-lights 0 0
+#sorts_of_variables
+
+#end_variables
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-on-light1 0 0
+#sorts_of_variables
+
+#end_variables
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+turn-on-light2 0 0
+#sorts_of_variables
+
+#end_variables
+#end_of_task
+#begin_task_name_number_of_original_variables_and_number_of_variables
+__top 0 0
+#sorts_of_variables
+
+#end_variables
+#end_of_task
+#number_of_methods
+4
+#begin_method_name_abstract_task_number_of_variables
+__top_method 9 0
+#variable_sorts
+
+#parameter_of_abstract_task
+
+#number_of_subtasks
+1
+#subtasks_each_with_task_id_and_parameter_variables
+6
+#number_of_ordering_constraints_and_ordering
+0
+#variable_constraints
+0
+#end_of_method
+#begin_method_name_abstract_task_number_of_variables
+method-control-lights 6 0
+#variable_sorts
+
+#parameter_of_abstract_task
+
+#number_of_subtasks
+2
+#subtasks_each_with_task_id_and_parameter_variables
+7
+8
+#number_of_ordering_constraints_and_ordering
+0
+#variable_constraints
+0
+#end_of_method
+#begin_method_name_abstract_task_number_of_variables
+method-turn-on-light1 7 2
+#variable_sorts
+1 1 
+#parameter_of_abstract_task
+
+#number_of_subtasks
+2
+#subtasks_each_with_task_id_and_parameter_variables
+0 0
+4 1
+#number_of_ordering_constraints_and_ordering
+1
+1 0
+#variable_constraints
+0
+#end_of_method
+#begin_method_name_abstract_task_number_of_variables
+method-turn-on-light2 8 2
+#variable_sorts
+2 2 
+#parameter_of_abstract_task
+
+#number_of_subtasks
+2
+#subtasks_each_with_task_id_and_parameter_variables
+1 0
+5 1
+#number_of_ordering_constraints_and_ordering
+1
+1 0
+#variable_constraints
+0
+#end_of_method
+#init_and_goal_facts
+2 0
+1 0
+1 1
+#end_init
+#end_goal
+#init_function_facts
+0
+#initial_task
+9

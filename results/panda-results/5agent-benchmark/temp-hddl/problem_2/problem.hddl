@@ -1,0 +1,34 @@
+(define (problem tower_of_hanoi_problem)
+ (:domain tower_of_hanoi)
+ 
+ (:objects
+ pegA pegB pegC - peg
+ disk1 disk2 disk3 - disk
+ )
+ 
+ (:htn
+ :parameters ()
+ :subtasks (and
+ (task0 (solve-tower pegC))
+ )
+ )
+ 
+ (:init
+ (on-peg disk3 pegA)
+ (on-peg disk2 pegA)
+ (on-peg disk1 pegA)
+ (empty-peg pegB)
+ (empty-peg pegC)
+ (fragile-peg pegB)
+ )
+ 
+ (:goal
+ (and
+ (on-peg disk3 pegC)
+ (on-peg disk2 pegC)
+ (on-peg disk1 pegC)
+ (empty-peg pegA)
+ (empty-peg pegB)
+ )
+ )
+)

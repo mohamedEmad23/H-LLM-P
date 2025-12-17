@@ -1,0 +1,51 @@
+(define (domain tower_of_hanoi)
+ (:requirements :typing :hierarchy)
+ 
+ (:types
+ peg disk - object
+ )
+ 
+ (:predicates (on-peg ?d - disk ?p - peg)
+ (on-disk ?d1 - disk ?d2 - disk)
+ (empty-peg ?p - peg)
+ (fragile-peg ?p - peg)
+ (clear-disk ?d - disk)
+ (goal-state ?p - peg)
+ )
+ 
+ (:task move-disk :parameters (?d - disk ?from - peg ?to - peg)
+ )
+ 
+ (:task solve-tower :parameters (?p - peg)
+ )
+ 
+ (:method solve-tower-method :parameters (?p - peg)
+ :task (solve-tower ?p)
+ :precondition (empty-peg ?p)
+ :subtasks (and
+ (t1 (move-disk disk1 pegA pegC))
+ (t2 (move-disk disk2 pegA pegB))
+ (t3 (move-disk disk1 pegC pegB))
+ (t4 (move-disk disk3 pegA pegC))
+ (t5 (move-disk disk1 pegB pegA))
+ (t6 (move-disk disk2 pegB pegC))
+ (t7 (move-disk disk1 pegA pegC))
+ )
+ :ordering (and (t1 < t2) (t2 < t3) (t3 < t4) (t4 < t5) (t5 < t6) (t6 < t7))
+ )
+ 
+ (:action move :parameters (?d - disk ?from - peg ?to - peg)
+ :precondition (and (on-peg ?d ?from) (empty-peg ?to) (clear-disk ?d))
+ :effect (and (on-peg ?d ?to) (not (on-peg ?d ?from)))
+ )
+ 
+ (:action place-on-disk :parameters (?d1 - disk ?d2 - disk ?p - peg)
+ :precondition (and (on-peg ?d2 ?p) (clear-disk ?d1))
+ :effect (and (on-disk ?d1 ?d2) (not (clear-disk ?d1)))
+ )
+ 
+ (:action remove-from-disk :parameters (?d1 - disk ?d2 - disk ?p - peg)
+ :precondition (and (on-disk ?d1 ?d2) (on-peg ?d2 ?p))
+ :effect (and (clear-disk ?d1) (not (on-disk ?d1 ?d2)))
+ )
+)

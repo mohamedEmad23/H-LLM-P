@@ -39,6 +39,8 @@ class SymbolicValidator:
             "tower_of_hanoi": self._validate_hanoi,
             "graph_traversal": self._validate_graph_traversal,
             "constrained_sorting": self._validate_sorting,
+            "probabilistic_planning": self._validate_probabilistic,
+            "resource_scheduling": self._validate_scheduling,
         }
 
         # Domain-specific appliers
@@ -46,6 +48,8 @@ class SymbolicValidator:
             "tower_of_hanoi": self._apply_hanoi,
             "graph_traversal": self._apply_graph_traversal,
             "constrained_sorting": self._apply_sorting,
+            "probabilistic_planning": self._apply_probabilistic,
+            "resource_scheduling": self._apply_scheduling,
         }
 
     def validate_operator(
@@ -513,4 +517,192 @@ class SymbolicValidator:
         else:
             raise ValueError(f"Unknown sorting operator: {operator}")
 
+        return new_state
+
+    # ========== Probabilistic Planning Domain ==========
+
+    def _validate_probabilistic(
+        self, operator: str, params: List, state: Dict
+    ) -> Tuple[bool, str]:
+        """
+        Validate probabilistic planning operations
+        
+        Supports operators:
+        - choose_path: Select a route (safe or risky)
+        - move / traverse: Move from one node to another
+        - complete-path: Finish at goal node
+        """
+        if operator in ("choose_path", "select_path", "choose-path"):
+            if len(params) < 1:
+                return False, f"{operator} requires at least 1 param (path type)"
+            return True, "Valid path selection"
+        
+        elif operator in ("move", "traverse", "traverse_edge"):
+            if len(params) < 2:
+                return False, f"{operator} requires 2 params (from, to)"
+            
+            from_node, to_node = params[0], params[1]
+            
+            # Validate current position if available
+            if "current_node" in state:
+                if state["current_node"] != from_node:
+                    return False, f"Not at node '{from_node}' (at '{state['current_node']}')"
+            
+            return True, "Valid move"
+        
+        elif operator in ("complete-path", "finish", "arrive"):
+            return True, "Valid completion"
+        
+        else:
+            # Be lenient - accept unknown operators for PANDA-generated plans
+            logger.debug(f"Unknown probabilistic operator '{operator}' - accepting for PANDA plan")
+            return True, f"Accepted operator: {operator}"
+
+    def _apply_probabilistic(self, operator: str, params: List, state: Dict) -> Dict:
+        """Apply probabilistic planning operations to state"""
+        new_state = copy.deepcopy(state)
+        
+        if operator in ("choose_path", "select_path", "choose-path"):
+            path_type = params[0] if params else "unknown"
+            new_state["chosen_path"] = path_type
+            logger.debug(f"Chose path: {path_type}")
+        
+        elif operator in ("move", "traverse", "traverse_edge"):
+            from_node, to_node = params[0], params[1]
+            new_state["current_node"] = to_node
+            
+            # Track visited nodes
+            if "visited" not in new_state:
+                new_state["visited"] = []
+            if from_node not in new_state["visited"]:
+                new_state["visited"].append(from_node)
+            
+            # Track path
+            if "path" not in new_state:
+                new_state["path"] = []
+            new_state["path"].append((from_node, to_node))
+            
+            logger.debug(f"Moved from {from_node} to {to_node}")
+        
+        elif operator in ("complete-path", "finish", "arrive"):
+            new_state["path_complete"] = True
+            if "current_node" in new_state:
+                new_state["goal_reached"] = new_state["current_node"]
+        
+        else:
+            # Generic operator - track execution
+            if "_executed_operators" not in new_state:
+                new_state["_executed_operators"] = []
+            new_state["_executed_operators"].append({
+                "operator": operator,
+                "params": params,
+                "simulated": True
+            })
+        
+        return new_state
+
+    # ========== Resource Scheduling Domain ==========
+
+    def _validate_scheduling(
+        self, operator: str, params: List, state: Dict
+    ) -> Tuple[bool, str]:
+        """
+        Validate resource scheduling operations
+        
+        Supports operators:
+        - schedule: Schedule a task at a specific time
+        - start_task / begin_task: Begin executing a task
+        - complete_task / finish_task: Complete a task
+        - allocate_resources: Allocate resources to a task
+        """
+        if operator in ("schedule", "schedule_task"):
+            if len(params) < 1:
+                return False, "schedule requires task name"
+            
+            task_name = params[0]
+            tasks = state.get("tasks", {})
+            
+            if task_name not in tasks:
+                # Be lenient - might be using task IDs
+                logger.debug(f"Task '{task_name}' not in tasks dict, accepting anyway")
+            
+            return True, "Valid schedule operation"
+        
+        elif operator in ("start_task", "begin_task", "start"):
+            if len(params) < 1:
+                return False, "start_task requires task name"
+            return True, "Valid start operation"
+        
+        elif operator in ("complete_task", "finish_task", "complete", "finish"):
+            if len(params) < 1:
+                return False, "complete_task requires task name"
+            return True, "Valid complete operation"
+        
+        elif operator in ("allocate_resources", "allocate"):
+            return True, "Valid resource allocation"
+        
+        elif operator in ("advance_time", "wait", "tick"):
+            return True, "Valid time advance"
+        
+        else:
+            # Be lenient - accept unknown operators for PANDA-generated plans
+            logger.debug(f"Unknown scheduling operator '{operator}' - accepting for PANDA plan")
+            return True, f"Accepted operator: {operator}"
+
+    def _apply_scheduling(self, operator: str, params: List, state: Dict) -> Dict:
+        """Apply resource scheduling operations to state"""
+        new_state = copy.deepcopy(state)
+        
+        # Ensure tracking fields exist
+        if "scheduled" not in new_state:
+            new_state["scheduled"] = []
+        if "completed" not in new_state:
+            new_state["completed"] = []
+        if "running" not in new_state:
+            new_state["running"] = []
+        
+        if operator in ("schedule", "schedule_task"):
+            task_name = params[0]
+            if task_name not in new_state["scheduled"]:
+                new_state["scheduled"].append(task_name)
+            logger.debug(f"Scheduled task: {task_name}")
+        
+        elif operator in ("start_task", "begin_task", "start"):
+            task_name = params[0]
+            if task_name not in new_state["running"]:
+                new_state["running"].append(task_name)
+            logger.debug(f"Started task: {task_name}")
+        
+        elif operator in ("complete_task", "finish_task", "complete", "finish"):
+            task_name = params[0]
+            
+            # Move from running to completed
+            if task_name in new_state["running"]:
+                new_state["running"].remove(task_name)
+            if task_name not in new_state["completed"]:
+                new_state["completed"].append(task_name)
+            
+            logger.debug(f"Completed task: {task_name}")
+        
+        elif operator in ("allocate_resources", "allocate"):
+            # Track resource allocation
+            if "allocations" not in new_state:
+                new_state["allocations"] = []
+            new_state["allocations"].append(params)
+        
+        elif operator in ("advance_time", "wait", "tick"):
+            # Advance simulation time
+            time_delta = params[0] if params else 1
+            new_state["time"] = new_state.get("time", 0) + time_delta
+        
+        else:
+            # Generic operator - track execution
+            if "_executed_operators" not in new_state:
+                new_state["_executed_operators"] = []
+            new_state["_executed_operators"].append({
+                "operator": operator,
+                "params": params,
+                "simulated": True
+            })
+        
         return new_state

@@ -1,0 +1,21 @@
+(define (problem graph-trav-p)
+  (:domain graph-trav)
+  
+  (:objects
+    A B C D - node
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (visit A)
+      (visit D)
+    )
+  )
+  
+  (:init
+    (at A)
+  )
+  
+  (:goal (visited D))
+)

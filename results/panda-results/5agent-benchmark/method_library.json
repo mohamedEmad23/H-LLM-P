@@ -1,0 +1,112 @@
+{
+  "graph_traversal": {
+    "Incomplete Knowledge Graph Traversal": [
+      {
+        "domain": "graph_traversal",
+        "task_name": "Incomplete Knowledge Graph Traversal",
+        "method_name": "problem_1_method",
+        "hddl_text": "(define (domain graph_traversal)\n (:requirements :typing :hierarchy)\n \n (:types\n node edge - object\n )\n \n (:predicates (current-node ?n - node)\n (edge-exists ?from - node ?to - node)\n (weight-known ?from - node ?to - node)\n (weight-defined ?from - node ?to - node)\n (path-passes-through ?n - node)\n (visited ?n - node)\n )\n \n (:task find-shortest-path :parameters (?start - node ?end - node ?pass-through - node)\n )\n \n (:method find-shortest-path-with-research :parameters (?start - node ?end - node ?pass-through - node ?from - node ?to - node)\n :task (find-shortest-path ?start ?end ?pass-through)\n :precondition (and\n (current-node ?start)\n (edge-exists ?from ?to)\n (not (weight-known ?from ?to))\n )\n :subtasks (and\n (t1 (research ?from ?to))\n (t2 (find-shortest-path ?start ?end ?pass-through))\n )\n :ordering (t1 < t2)\n )\n \n (:method find-shortest-path-without-research :parameters (?start - node ?end - node ?pass-through - node)\n :task (find-shortest-path ?start ?end ?pass-through)\n :precondition (and\n (current-node ?start)\n (path-passes-through ?pass-through)\n )\n :subtasks (and\n (t1 (move ?start ?pass-through))\n (t2 (move ?pass-through ?end))\n )\n :ordering (t1 < t2)\n )\n \n (:action research :parameters (?from - node ?to - node)\n :precondition (and\n (edge-exists ?from ?to)\n (not (weight-known ?from ?to))\n )\n :effect (weight-known ?from ?to)\n )\n \n (:action move :parameters (?from - node ?to - node)\n :precondition (and\n (current-node ?from)\n (edge-exists ?from ?to)\n (weight-known ?from ?to)\n )\n :effect (and\n (current-node ?to)\n (not (current-node ?from))\n (visited ?from)\n )\n )\n)",
+        "parameters": {},
+        "preconditions": [
+          "Must pass through node B",
+          "Must find shortest path",
+          "Unknown weights must be discovered before use"
+        ],
+        "subtasks": [
+          "move(A, B)",
+          "move(B, C)",
+          "move(C, D)"
+        ],
+        "ordering": "sequential",
+        "success_count": 1,
+        "failure_count": 0,
+        "last_used": "2025-12-17T16:20:19.336888",
+        "created_at": "2025-12-17T14:21:05.089735"
+      }
+    ]
+  },
+  "tower_of_hanoi": {
+    "Constrained Tower of Hanoi": [
+      {
+        "domain": "tower_of_hanoi",
+        "task_name": "Constrained Tower of Hanoi",
+        "method_name": "problem_2_method",
+        "hddl_text": "(define (domain tower_of_hanoi)\n (:requirements :typing :hierarchy)\n \n (:types\n peg disk - object\n )\n \n (:predicates (on-peg ?d - disk ?p - peg)\n (on-disk ?d1 - disk ?d2 - disk)\n (empty-peg ?p - peg)\n (fragile-peg ?p - peg)\n (clear-disk ?d - disk)\n (goal-state ?p - peg)\n )\n \n (:task move-disk :parameters (?d - disk ?from - peg ?to - peg)\n )\n \n (:task solve-tower :parameters (?p - peg)\n )\n \n (:method solve-tower-method :parameters (?p - peg)\n :task (solve-tower ?p)\n :precondition (goal-state ?p)\n :subtasks ()\n )\n \n (:method move-disk-method :parameters (?d - disk ?from - peg ?to - peg)\n :task (move-disk ?d ?from ?to)\n :precondition (and (on-peg ?d ?from) (empty-peg ?to) (clear-disk ?d))\n :subtasks (and\n (t1 (pick ?d ?from))\n (t2 (place ?d ?to))\n )\n :ordering (t1 < t2)\n )\n \n (:action pick :parameters (?d - disk ?p - peg)\n :precondition (and (on-peg ?d ?p) (clear-disk ?d))\n :effect (not (on-peg ?d ?p))\n )\n \n (:action place :parameters (?d - disk ?p - peg)\n :precondition (and (not (on-peg ?d ?p)) (empty-peg ?p))\n :effect (and (on-peg ?d ?p) (not (empty-peg ?p)))\n )\n \n (:action move :parameters (?d - disk ?from - peg ?to - peg)\n :precondition (and (on-peg ?d ?from) (empty-peg ?to) (clear-disk ?d) (not (fragile-peg ?to)))\n :effect (and (on-peg ?d ?to) (not (on-peg ?d ?from)) (not (empty-peg ?to)))\n )\n)",
+        "parameters": {},
+        "preconditions": [
+          "Larger disk cannot be on smaller disk",
+          "Disk 3 cannot be placed on Peg B (fragile peg)",
+          "Only one disk can be moved at a time"
+        ],
+        "subtasks": [
+          "move_disk(1, A, C)",
+          "move_disk(2, A, B)",
+          "move_disk(1, C, B)",
+          "move_disk(3, A, C)",
+          "move_disk(1, B, A)",
+          "move_disk(2, B, C)",
+          "move_disk(1, A, C)"
+        ],
+        "ordering": "sequential",
+        "success_count": 1,
+        "failure_count": 0,
+        "last_used": "2025-12-17T16:22:01.758737",
+        "created_at": "2025-12-17T14:22:50.975514"
+      }
+    ]
+  },
+  "probabilistic_planning": {
+    "Probabilistic Graph Traversal": [
+      {
+        "domain": "probabilistic_planning",
+        "task_name": "Probabilistic Graph Traversal",
+        "method_name": "problem_3_method",
+        "hddl_text": "(define (domain probabilistic_planning)\n (:requirements :typing :hierarchy)\n \n (:types\n node edge - object\n )\n \n (:predicates (current-node ?n - node)\n (edge-known ?from - node ?to - node)\n (time-elapsed ?t - node)\n (path-chosen ?p - node)\n (safe-route ?n - node)\n (risky-route ?n - node)\n (base-time-known ?e - edge)\n (penalty-known ?e - edge)\n (penalty-probability-known ?e - edge)\n (expected-time-known ?e - edge)\n (goal-reached ?n - node)\n )\n \n (:task reach-goal :parameters (?n - node)\n )\n \n (:method choose-safe-route :parameters (?n - node)\n :task (reach-goal ?n)\n :precondition (and (current-node ?n) (safe-route ?n))\n :subtasks (and\n (t1 (move-to-A ?n))\n (t2 (move-to-End ?n))\n )\n :ordering (t1 < t2)\n )\n \n (:method choose-risky-route :parameters (?n - node)\n :task (reach-goal ?n)\n :precondition (and (current-node ?n) (risky-route ?n))\n :subtasks (and\n (t1 (move-to-B ?n))\n (t2 (move-to-End ?n))\n )\n :ordering (t1 < t2)\n )\n \n (:action move-to-A :parameters (?n - node)\n :precondition (and (current-node ?n) (edge-known ?n A))\n :effect (and (current-node A) (time-elapsed A))\n )\n \n (:action move-to-B :parameters (?n - node)\n :precondition (and (current-node ?n) (edge-known ?n B))\n :effect (and (current-node B) (time-elapsed B))\n )\n \n (:action move-to-End :parameters (?n - node)\n :precondition (and (current-node ?n) (edge-known ?n End))\n :effect (and (current-node End) (goal-reached End))\n )\n)",
+        "parameters": {},
+        "preconditions": [
+          "Cannot turn back once path is chosen",
+          "Must choose between Safe and Risky paths",
+          "Goal is to minimize expected total time"
+        ],
+        "subtasks": [
+          "analyze_problem(probabilistic_planning)",
+          "apply_strategy(Compare the expected total time of each path and choose the one with the lowest value)",
+          "achieve_goal()"
+        ],
+        "ordering": "sequential",
+        "success_count": 1,
+        "failure_count": 0,
+        "last_used": "2025-12-17T16:23:40.642254",
+        "created_at": "2025-12-17T14:24:18.842148"
+      }
+    ]
+  },
+  "resource_scheduling": {
+    "Multi-Resource Task Scheduling": [
+      {
+        "domain": "resource_scheduling",
+        "task_name": "Multi-Resource Task Scheduling",
+        "method_name": "problem_4_method",
+        "hddl_text": "(define (domain resource_scheduling)\n (:requirements :typing :hierarchy)\n \n (:types\n task resource - object\n )\n \n (:predicates (task-defined ?t - task)\n (resource-defined ?r - resource)\n (cpu-allocated ?t - task)\n (memory-allocated ?t - task)\n (gpu-allocated ?t - task)\n (task-scheduled ?t - task)\n (task-completed ?t - task)\n (dependency-met ?t1 - task ?t2 - task)\n (high-priority ?t - task)\n (medium-priority ?t - task)\n (low-priority ?t - task)\n (time-defined)\n (resources-defined)\n )\n \n (:task schedule-task :parameters (?t - task)\n )\n \n (:method schedule-by-priority :parameters (?t - task)\n :task (schedule-task ?t)\n :precondition (and\n (task-defined ?t)\n (resources-defined)\n )\n :subtasks (and\n (t1 (allocate-cpu ?t))\n (t2 (allocate-memory ?t))\n (t3 (allocate-gpu ?t))\n )\n :ordering (and (t1 < t2) (t2 < t3))\n )\n \n (:method allocate-resources :parameters (?t - task)\n :task (schedule-task ?t)\n :precondition (task-defined ?t)\n :subtasks (and\n (t1 (allocate-cpu ?t))\n (t2 (allocate-memory ?t))\n (t3 (allocate-gpu ?t))\n )\n :ordering (and (t1 < t2) (t2 < t3))\n )\n \n (:action allocate-cpu :parameters (?t - task)\n :precondition (and\n (task-defined ?t)\n (resources-defined)\n )\n :effect (cpu-allocated ?t)\n )\n \n (:action allocate-memory :parameters (?t - task)\n :precondition (and\n (task-defined ?t)\n (resources-defined)\n )\n :effect (memory-allocated ?t)\n )\n \n (:action allocate-gpu :parameters (?t - task)\n :precondition (and\n (task-defined ?t)\n (resources-defined)\n )\n :effect (gpu-allocated ?t)\n )\n \n (:action schedule-task-action :parameters (?t - task)\n :precondition (and\n (task-defined ?t)\n (cpu-allocated ?t)\n (memory-allocated ?t)\n (gpu-allocated ?t)\n )\n :effect (task-scheduled ?t)\n )\n \n (:action complete-task :parameters (?t - task)\n :precondition (task-scheduled ?t)\n :effect (task-completed ?t)\n )\n)",
+        "parameters": {},
+        "preconditions": [
+          "Max 3 concurrent tasks",
+          "No resource overcommit",
+          "Dependencies must complete before dependent task starts",
+          "High priority tasks should be scheduled first when possible"
+        ],
+        "subtasks": [
+          "schedule(C, 0, 5)",
+          "schedule(A, 0, 10)",
+          "schedule(B, 10, 25)",
+          "schedule(D, 25, 37)"
+        ],
+        "ordering": "sequential",
+        "success_count": 1,
+        "failure_count": 0,
+        "last_used": "2025-12-17T16:25:45.972075",
+        "created_at": "2025-12-17T14:25:53.364270"
+      }
+    ]
+  }
+}

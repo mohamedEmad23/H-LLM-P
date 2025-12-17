@@ -1,0 +1,68 @@
+Random seed: 42
+Time limit: 1800 seconds
+Reading input from /home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/panda-results/grounded/bench_prob_1.sas.
+- State has 5 bits divided into 5 mutex groups.
+- Domain contains 7 actions.
+- Domain contains 9 tasks.
+- Domain contains 3 methods.
+- The initial state contains 2 set bits.
+- The initial task is "__top[]".
+- State-based goal contains 0 bits.
+- Instance is totally-ordered: yes
+- Instance has unique paths: yes
+- Instance is parallel sequences: yes
+Calculate SCCs...
+- Number of SCCs: 9
+- The problem is acyclic
+Selected Planning Algorithm: progression searchParsing heuristics ...
+Number of specified heuristics: 1
+Generate 3
+
+RC Factory: CMA 1
+- the option "store cuts" of the RC heuristic can only be used with the inner heuristic LM-Cut. It will be disabled.
+- Calculating minimal implied distances and estimated costs (0 ms)
+Heuristic #0 = hhRC2(add;distance;correct count)
+Search config:
+ - type: greedy
+ - weight: 1
+ - suboptimal: false
+Visited List configured
+- mode: total order
+- hashs to use: state task task-sequence
+- memory information: topological ordering
+- Visited list allows deletion of search nodes: true
+Search Configuration
+- Using JAIR 2020 progression algorithm
+- Search is stopped after first solution is found.
+- Greedy Search
+Search Results
+- Search time 0 seconds
+- Visited list time 2.8e-05 seconds
+- Visited list inserts 3
+- Visited list pruned 0
+- Visited list contains 3
+- Visited list hash collisions 0
+- Visited list used hash buckets 3
+- Generated 14 search nodes
+  Calculated heuristic for 4 nodes
+  One modifications 5
+  Effectless actions 5
+- including 5 one modification actions
+- including 0 one modification methods
+- and       5 progressions of effectless actions
+- Generated -2147483648 nodes per second
+- Final fringe contains 1 nodes
+- Status: Solved
+- Found solution of length 8
+- Total costs of actions: 4
+==>
+1 __method_precondition_strategic-approach[start]
+2 calculate-expected-values[start]
+4 __method_precondition_choose-safe-path-strategic[]
+5 select-safe-path[]
+6 traverse-to-goal[end]
+7 verify-goal[end]
+root 0
+3 analyze-and-choose-path[start] -> choose-safe-path-strategic 4 5
+0 __top[] -> <__top_method;solve-probabilistic-graph[start,end];strategic-approach;0;-1,-2,-3,-4,-5> 1 2 3 6 7
+<==

@@ -1,0 +1,49 @@
+(define (domain probabilistic)
+  (:requirements :typing :hierarchy)
+  
+  (:types node - object)
+  
+  (:predicates
+    (current-node ?n - node)
+    (at-goal)
+  )
+  
+  (:task find-path :parameters (?start ?goal - node))
+  
+  (:method route-one
+    :parameters (?start ?mid ?goal - node)
+    :task (find-path ?start ?goal)
+    :subtasks (and
+      (t1 (move ?start ?mid))
+      (t2 (move ?mid ?goal))
+      (t3 (done))
+    )
+    :ordering (and (t1 < t2) (t2 < t3))
+  )
+  
+  (:method route-two
+    :parameters (?start ?mid ?goal - node)
+    :task (find-path ?start ?goal)
+    :subtasks (and
+      (t1 (move ?start ?mid))
+      (t2 (move ?mid ?goal))
+      (t3 (done))
+    )
+    :ordering (t1 < t2)
+    :ordering (t2 < t3)
+  )
+  
+  (:action move
+    :parameters (?from ?to - node)
+    :precondition (current-node ?from)
+    :effect (and
+      (current-node ?to)
+      (not (current-node ?from))
+    )
+  )
+  
+  (:action done
+    :parameters ()
+    :effect (at-goal)
+  )
+)

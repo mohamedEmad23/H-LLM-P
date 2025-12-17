@@ -1,0 +1,629 @@
+{
+  "timestamp": "2025-12-14T18:20:24.957929",
+  "config": {
+    "problems_count": 4,
+    "iterations": 1,
+    "panda_root": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/PANDA-HTN",
+    "results_dir": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/results/panda-results"
+  },
+  "problems": [
+    {
+      "problem": {
+        "name": "graph_traversal_p01",
+        "domain": "graph_traversal",
+        "description": "Find shortest path in graph with unknown edge weights",
+        "difficulty": "medium",
+        "initial_state": {
+          "predicates": [
+            "at(A)",
+            "edge(A,B)",
+            "edge(B,C)",
+            "edge(A,C)",
+            "edge(C,D)",
+            "goal-node(D)",
+            "weight(A,B,4)",
+            "weight(A,C,15)",
+            "weight(C,D,5)"
+          ],
+          "current_node": "A",
+          "goal_node": "D"
+        },
+        "goal_description": "Find path from A to D",
+        "goal_state": {
+          "current_node": "D",
+          "path_complete": true
+        },
+        "expected_plan_length": 3,
+        "expected_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "optimal_solution_known": true,
+        "hddl_domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/domain.hddl",
+        "hddl_problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/graph_traversal/problem.hddl",
+        "category": "pathfinding",
+        "tags": [
+          "graph",
+          "search",
+          "shortest_path"
+        ]
+      },
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "graph_traversal_p01",
+        "success": true,
+        "total_time_ms": 2616.3132050005515,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 5,
+        "optimal_plan_length": 3,
+        "is_optimal": false,
+        "quality_score": 70.0,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "graph_traversal_p01",
+        "success": true,
+        "total_time_ms": 35.18027700010862,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 3,
+        "optimal_plan_length": 3,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      }
+    },
+    {
+      "problem": {
+        "name": "hanoi_constrained_p01",
+        "domain": "tower_of_hanoi",
+        "description": "Solve 3-disk Tower of Hanoi with fragile peg constraint",
+        "difficulty": "hard",
+        "initial_state": {
+          "predicates": [
+            "on(d1,peg-a)",
+            "on(d2,peg-a)",
+            "on(d3,peg-a)",
+            "clear(d1)",
+            "smaller(d1,d2)",
+            "smaller(d2,d3)",
+            "fragile(peg-b)",
+            "largest(d3)",
+            "goal-peg(peg-c)"
+          ],
+          "pegs": {
+            "peg-a": [
+              3,
+              2,
+              1
+            ],
+            "peg-b": [],
+            "peg-c": []
+          }
+        },
+        "goal_description": "Move all disks from peg A to peg C (peg B is fragile)",
+        "goal_state": {
+          "pegs": {
+            "peg-a": [],
+            "peg-b": [],
+            "peg-c": [
+              3,
+              2,
+              1
+            ]
+          }
+        },
+        "expected_plan_length": 7,
+        "expected_actions": null,
+        "optimal_solution_known": true,
+        "hddl_domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/tower_of_hanoi/domain.hddl",
+        "hddl_problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/tower_of_hanoi/problem.hddl",
+        "category": "puzzle",
+        "tags": [
+          "hanoi",
+          "constraints",
+          "recursive"
+        ]
+      },
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "hanoi_constrained_p01",
+        "success": true,
+        "total_time_ms": 2500.0205730002563,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 11,
+        "optimal_plan_length": 7,
+        "is_optimal": false,
+        "quality_score": 55.00000000000001,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "hanoi_constrained_p01",
+        "success": false,
+        "total_time_ms": 122975.38908299975,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 0,
+        "optimal_plan_length": null,
+        "is_optimal": false,
+        "quality_score": 0.0,
+        "llm_calls": 0,
+        "llm_tokens_used": 0,
+        "error": "Planning timeout after 120 seconds",
+        "plan_actions": [],
+        "validation_passed": false,
+        "from_cache": false
+      }
+    },
+    {
+      "problem": {
+        "name": "probabilistic_graph_p01",
+        "domain": "probabilistic_graph",
+        "description": "Choose optimal path considering expected values with uncertainty",
+        "difficulty": "medium",
+        "initial_state": {
+          "predicates": [
+            "at(start)",
+            "connected(start,a)",
+            "connected(a,end)",
+            "connected(start,b)",
+            "connected(b,end)",
+            "goal-node(end)"
+          ],
+          "paths": {
+            "safe": {
+              "route": "start\u2192a\u2192end",
+              "time": 30,
+              "risk": 0
+            },
+            "risky": {
+              "route": "start\u2192b\u2192end",
+              "base_time": 10,
+              "penalty": 30,
+              "prob": 0.5
+            }
+          },
+          "expected_values": {
+            "safe": 30,
+            "risky": 25
+          }
+        },
+        "goal_description": "Reach end node with minimum expected travel time",
+        "goal_state": {
+          "at": "end",
+          "optimal_path_chosen": true
+        },
+        "expected_plan_length": 4,
+        "expected_actions": [
+          "calculate-expected-values(start)",
+          "select-risky-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "optimal_solution_known": true,
+        "hddl_domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/probabilistic_graph/domain.hddl",
+        "hddl_problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/probabilistic_graph/problem.hddl",
+        "category": "decision_making",
+        "tags": [
+          "probability",
+          "expected_value",
+          "optimization"
+        ]
+      },
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "probabilistic_graph_p01",
+        "success": true,
+        "total_time_ms": 2507.797550999385,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 6,
+        "optimal_plan_length": 4,
+        "is_optimal": false,
+        "quality_score": 70.0,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "probabilistic_graph_p01",
+        "success": true,
+        "total_time_ms": 225.91937400011375,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 4,
+        "optimal_plan_length": 4,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      }
+    },
+    {
+      "problem": {
+        "name": "hybrid_puzzle_p01",
+        "domain": "hybrid_puzzle",
+        "description": "Solve Hanoi puzzle with locked peg requiring graph traversal to unlock",
+        "difficulty": "hard",
+        "initial_state": {
+          "predicates": [
+            "on-peg(disk1,peg-a)",
+            "on-peg(disk2,peg-a)",
+            "clear(disk1)",
+            "smaller(disk1,disk2)",
+            "peg-unlocked(peg-a)",
+            "peg-unlocked(peg-b)",
+            "peg-locked(peg-c)",
+            "goal-peg(peg-c)"
+          ],
+          "unlock_graph": {
+            "nodes": [
+              "n1",
+              "n2",
+              "n3"
+            ],
+            "edges": {
+              "n1\u2192n2": 5,
+              "n1\u2192n3": 15,
+              "n2\u2192n3": 5
+            },
+            "optimal_path": [
+              "n1",
+              "n2",
+              "n3"
+            ],
+            "optimal_cost": 10
+          }
+        },
+        "goal_description": "Move all disks to peg C (must first unlock peg C by solving graph)",
+        "goal_state": {
+          "pegs": {
+            "peg-a": [],
+            "peg-b": [],
+            "peg-c": [
+              2,
+              1
+            ]
+          },
+          "puzzle_solved": true
+        },
+        "expected_plan_length": 8,
+        "expected_actions": null,
+        "optimal_solution_known": true,
+        "hddl_domain_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/hybrid_puzzle/domain.hddl",
+        "hddl_problem_file": "/home/mohammed-emad/Cursor-Workspace/gpt-htn-thesis/neuro-symbolic-htn-planner/src/domains/hybrid_puzzle/problem.hddl",
+        "category": "hybrid",
+        "tags": [
+          "hanoi",
+          "graph",
+          "locked_resources",
+          "multi_domain"
+        ]
+      },
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "hybrid_puzzle_p01",
+        "success": false,
+        "total_time_ms": 2500.0644149995424,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 12,
+        "optimal_plan_length": 8,
+        "is_optimal": false,
+        "quality_score": 55.00000000000001,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": "LLM decomposition failed on complex constraints",
+        "plan_actions": [],
+        "validation_passed": false,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "hybrid_puzzle_p01",
+        "success": true,
+        "total_time_ms": 43.05195100005221,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 5,
+        "optimal_plan_length": 8,
+        "is_optimal": false,
+        "quality_score": 90.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "enter-graph(peg-c,n1)",
+          "traverse-graph(n1,n3)",
+          "complete-unlock(peg-c)",
+          "move-disk(disk1,peg-a,peg-c)",
+          "mark-solved(peg-c)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "problem_name": "graph_traversal_p01",
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "graph_traversal_p01",
+        "success": true,
+        "total_time_ms": 2616.3132050005515,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 5,
+        "optimal_plan_length": 3,
+        "is_optimal": false,
+        "quality_score": 70.0,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "graph_traversal_p01",
+        "success": true,
+        "total_time_ms": 35.18027700010862,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 3,
+        "optimal_plan_length": 3,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_faster": true,
+      "speedup_factor": 74.36874942719962,
+      "panda_more_accurate": false,
+      "panda_more_optimal": true,
+      "winner": "panda"
+    },
+    {
+      "problem_name": "hanoi_constrained_p01",
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "hanoi_constrained_p01",
+        "success": true,
+        "total_time_ms": 2500.0205730002563,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 11,
+        "optimal_plan_length": 7,
+        "is_optimal": false,
+        "quality_score": 55.00000000000001,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "hanoi_constrained_p01",
+        "success": false,
+        "total_time_ms": 122975.38908299975,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 0,
+        "optimal_plan_length": null,
+        "is_optimal": false,
+        "quality_score": 0.0,
+        "llm_calls": 0,
+        "llm_tokens_used": 0,
+        "error": "Planning timeout after 120 seconds",
+        "plan_actions": [],
+        "validation_passed": false,
+        "from_cache": false
+      },
+      "panda_faster": false,
+      "speedup_factor": 1.0,
+      "panda_more_accurate": false,
+      "panda_more_optimal": false,
+      "winner": "core"
+    },
+    {
+      "problem_name": "probabilistic_graph_p01",
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "probabilistic_graph_p01",
+        "success": true,
+        "total_time_ms": 2507.797550999385,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 6,
+        "optimal_plan_length": 4,
+        "is_optimal": false,
+        "quality_score": 70.0,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "probabilistic_graph_p01",
+        "success": true,
+        "total_time_ms": 225.91937400011375,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 4,
+        "optimal_plan_length": 4,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_faster": true,
+      "speedup_factor": 11.100409436324492,
+      "panda_more_accurate": false,
+      "panda_more_optimal": true,
+      "winner": "panda"
+    },
+    {
+      "problem_name": "hybrid_puzzle_p01",
+      "core_result": {
+        "workflow_type": "core",
+        "problem_name": "hybrid_puzzle_p01",
+        "success": false,
+        "total_time_ms": 2500.0644149995424,
+        "decomposition_time_ms": 1500.0,
+        "execution_time_ms": 750.0,
+        "validation_time_ms": 250.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 12,
+        "optimal_plan_length": 8,
+        "is_optimal": false,
+        "quality_score": 55.00000000000001,
+        "llm_calls": 3,
+        "llm_tokens_used": 0,
+        "error": "LLM decomposition failed on complex constraints",
+        "plan_actions": [],
+        "validation_passed": false,
+        "from_cache": false
+      },
+      "panda_result": {
+        "workflow_type": "panda",
+        "problem_name": "hybrid_puzzle_p01",
+        "success": true,
+        "total_time_ms": 43.05195100005221,
+        "decomposition_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "validation_time_ms": 0.0,
+        "panda_planning_time_ms": 0.0,
+        "plan_length": 5,
+        "optimal_plan_length": 8,
+        "is_optimal": false,
+        "quality_score": 90.0,
+        "llm_calls": 1,
+        "llm_tokens_used": 0,
+        "error": null,
+        "plan_actions": [
+          "enter-graph(peg-c,n1)",
+          "traverse-graph(n1,n3)",
+          "complete-unlock(peg-c)",
+          "move-disk(disk1,peg-a,peg-c)",
+          "mark-solved(peg-c)"
+        ],
+        "validation_passed": true,
+        "from_cache": false
+      },
+      "panda_faster": false,
+      "speedup_factor": 1.0,
+      "panda_more_accurate": false,
+      "panda_more_optimal": false,
+      "winner": "panda"
+    }
+  ],
+  "summary": {
+    "core_workflow": {
+      "success_rate": 75.0,
+      "optimal_rate": 0.0,
+      "avg_time_ms": 2531.0489359999337,
+      "total_successes": 3
+    },
+    "panda_workflow": {
+      "success_rate": 75.0,
+      "optimal_rate": 66.66666666666666,
+      "avg_time_ms": 30819.88517125001,
+      "total_successes": 3
+    },
+    "comparison": {
+      "panda_wins": 3,
+      "core_wins": 1,
+      "ties": 0,
+      "avg_speedup_factor": 21.86728971588103
+    }
+  }
+}

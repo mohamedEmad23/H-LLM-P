@@ -242,7 +242,7 @@ class SimilaritySearch:
         >>> search = SimilaritySearch()
         >>> search.add_solved_problem(
         ...     problem_id="hanoi_4_disk",
-        ...     domain="hanoi",
+        ...     domain="hanoi",c
         ...     goal="Move all disks from peg A to peg C",
         ...     init_state={"n_disks": 4, "pegs": {"A": [4,3,2,1], "B": [], "C": []}},
         ...     strategies=[{"name": "recursive_move", "approach": "Break into subproblems"}],

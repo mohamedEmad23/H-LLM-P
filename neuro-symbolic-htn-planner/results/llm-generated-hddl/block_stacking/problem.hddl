@@ -1,0 +1,21 @@
+(define (problem block_stacking-p01)
+  (:domain block_stacking)
+  
+  (:objects 
+    block_a block_b - block
+  )
+  
+  (:init
+    (on_table block_a)
+    (on_table block_b)
+    (clear block_a)
+    (clear block_b)
+    (hand_empty)
+  )
+  
+  (:htn 
+    :ordered-tasks (and
+      (stack_block_a_on_b)
+    )
+  )
+)

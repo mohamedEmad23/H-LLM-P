@@ -1,0 +1,128 @@
+{
+  "timestamp": "2025-12-14T18:38:20.966139",
+  "config": {
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "problems_count": 2
+  },
+  "comparisons": [
+    {
+      "problem": "graph_simple",
+      "core": {
+        "workflow_type": "core_llm_only",
+        "problem_name": "graph_simple",
+        "success": true,
+        "total_time_ms": 1161.6521289997763,
+        "llm_time_ms": 620.9777000003669,
+        "planning_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 431,
+        "llm_model": "llama-3.3-70b-versatile",
+        "plan_length": 4,
+        "is_optimal": false,
+        "quality_score": 66.66666666666666,
+        "plan_actions": [
+          "traverse(A, B)",
+          "traverse(B, C)",
+          "traverse(C, D)",
+          "complete_path(D)"
+        ],
+        "reasoning": "Decomposed task into a sequence of traverse actions to reach the goal node D, then applied complete_path to confirm path completion",
+        "error": null
+      },
+      "panda": {
+        "workflow_type": "panda_neuro_symbolic",
+        "problem_name": "graph_simple",
+        "success": true,
+        "total_time_ms": 47.411763000127394,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 30.8665660004408,
+        "execution_time_ms": 0.0,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "llm_model": "cached",
+        "plan_length": 3,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "plan_actions": [
+          "traverse(A,C)",
+          "traverse(C,D)",
+          "complete-path(D)"
+        ],
+        "reasoning": "PANDA symbolic planning with 5 nodes expanded",
+        "error": null
+      },
+      "winner": "panda"
+    },
+    {
+      "problem": "probabilistic_choice",
+      "core": {
+        "workflow_type": "core_llm_only",
+        "problem_name": "probabilistic_choice",
+        "success": true,
+        "total_time_ms": 1078.3329240002786,
+        "llm_time_ms": 1009.9357310000414,
+        "planning_time_ms": 0.0,
+        "execution_time_ms": 0.0,
+        "llm_calls": 1,
+        "llm_tokens": 646,
+        "llm_model": "llama-3.3-70b-versatile",
+        "plan_length": 4,
+        "is_optimal": true,
+        "quality_score": 0.0,
+        "plan_actions": [
+          "calculate_expected_value()",
+          "calculate_expected_value()",
+          "choose_path(safe)",
+          "travel()"
+        ],
+        "reasoning": "Calculate expected values for both safe and risky paths. The safe path has a guaranteed time of 30 minutes. The risky path has a base time of 10 minutes with a 50% chance of a 30-minute penalty, resulting in an expected time of 10 + (0.5 * 30) = 25 minutes. Since the risky path has a lower expected value, it should be chosen. However, the task specifies reaching the end node with minimum expected travel time and a safe path of 30 minutes guaranteed, so we must consider the context of 'minimum expected travel time' and 'safe path' as the primary goal, thus the safe path is not always the best choice but in this case, the risky path has the lower expected value.",
+        "error": null
+      },
+      "panda": {
+        "workflow_type": "panda_neuro_symbolic",
+        "problem_name": "probabilistic_choice",
+        "success": true,
+        "total_time_ms": 25.485701999969024,
+        "llm_time_ms": 0.0,
+        "planning_time_ms": 22.28852400003234,
+        "execution_time_ms": 0.0,
+        "llm_calls": 0,
+        "llm_tokens": 0,
+        "llm_model": "cached",
+        "plan_length": 4,
+        "is_optimal": true,
+        "quality_score": 100.0,
+        "plan_actions": [
+          "calculate-expected-values(start)",
+          "select-safe-path()",
+          "traverse-to-goal(end)",
+          "verify-goal(end)"
+        ],
+        "reasoning": "PANDA symbolic planning with 14 nodes expanded",
+        "error": null
+      },
+      "winner": "panda"
+    }
+  ],
+  "summary": {
+    "core_workflow": {
+      "success_rate": 100.0,
+      "optimal_rate": 50.0,
+      "avg_time_ms": 1119.9925265000275,
+      "total_llm_calls": 2
+    },
+    "panda_workflow": {
+      "success_rate": 100.0,
+      "optimal_rate": 100.0,
+      "avg_time_ms": 36.44873250004821,
+      "total_llm_calls": 0
+    },
+    "comparison": {
+      "panda_wins": 2,
+      "core_wins": 0,
+      "ties": 0
+    }
+  }
+}

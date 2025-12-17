@@ -1,0 +1,23 @@
+(define (problem probabilistic-problem)
+  (:domain probabilistic)
+  
+  (:objects
+    Start A B End - node
+  )
+  
+  (:htn
+    :parameters ()
+    :subtasks (and
+      (task (find-path Start End))
+    )
+  )
+  
+  (:init
+    (current-node Start)
+  )
+  
+  (:goal (and
+    (current-node End)
+    (at-goal)
+  ))
+)

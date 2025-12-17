@@ -1,0 +1,126 @@
+(define (domain block_stacking)
+  (:requirements :typing :hierarchy)
+  
+  (:types 
+    block - object
+  )
+  
+  (:predicates
+    (on ?block - block ?loc - block)
+    (on_table ?block - block)
+    (clear ?block - block)
+    (holding ?block - block)
+    (hand_empty)
+  )
+  
+  (:task stack_blocks
+    :parameters ()
+    :method (method_stack_blocks)
+  )
+  
+  (:method method_stack_blocks
+    :parameters ()
+    :task (stack_blocks)
+    :precondition ()
+    :subtasks (stack_block_a_on_b)
+  )
+  
+  (:task stack_block_a_on_b
+    :parameters ()
+    :method (method_stack_block_a_on_b)
+  )
+  
+  (:method method_stack_block_a_on_b
+    :parameters ()
+    :task (stack_block_a_on_b)
+    :precondition (and (on_table block_a) (on_table block_b) (clear block_a) (clear block_b) (hand_empty))
+    :subtasks (and
+      (pick_up_block_a)
+      (stack_block_a_on_block_b)
+    )
+  )
+  
+  (:task pick_up_block
+    :parameters (?block - block)
+    :method (method_pick_up_block)
+  )
+  
+  (:method method_pick_up_block
+    :parameters (?block - block)
+    :task (pick_up_block ?block)
+    :precondition (and (on_table ?block) (clear ?block) (hand_empty))
+    :subtasks (pick_up_block_action ?block)
+  )
+  
+  (:action pick_up_block_action
+    :parameters (?block - block)
+    :precondition (and (on_table ?block) (clear ?block) (hand_empty))
+    :effect (and (holding ?block) (not (on_table ?block)) (not (clear ?block)) (not (hand_empty)))
+  )
+  
+  (:task stack_block_a_on_block_b
+    :parameters ()
+    :method (method_stack_block_a_on_block_b)
+  )
+  
+  (:method method_stack_block_a_on_block_b
+    :parameters ()
+    :task (stack_block_a_on_block_b)
+    :precondition (and (holding block_a) (clear block_b))
+    :subtasks (stack_block_action block_a block_b)
+  )
+  
+  (:action stack_block_action
+    :parameters (?block - block ?on_block - block)
+    :precondition (and (holding ?block) (clear ?on_block))
+    :effect (and (on ?block ?on_block) (not (holding ?block)) (not (clear ?on_block)) (hand_empty))
+  )
+  
+  (:task put_down_block
+    :parameters (?block - block)
+    :method (method_put_down_block)
+  )
+  
+  (:method method_put_down_block
+    :parameters (?block - block)
+    :task (put_down_block ?block)
+    :precondition (holding ?block)
+    :subtasks (put_down_block_action ?block)
+  )
+  
+  (:action put_down_block_action
+    :parameters (?block - block)
+    :precondition (holding ?block)
+    :effect (and (on_table ?block) (clear ?block) (not (holding ?block)) (hand_empty))
+  )
+  
+  (:task unstack_block
+    :parameters (?block - block ?from_block - block)
+    :method (method_unstack_block)
+  )
+  
+  (:method method_unstack_block
+    :parameters (?block - block ?from_block - block)
+    :task (unstack_block ?block ?from_block)
+    :precondition (and (on ?block ?from_block) (clear ?block) (hand_empty))
+    :subtasks (unstack_block_action ?block ?from_block)
+  )
+  
+  (:action unstack_block_action
+    :parameters (?block - block ?from_block - block)
+    :precondition (and (on ?block ?from_block) (clear ?block) (hand_empty))
+    :effect (and (holding ?block) (on_table ?block) (clear ?from_block) (not (on ?block ?from_block)) (not (hand_empty)))
+  )
+  
+  (:task pick_up_block_a
+    :parameters ()
+    :method (method_pick_up_block_a)
+  )
+  
+  (:method method_pick_up_block_a
+    :parameters ()
+    :task (pick_up_block_a)
+    :precondition (and (on_table block_a) (clear block_a) (hand_empty))
+    :subtasks (pick_up_block_action block_a)
+  )
+)

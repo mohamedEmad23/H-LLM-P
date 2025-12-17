@@ -1,0 +1,449 @@
+{
+  "benchmark_id": "5agent_20251217_190535",
+  "timestamp": "2025-12-17T19:05:35.822681",
+  "problems": {
+    "knowledge_graph_traversal": {
+      "problem_id": "problem_1",
+      "problem_name": "Incomplete Knowledge Graph Traversal",
+      "workflow_phases": {
+        "context_init": {
+          "success": true,
+          "time_ms": 0.09894371032714844
+        },
+        "planning": {
+          "success": true,
+          "strategies_generated": 3,
+          "recommended_strategy": "Research-Then-Plan",
+          "confidence": 0.95,
+          "time_ms": 1947.9265213012695,
+          "llm_used": true
+        },
+        "decomposition": {
+          "success": true,
+          "template_selected": "graph_traversal",
+          "confidence": 1.0,
+          "panda_validated": true,
+          "time_ms": 0.18787384033203125,
+          "llm_used": false
+        },
+        "execution": {
+          "success": true,
+          "steps_completed": 5,
+          "steps_total": 5,
+          "llm_fallback_used": 0,
+          "time_ms": 0.5753040313720703
+        },
+        "verification": {
+          "success": true,
+          "goal_achieved": true,
+          "quality_score": 98.0,
+          "efficiency_score": 80,
+          "issues_found": 0,
+          "time_ms": 1627.7410984039307,
+          "llm_used": true
+        },
+        "context_storage": {
+          "success": true,
+          "time_ms": 0.10466575622558594
+        }
+      },
+      "success": true,
+      "error": null,
+      "goal_achieved": true,
+      "quality_score": 98.0,
+      "panda_validated": true,
+      "total_time_ms": 3577.6453018188477,
+      "metrics": {
+        "total_llm_calls": 2,
+        "agent_breakdown": {
+          "planning": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 6881.892681121826
+          },
+          "decomposition": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 0.6396770477294922
+          },
+          "execution": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 2.4712085723876953
+          },
+          "verification": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 5486.939191818237
+          },
+          "context": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 0
+          }
+        }
+      },
+      "llm_calls_for_problem": 2
+    },
+    "constrained_hanoi": {
+      "problem_id": "problem_2",
+      "problem_name": "Constrained Tower of Hanoi",
+      "workflow_phases": {
+        "context_init": {
+          "success": true,
+          "time_ms": 0.4124641418457031
+        },
+        "planning": {
+          "success": true,
+          "strategies_generated": 3,
+          "recommended_strategy": "Modified Recursive Strategy",
+          "confidence": 0.9,
+          "time_ms": 1816.05863571167,
+          "llm_used": true
+        },
+        "decomposition": {
+          "success": true,
+          "template_selected": "tower_of_hanoi",
+          "confidence": 1.0,
+          "panda_validated": true,
+          "time_ms": 0.12111663818359375,
+          "llm_used": false
+        },
+        "execution": {
+          "success": true,
+          "steps_completed": 7,
+          "steps_total": 7,
+          "llm_fallback_used": 0,
+          "time_ms": 0.2110004425048828
+        },
+        "verification": {
+          "success": true,
+          "goal_achieved": true,
+          "quality_score": 100.0,
+          "efficiency_score": 100,
+          "issues_found": 0,
+          "time_ms": 1395.3030109405518,
+          "llm_used": true
+        },
+        "context_storage": {
+          "success": true,
+          "time_ms": 0.24580955505371094
+        }
+      },
+      "success": true,
+      "error": null,
+      "goal_achieved": true,
+      "quality_score": 100.0,
+      "panda_validated": true,
+      "total_time_ms": 3215.252637863159,
+      "metrics": {
+        "total_llm_calls": 4,
+        "agent_breakdown": {
+          "planning": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 6881.892681121826
+          },
+          "decomposition": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 0.6396770477294922
+          },
+          "execution": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 2.4712085723876953
+          },
+          "verification": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 5486.939191818237
+          },
+          "context": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 0
+          }
+        }
+      },
+      "llm_calls_for_problem": 2
+    },
+    "probabilistic_decision": {
+      "problem_id": "problem_3",
+      "problem_name": "Probabilistic Graph Traversal",
+      "workflow_phases": {
+        "context_init": {
+          "success": true,
+          "time_ms": 0.1316070556640625
+        },
+        "planning": {
+          "success": true,
+          "strategies_generated": 3,
+          "recommended_strategy": "Deterministic Comparison",
+          "confidence": 0.95,
+          "time_ms": 1549.2849349975586,
+          "llm_used": true
+        },
+        "decomposition": {
+          "success": true,
+          "template_selected": "probabilistic_graph",
+          "confidence": 1.0,
+          "panda_validated": true,
+          "time_ms": 0.19884109497070312,
+          "llm_used": false
+        },
+        "execution": {
+          "success": true,
+          "steps_completed": 4,
+          "steps_total": 4,
+          "llm_fallback_used": 0,
+          "time_ms": 0.32520294189453125
+        },
+        "verification": {
+          "success": true,
+          "goal_achieved": true,
+          "quality_score": 96.6,
+          "efficiency_score": 66,
+          "issues_found": 0,
+          "time_ms": 913.2535457611084,
+          "llm_used": true
+        },
+        "context_storage": {
+          "success": true,
+          "time_ms": 0.12087821960449219
+        }
+      },
+      "success": true,
+      "error": null,
+      "goal_achieved": true,
+      "quality_score": 96.6,
+      "panda_validated": true,
+      "total_time_ms": 2464.0493392944336,
+      "metrics": {
+        "total_llm_calls": 6,
+        "agent_breakdown": {
+          "planning": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 6881.892681121826
+          },
+          "decomposition": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 0.6396770477294922
+          },
+          "execution": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 2.4712085723876953
+          },
+          "verification": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 5486.939191818237
+          },
+          "context": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 0
+          }
+        }
+      },
+      "llm_calls_for_problem": 2
+    },
+    "resource_scheduling": {
+      "problem_id": "problem_4",
+      "problem_name": "Multi-Resource Task Scheduling",
+      "workflow_phases": {
+        "context_init": {
+          "success": true,
+          "time_ms": 0.1399517059326172
+        },
+        "planning": {
+          "success": true,
+          "strategies_generated": 3,
+          "recommended_strategy": "Dependency-Aware Scheduling",
+          "confidence": 0.9,
+          "time_ms": 1568.6225891113281,
+          "llm_used": true
+        },
+        "decomposition": {
+          "success": true,
+          "template_selected": "resource_scheduling",
+          "confidence": 1.0,
+          "panda_validated": true,
+          "time_ms": 0.13184547424316406,
+          "llm_used": false
+        },
+        "execution": {
+          "success": true,
+          "steps_completed": 12,
+          "steps_total": 12,
+          "llm_fallback_used": 0,
+          "time_ms": 1.359701156616211
+        },
+        "verification": {
+          "success": true,
+          "goal_achieved": true,
+          "quality_score": 96.25,
+          "efficiency_score": 62.5,
+          "issues_found": 0,
+          "time_ms": 1550.6415367126465,
+          "llm_used": true
+        },
+        "context_storage": {
+          "success": true,
+          "time_ms": 0.09322166442871094
+        }
+      },
+      "success": true,
+      "error": null,
+      "goal_achieved": true,
+      "quality_score": 96.25,
+      "panda_validated": true,
+      "total_time_ms": 3121.8676567077637,
+      "metrics": {
+        "total_llm_calls": 8,
+        "agent_breakdown": {
+          "planning": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 6881.892681121826
+          },
+          "decomposition": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 0.6396770477294922
+          },
+          "execution": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 2.4712085723876953
+          },
+          "verification": {
+            "calls": 4,
+            "tokens": 0,
+            "time_ms": 5486.939191818237
+          },
+          "context": {
+            "calls": 0,
+            "tokens": 0,
+            "time_ms": 0
+          }
+        }
+      },
+      "llm_calls_for_problem": 2
+    }
+  },
+  "summary": {
+    "total_problems": 4,
+    "successful": 4,
+    "success_rate": 100.0,
+    "total_llm_calls": 8,
+    "total_time_ms": 12378.814935684204,
+    "agent_statistics": {
+      "planning": {
+        "plans_generated": 4,
+        "successful_plans": 4,
+        "failed_plans": 0,
+        "fallback_used": 0,
+        "avg_strategies_per_plan": 3.0,
+        "avg_confidence": 0.9249999999999999,
+        "success_rate": 1.0,
+        "fallback_rate": 0.0
+      },
+      "decomposition": {
+        "decompositions_generated": 0,
+        "successful_decompositions": 0,
+        "failed_decompositions": 0,
+        "fallback_used": 0,
+        "avg_confidence": 0.0,
+        "panda_validations": 0,
+        "panda_validation_failures": 0,
+        "hand_coded_fallbacks": 0,
+        "domain_registry_hits": 0,
+        "domain_registry_misses": 0,
+        "llm_feedback_corrections": 0,
+        "methods_stored": 0,
+        "success_rate": 0.0,
+        "fallback_rate": 0.0,
+        "panda_validation_success_rate": 0.0,
+        "domain_registry_hit_rate": 0.0,
+        "domain_registry": {
+          "total_domains": 0,
+          "llm_generated": 0,
+          "hand_coded": 0,
+          "total_usage": 0,
+          "total_successes": 0,
+          "total_failures": 0,
+          "overall_success_rate": 0.0,
+          "lookup_hit_rate": 0.0,
+          "lookups": 0,
+          "lookup_hits": 0,
+          "lookup_misses": 0,
+          "registrations": 0,
+          "updates": 0
+        },
+        "method_library": {
+          "total_methods": 0,
+          "domains": 0,
+          "tasks": 0,
+          "total_successes": 0,
+          "total_failures": 0,
+          "overall_success_rate": 0.0
+        }
+      },
+      "execution": {
+        "plans_executed": 4,
+        "successful_executions": 4,
+        "failed_executions": 0,
+        "total_steps_executed": 28,
+        "validation_failures": 0,
+        "llm_fallback_used": 0,
+        "avg_execution_time_ms": 0.60175,
+        "panda_plans_parsed": 0,
+        "hierarchical_plans_executed": 0,
+        "success_rate": 1.0,
+        "validation_failure_rate": 0.0,
+        "llm_fallback_rate": 0.0,
+        "validator_stats": {
+          "validation_count": 28,
+          "validation_failures": 0,
+          "success_rate": 1.0
+        }
+      },
+      "verification": {
+        "verifications_performed": 4,
+        "plans_verified_successful": 4,
+        "plans_verified_failed": 0,
+        "avg_quality_score": 97.7125,
+        "fallback_used": 0,
+        "panda_validations": 0,
+        "panda_validation_failures": 0,
+        "success_rate": 1.0,
+        "fallback_rate": 0.0,
+        "panda_validation_success_rate": 0.0
+      },
+      "context": {
+        "contexts_retrieved": 0,
+        "states_tracked": 8,
+        "interactions_logged": 4,
+        "llm_invocations": 0,
+        "rule_based_retrievals": 0,
+        "panda_methods_stored": 0,
+        "panda_methods_retrieved": 0,
+        "llm_usage_rate": 0.0,
+        "history_size": 4,
+        "active_agents": 1,
+        "panda_method_library_stats": {
+          "total_methods": 4,
+          "domains": 4,
+          "tasks": 4,
+          "total_successes": 4,
+          "total_failures": 0,
+          "overall_success_rate": 1.0
+        }
+      }
+    }
+  }
+}

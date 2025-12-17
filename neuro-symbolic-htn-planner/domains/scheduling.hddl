@@ -1,0 +1,43 @@
+(define (domain scheduling)
+  (:requirements :typing :hierarchy)
+  
+  (:types task - object)
+  
+  (:predicates
+    (task-scheduled ?t - task)
+    (task-completed ?t - task)
+  )
+  
+  (:task schedule-all :parameters ())
+  
+  (:method do-schedule
+    :parameters ()
+    :task (schedule-all)
+    :subtasks (and
+      (t1 (schedule task-A))
+      (t2 (schedule task-B))
+      (t3 (schedule task-C))
+      (t4 (schedule task-D))
+      (t5 (complete task-A))
+      (t6 (complete task-B))
+      (t7 (complete task-C))
+      (t8 (complete task-D))
+    )
+    :ordering (and (t1 < t5) (t2 < t6) (t3 < t7) (t4 < t8))
+  )
+  
+  (:action schedule
+    :parameters (?t - task)
+    :precondition (not (task-scheduled ?t))
+    :effect (task-scheduled ?t)
+  )
+  
+  (:action complete
+    :parameters (?t - task)
+    :precondition (task-scheduled ?t)
+    :effect (and
+      (task-completed ?t)
+      (not (task-scheduled ?t))
+    )
+  )
+)

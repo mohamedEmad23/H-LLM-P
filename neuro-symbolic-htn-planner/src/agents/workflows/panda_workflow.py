@@ -1,6 +1,11 @@
 """
 PANDA Workflow Orchestrator
 Complete neuro-symbolic HTN planning pipeline integrating all 5 agents with PANDA framework
+
+Enhanced with:
+- DomainRegistry integration for persistent domain learning
+- Automatic domain reuse across workflow executions
+- Statistics tracking for domain usage
 """
 
 import json
@@ -16,6 +21,8 @@ from ..verification_agent import VerificationAgent
 from ..context_agent import ContextAgent
 from ...integrations.panda_wrapper import PANDAWrapper, PlannerResult
 from ...integrations.problem_cache import ProblemCache
+from ...integrations.domain_registry import DomainRegistry
+from ...integrations.panda_method_library import PANDAMethodLibrary
 from ...memory.similarity_search import SimilaritySearch, SimilarProblem
 from ...core.state_manager import State
 
@@ -103,6 +110,43 @@ class PANDAWorkflow:
         else:
             self.similarity_search = None
         
+        # ========== DOMAIN REGISTRY INTEGRATION ==========
+        # Persistent storage for generated HDDL domains - enables domain reuse
+        registry_path = str(self.results_dir / "domain_registry.json")
+        domains_base_path = "./src/domains"
+        
+        try:
+            self.domain_registry = DomainRegistry(
+                registry_path=registry_path,
+                domains_base_path=domains_base_path
+            )
+            # Scan existing domains on initialization
+            scanned = self.domain_registry.scan_existing_domains()
+            if scanned > 0:
+                logger.info(f"[WORKFLOW] Scanned {scanned} existing domains into registry")
+            
+            logger.info(
+                f"[WORKFLOW] DomainRegistry initialized with "
+                f"{len(self.domain_registry.registry)} domains"
+            )
+        except Exception as e:
+            logger.warning(f"[WORKFLOW] Failed to initialize DomainRegistry: {e}")
+            self.domain_registry = None
+        
+        # ========== METHOD LIBRARY INTEGRATION ==========
+        # Persistent storage for successful HDDL methods
+        method_library_path = str(self.results_dir / "method_library.json")
+        
+        try:
+            self.method_library = PANDAMethodLibrary(storage_path=method_library_path)
+            logger.info(
+                f"[WORKFLOW] PANDAMethodLibrary initialized with "
+                f"{self.method_library.get_statistics()['total_methods']} methods"
+            )
+        except Exception as e:
+            logger.warning(f"[WORKFLOW] Failed to initialize PANDAMethodLibrary: {e}")
+            self.method_library = None
+        
         # Workflow statistics
         self.stats = {
             "workflows_executed": 0,
@@ -112,6 +156,8 @@ class PANDAWorkflow:
             "cache_misses": 0,
             "similarity_hits": 0,
             "similarity_misses": 0,
+            "domain_registry_hits": 0,
+            "domain_registry_misses": 0,
             "avg_total_time_ms": 0.0,
             "avg_planning_time_ms": 0.0,
             "avg_panda_time_ms": 0.0,
@@ -286,6 +332,21 @@ class PANDAWorkflow:
                 workflow_result["error"] = "HDDL generation/validation failed"
                 return await self._finalize_workflow(workflow_result, workflow_start)
             
+            # ========== LOG PERSISTENCE STATUS ==========
+            if decomposition_result.get("persisted"):
+                logger.success(
+                    f"[WORKFLOW] ★ Domain persisted to "
+                    f"{decomposition_result.get('hddl_domain_file')}"
+                )
+                workflow_result["domain_persisted"] = True
+            if decomposition_result.get("from_registry"):
+                logger.success(
+                    f"[WORKFLOW] ★ Domain loaded from registry "
+                    f"(skipped LLM generation)"
+                )
+                workflow_result["domain_from_registry"] = True
+            # ============================================
+            
             # Phase 3: PANDA HTN Planning
             logger.info("[WORKFLOW] Phase 3: PANDA HTN Planning")
             panda_result = await self._phase3_panda_planning(
@@ -348,7 +409,7 @@ class PANDAWorkflow:
             
             if workflow_result["success"]:
                 self.stats["successful_workflows"] += 1
-                logger.info("[WORKFLOW] ✓ Workflow completed successfully")
+                logger.success("[WORKFLOW] ✓ Workflow completed successfully")
                 
                 # =========== CACHE STORE ===========
                 # Store successful solution for future reuse
@@ -390,9 +451,61 @@ class PANDAWorkflow:
                     except Exception as e:
                         logger.warning(f"[SIMILARITY] Failed to store in index: {e}")
                 # ==============================================
+                
+                # =========== DOMAIN REGISTRY UPDATE ===========
+                # Update success statistics for the domain
+                if self.domain_registry:
+                    try:
+                        self.domain_registry.update_success(domain_name, success=True)
+                        
+                        # Track if this was from registry
+                        if decomposition_result.get("from_registry"):
+                            self.stats["domain_registry_hits"] += 1
+                            workflow_result["domain_from_registry"] = True
+                        else:
+                            self.stats["domain_registry_misses"] += 1
+                            workflow_result["domain_from_registry"] = False
+                            
+                    except Exception as e:
+                        logger.warning(f"[REGISTRY] Failed to update success: {e}")
+                # =============================================
+                
+                # =========== METHOD LIBRARY AUTO-POPULATE ===========
+                # Store successful methods for future reuse
+                if self.method_library and decomposition_result.get("methods"):
+                    try:
+                        methods = decomposition_result.get("methods", [])
+                        for method in methods:
+                            # Generate HDDL text for this method
+                            hddl_text = self._method_to_hddl_text(method, domain_name)
+                            
+                            self.method_library.store_method(
+                                domain=domain_name,
+                                task_name=method.get("task_name", method.get("task", "unknown")),
+                                method_name=method.get("name", "unnamed_method"),
+                                hddl_text=hddl_text,
+                                parameters=method.get("parameters", {}),
+                                preconditions=method.get("preconditions", []),
+                                subtasks=method.get("subtasks", []),
+                                ordering=method.get("ordering", [])
+                            )
+                        
+                        if methods:
+                            logger.info(f"[METHOD_LIB] Stored {len(methods)} methods for domain '{domain_name}'")
+                            
+                    except Exception as e:
+                        logger.warning(f"[METHOD_LIB] Failed to store methods: {e}")
+                # ====================================================
             else:
                 self.stats["failed_workflows"] += 1
                 logger.warning(f"[WORKFLOW] ✗ Workflow completed with errors: {workflow_result['error']}")
+                
+                # Update domain registry with failure
+                if self.domain_registry:
+                    try:
+                        self.domain_registry.update_success(domain_name, success=False)
+                    except Exception as e:
+                        logger.debug(f"[REGISTRY] Failed to update failure: {e}")
             
         except Exception as e:
             logger.error(f"[WORKFLOW] Fatal error: {e}", exc_info=True)
@@ -640,8 +753,73 @@ class PANDAWorkflow:
         
         return workflow_result
     
+    def _method_to_hddl_text(self, method: Dict, domain_name: str) -> str:
+        """
+        Convert a method dict to HDDL text format
+        
+        Args:
+            method: Method dictionary with name, parameters, preconditions, subtasks
+            domain_name: Domain name for context
+        
+        Returns:
+            HDDL method text string
+        """
+        name = method.get("name", "unnamed_method")
+        task_name = method.get("task_name", method.get("task", "unknown_task"))
+        params = method.get("parameters", {})
+        preconditions = method.get("preconditions", [])
+        subtasks = method.get("subtasks", [])
+        
+        # Format parameters
+        if isinstance(params, dict):
+            params_str = " ".join([f"?{p}" for p in params.keys()])
+        elif isinstance(params, list):
+            params_str = " ".join([f"?{p}" for p in params])
+        else:
+            params_str = ""
+        
+        # Format preconditions
+        if preconditions:
+            if len(preconditions) == 1:
+                precond_str = f"({preconditions[0]})"
+            else:
+                precond_str = "(and " + " ".join([f"({p})" if not p.startswith("(") else p for p in preconditions]) + ")"
+        else:
+            precond_str = "()"
+        
+        # Format subtasks
+        if subtasks:
+            subtask_parts = []
+            for st in subtasks:
+                if isinstance(st, dict):
+                    st_name = st.get('name', st.get('task', 'unknown'))
+                    st_params = st.get('parameters', [])
+                    if st_params:
+                        subtask_parts.append(f"({st_name} {' '.join(st_params)})")
+                    else:
+                        subtask_parts.append(f"({st_name})")
+                elif isinstance(st, str):
+                    if not st.startswith("("):
+                        subtask_parts.append(f"({st})")
+                    else:
+                        subtask_parts.append(st)
+            
+            if len(subtask_parts) == 1:
+                subtasks_str = subtask_parts[0]
+            else:
+                subtasks_str = "(and " + " ".join(subtask_parts) + ")"
+        else:
+            subtasks_str = "()"
+        
+        return f"""(:method {name}
+  :parameters ({params_str})
+  :task ({task_name})
+  :precondition {precond_str}
+  :subtasks {subtasks_str}
+)"""
+    
     def get_statistics(self) -> Dict:
-        """Get workflow statistics"""
+        """Get workflow statistics including all memory systems"""
         stats = {
             **self.stats,
             "success_rate": (
@@ -656,5 +834,27 @@ class PANDAWorkflow:
             stats["cache_hit_rate"] = (
                 self.stats["cache_hits"] / (self.stats["cache_hits"] + self.stats["cache_misses"])
             ) if (self.stats["cache_hits"] + self.stats["cache_misses"]) > 0 else 0.0
+        
+        # Add domain registry statistics
+        if self.domain_registry:
+            stats["domain_registry"] = self.domain_registry.get_statistics()
+            stats["domain_registry_hit_rate"] = (
+                self.stats["domain_registry_hits"] / 
+                (self.stats["domain_registry_hits"] + self.stats["domain_registry_misses"])
+            ) if (self.stats["domain_registry_hits"] + self.stats["domain_registry_misses"]) > 0 else 0.0
+        
+        # Add method library statistics
+        if self.method_library:
+            stats["method_library"] = self.method_library.get_statistics()
+        
+        # Add similarity search statistics
+        if self.enable_similarity and self.similarity_search:
+            try:
+                stats["similarity_hit_rate"] = (
+                    self.stats["similarity_hits"] /
+                    (self.stats["similarity_hits"] + self.stats["similarity_misses"])
+                ) if (self.stats["similarity_hits"] + self.stats["similarity_misses"]) > 0 else 0.0
+            except Exception:
+                pass
         
         return stats

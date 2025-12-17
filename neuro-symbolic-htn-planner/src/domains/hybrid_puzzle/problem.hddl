@@ -1,0 +1,45 @@
+(define (problem hybrid-puzzle-p01)
+  (:domain hybrid-hanoi-graph)
+  
+  (:objects
+    disk1 disk2 - disk
+    peg-a peg-b peg-c - peg
+    n1 n2 n3 - graph-node
+  )
+  
+  (:init
+    ; Hanoi initial state: 2 disks on peg A
+    (on-peg disk2 peg-a)   ; Bottom disk
+    (on-peg disk1 peg-a)   ; Top disk
+    (clear disk1)
+    (smaller disk1 disk2)
+    
+    ; Peg states
+    (peg-unlocked peg-a)   ; Peg A starts unlocked
+    (peg-unlocked peg-b)   ; Peg B starts unlocked
+    (peg-locked peg-c)     ; Peg C is LOCKED!
+    
+    ; Goal peg
+    (goal-peg peg-c)
+    
+    ; Unlock graph for peg C
+    ; Graph: N1 --5--> N2 --5--> N3 (optimal path)
+    ;        N1 -------15------> N3 (direct but suboptimal)
+    (unlock-graph-for peg-c)
+    (graph-start n1)
+    (graph-goal n3)
+    (graph-edge n1 n2)
+    (graph-edge n1 n3)
+    (graph-edge n2 n3)
+    (= (graph-edge-cost n1 n2) 5)
+    (= (graph-edge-cost n1 n3) 15)
+    (= (graph-edge-cost n2 n3) 5)
+    (= (unlock-path-cost peg-c) 0)
+  )
+  
+  (:htn
+    :ordered-tasks (and
+      (task1 (solve-hybrid-puzzle peg-c))
+    )
+  )
+)

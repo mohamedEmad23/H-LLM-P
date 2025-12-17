@@ -1,0 +1,141 @@
+(define (domain resource-scheduling)
+  (:requirements :typing :hierarchy :negative-preconditions)
+  
+  (:types
+    task - object
+    resource - object
+  )
+  
+  (:predicates
+    (task-ready ?t - task)           ; Task can be scheduled
+    (task-running ?t - task)         ; Task is currently running  
+    (task-completed ?t - task)       ; Task has finished
+    (depends-on ?t1 ?t2 - task)      ; t1 depends on t2
+    (high-priority ?t - task)        ; Task is high priority
+    (resource-available ?r - resource) ; Resource is free
+    (uses-resource ?t - task ?r - resource) ; Task uses resource
+    (all-complete)                   ; All tasks done
+  )
+  
+  ;; Abstract task: Schedule all tasks
+  (:task schedule-all
+    :parameters ())
+  
+  ;; Abstract task: Schedule single task
+  (:task schedule-task
+    :parameters (?t - task))
+  
+  ;; Abstract task: Complete task
+  (:task complete-task
+    :parameters (?t - task))
+  
+  ;; Method: Schedule all by priority
+  (:method schedule-by-priority
+    :parameters ()
+    :task (schedule-all)
+    :precondition (and
+      (not (all-complete))
+    )
+    :subtasks (and
+      (task1 (schedule-high-priority-first))
+      (task2 (finalize-schedule))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Schedule high priority task
+  (:method schedule-high-priority
+    :parameters (?t - task)
+    :task (schedule-task ?t)
+    :precondition (and
+      (task-ready ?t)
+      (high-priority ?t)
+      (not (task-running ?t))
+      (not (task-completed ?t))
+    )
+    :subtasks (and
+      (task1 (start-task ?t))
+      (task2 (complete-task ?t))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Schedule normal priority task
+  (:method schedule-normal-priority
+    :parameters (?t - task)
+    :task (schedule-task ?t)
+    :precondition (and
+      (task-ready ?t)
+      (not (high-priority ?t))
+      (not (task-running ?t))
+      (not (task-completed ?t))
+    )
+    :subtasks (and
+      (task1 (start-task ?t))
+      (task2 (complete-task ?t))
+    )
+    :ordering (and
+      (task1 < task2)
+    )
+  )
+  
+  ;; Method: Complete a running task
+  (:method finish-running-task
+    :parameters (?t - task)
+    :task (complete-task ?t)
+    :precondition (and
+      (task-running ?t)
+    )
+    :subtasks (and
+      (task1 (finish-task ?t))
+    )
+  )
+  
+  ;; Primitive action: Start a task
+  (:action start-task
+    :parameters (?t - task)
+    :precondition (and
+      (task-ready ?t)
+      (not (task-running ?t))
+      (not (task-completed ?t))
+    )
+    :effect (and
+      (task-running ?t)
+      (not (task-ready ?t))
+    )
+  )
+  
+  ;; Primitive action: Finish a task
+  (:action finish-task
+    :parameters (?t - task)
+    :precondition (and
+      (task-running ?t)
+    )
+    :effect (and
+      (task-completed ?t)
+      (not (task-running ?t))
+    )
+  )
+  
+  ;; Primitive action: Schedule high priority tasks first
+  (:action schedule-high-priority-first
+    :parameters ()
+    :precondition (and
+      (not (all-complete))
+    )
+    :effect (and)
+  )
+  
+  ;; Primitive action: Finalize the schedule
+  (:action finalize-schedule
+    :parameters ()
+    :precondition (and)
+    :effect (and
+      (all-complete)
+    )
+  )
+)
